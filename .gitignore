@@ -1,3 +1,16 @@
+*.sdf
+*.user
+Debug
+Release
+.vs
+external-deps
+html
+*.opendb
+*.ipch
+/notes
+/unittests/test.bin
+/unittests/test.txt
+
 # Compiled Object files
 *.slo
 *.lo
