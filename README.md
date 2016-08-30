@@ -1,6 +1,6 @@
-# kepler3d
+# Kepler3D
 
-kepler3d is an OpenGL and C++11 game engine. 
+Kepler3D is an OpenGL and C++11 game engine. 
 
 This is a learning experience and a work in progress so I don't recommend using this engine in its current state.
 
@@ -23,6 +23,9 @@ This is a learning experience and a work in progress so I don't recommend using 
 
 External-dependencies and resource files are stored separately to keep the repo size down.
 
+### Setup
+
+- Clone the repo
 - Download [kepler3d_deps.zip](https://github.com/dgough/kepler3d/releases/download/v0.0.1/kepler3d_deps.zip) from [releases](https://github.com/dgough/kepler3d/releases) and unzip to the kepler3d directory
 - Open **kepler3d.sln**
 
