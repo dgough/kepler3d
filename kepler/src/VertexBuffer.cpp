@@ -19,7 +19,7 @@ namespace kepler {
         return buffer;
     }
 
-    void VertexBuffer::bind() {
+    void VertexBuffer::bind() const noexcept {
         glBindBuffer(GL_ARRAY_BUFFER, _handle);
     }
 }

@@ -35,7 +35,7 @@ using json = nlohmann::basic_json<std::map, std::vector, std::string, bool, std:
         } \
     }
 
-static constexpr GLchar DEFAULT_VERT_SHADER[] = "precision highp float;\n"
+static constexpr GLchar* DEFAULT_VERT_SHADER = "precision highp float;\n"
 "\n"
 "uniform mat4 u_modelViewMatrix;\n"
 "uniform mat3 u_normalMatrix;\n"
@@ -49,7 +49,7 @@ static constexpr GLchar DEFAULT_VERT_SHADER[] = "precision highp float;\n"
 "    gl_Position = u_projectionMatrix * u_modelViewMatrix * vec4(a_position,1.0);\n"
 "}\n";
 
-static constexpr GLchar DEFAULT_FRAG_SHADER[] = "precision highp float;\n"
+static constexpr GLchar* DEFAULT_FRAG_SHADER = "precision highp float;\n"
 "\n"
 "uniform vec4 u_emission;\n"
 "\n"
@@ -124,7 +124,7 @@ namespace kepler {
 
     // Private implementation
     /// @Internal
-    class GLTFLoader::Impl {
+    class GLTFLoader::Impl final {
         friend class GLTFLoader;
     public:
         Impl();

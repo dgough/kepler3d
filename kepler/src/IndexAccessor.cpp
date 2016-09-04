@@ -8,14 +8,11 @@ namespace kepler {
         : _buffer(indexBuffer), _count(count), _type(type), _offset(offset) {
     }
 
-    IndexAccessor::~IndexAccessor() noexcept {
-    }
-
     IndexAccessorRef IndexAccessor::create(IndexBufferRef indexBuffer, GLsizei count, GLenum type, GLintptr offset) {
         if (indexBuffer == nullptr) {
             return nullptr;
         }
-        return MAKE_SHARED(IndexAccessor, indexBuffer, count, type, offset);
+        return std::make_shared<IndexAccessor>(indexBuffer, count, type, offset);
     }
 
     void IndexAccessor::bind() {

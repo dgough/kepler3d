@@ -10,7 +10,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <App.hpp>
-#include <GLTFLoader.hpp>
 #include <Node.hpp>
 #include <Transform.hpp>
 #include <Camera.hpp>
@@ -33,6 +32,10 @@
 #include <iostream>
 
 using namespace kepler;
+
+static constexpr int WIDTH = 1024;
+static constexpr int HEIGHT = 768;
+static constexpr bool FULLSCREEN = false;
 
 static std::shared_ptr<MainMenu> __instance;
 
@@ -90,7 +93,7 @@ void MainMenu::gotoMainMenu() {
 }
 
 int main() {
-    App app(1024, 768, false);
+    App app(WIDTH, HEIGHT, FULLSCREEN);
     MainMenu::gotoMainMenu();
     app.mainLoop();
     return 0;

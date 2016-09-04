@@ -37,4 +37,4 @@ No. It is very incomplete and unoptimized.
 
 ### Are you accepting outside contributions?
 
-No.
+No. I want to stay as the sole contributor for now.

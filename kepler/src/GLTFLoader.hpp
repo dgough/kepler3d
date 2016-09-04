@@ -6,14 +6,14 @@
 namespace kepler {
 
     /// Class for loading GLTF files.
-    class GLTFLoader {
+    class GLTFLoader final {
     public:
         GLTFLoader();
 
         /// Loads the GLTF file at the given path.
         /// @param[in] path The file path.
         explicit GLTFLoader(const char* path);
-        virtual ~GLTFLoader() noexcept;
+        ~GLTFLoader() noexcept;
 
         /// True if a GLTF file was loaded successfully; false otherwise.
         explicit operator bool() const;

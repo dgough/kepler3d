@@ -19,7 +19,7 @@ namespace kepler {
         static VertexBufferRef create(GLsizeiptr size, const GLvoid* data, GLenum usage = GL_STATIC_DRAW);
         
         /// Binds this buffer.
-        void bind();
+        void bind() const noexcept;
     public:
         VertexBuffer(const VertexBuffer&) = delete;
         VertexBuffer& operator=(const VertexBuffer&) = delete;

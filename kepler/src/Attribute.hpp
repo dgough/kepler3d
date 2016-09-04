@@ -55,9 +55,6 @@ namespace kepler {
         const Semantic& getSemantic() const;
         const MaterialParameter::Type& getType() const;
 
-    public:
-        //Attribute(const Attribute&) = delete;
-        //Attribute& operator=(const Attribute&) = delete;
     private:
         std::string _name;
         Semantic _semantic;

@@ -5,17 +5,15 @@
 
 namespace kepler {
 
-    class IndexAccessor {
-        ALLOW_MAKE_SHARED(IndexAccessor);
+    class IndexAccessor final {
     public:
-
         enum Type {
             UNSIGNED_BYTE = GL_UNSIGNED_BYTE,
             UNSIGNED_SHORT = GL_UNSIGNED_SHORT,
             UNSIGNED_INT = GL_UNSIGNED_INT
         };
-
-        virtual ~IndexAccessor() noexcept;
+        // Use IndexAccessor::create()
+        IndexAccessor(IndexBufferRef indexBuffer, GLsizei count, GLenum type, GLintptr offset);
 
         /// Creates a IndexAccessor.
         /// 
@@ -32,10 +30,6 @@ namespace kepler {
         GLenum getType() const;
         GLintptr getOffset() const;
 
-    private:
-        IndexAccessor(IndexBufferRef indexBuffer, GLsizei count, GLenum type, GLintptr offset);
-        IndexAccessor(const IndexAccessor&) = delete;
-        IndexAccessor& operator=(const IndexAccessor&) = delete;
     private:
         IndexBufferRef _buffer;
         GLsizei _count;

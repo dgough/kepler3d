@@ -32,6 +32,7 @@
 #include <StringUtils.hpp>
 
 #include <iostream>
+#include <array>
 
 using namespace kepler;
 
@@ -44,7 +45,7 @@ static constexpr char* CITY_PATH = "res/glTF/VC/VC.gltf";
 
 static float g_deltaTime = 0.0f;
 
-static bool g_use_vsync = true;
+static bool g_use_vsync = false;
 static bool g_showText = true;
 
 static std::string g_fps_str;
@@ -67,7 +68,10 @@ TestApp::~TestApp() {
 }
 
 void TestApp::start() {
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    app()->setSwapInterval(g_use_vsync ? 1 : 0);
+
+    //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 
     loadScenes();
 
@@ -111,11 +115,16 @@ void TestApp::render() {
         _scene->visit(renderAll);
     }
 
+    auto fps = 1.0f / g_deltaTime;
+    if (fps < 55.f) {
+        std::cout << fps << std::endl;
+    }
+
     static float displayFrameTime = 0;
     displayFrameTime += g_deltaTime;
     if (displayFrameTime > 0.5f) {
         displayFrameTime -= 0.5f;
-        g_frame_time_str = std::to_string(g_deltaTime);
+        g_frame_time_str = std::to_string(g_deltaTime * 1000.0);
         g_fps_str = std::to_string(1.0f / g_deltaTime);
     }
 
@@ -382,7 +391,7 @@ void changeBoxColor(const Scene& scene) {
 MeshPrimitiveRef createLitCubePrimitive() {
     static constexpr float p = 0.5f;
     static constexpr float n = -0.5f;
-    static constexpr GLfloat vertices[] = {
+    static constexpr std::array<GLfloat, 144> vertices = {
         // back face
         n, n, n, 0.0f, 0.0f, -1.f, // bottom left
         n, p, n, 0.0f, 0.0f, -1.f, // top left
@@ -419,13 +428,13 @@ MeshPrimitiveRef createLitCubePrimitive() {
         n, n, p, 0.f, -1.f, 0.f, // front left
         p, n, p, 0.f, -1.f, 0.f, // front right
     };
-    auto vbo = VertexBuffer::create(sizeof(vertices), vertices);
+    auto vbo = VertexBuffer::create(sizeof(vertices), vertices.data());
     static constexpr GLsizei stride = 6 * sizeof(GLfloat);
     static constexpr GLsizei count = 24;
     auto prim = MeshPrimitive::create(MeshPrimitive::Mode::TRIANGLES);
     prim->setAttribute(Attribute::Semantic::POSITION, VertexAttributeAccessor::create(vbo, 3, GL_FLOAT, false, stride, 0, count));
     prim->setAttribute(Attribute::Semantic::NORMAL, VertexAttributeAccessor::create(vbo, 3, GL_FLOAT, false, stride, 3 * sizeof(GLfloat), count));
-    static constexpr GLubyte indices[] = {
+    static constexpr std::array<GLubyte, 36> indices = {
         0, 1, 2, 2, 1, 3, // back face
         4, 5, 6, 6, 5, 7, // right face
         8, 9, 10, 10, 9, 11, // front face
@@ -433,7 +442,7 @@ MeshPrimitiveRef createLitCubePrimitive() {
         16, 17, 18, 18, 17, 19, // top face
         20, 21, 22, 22, 21, 23 // bottom face
     };
-    auto indexBuffer = IndexBuffer::create(sizeof(indices), indices);
+    auto indexBuffer = IndexBuffer::create(sizeof(indices), indices.data());
     auto indexAccessor = IndexAccessor::create(indexBuffer, 36, IndexAccessor::UNSIGNED_BYTE, 0);
     prim->setIndices(indexAccessor);
     return prim;

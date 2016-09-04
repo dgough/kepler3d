@@ -23,6 +23,8 @@ const char* GLTF_PATH =
 //"res/glTF/BoxWithoutIndices/BoxWithoutIndices.gltf";
 //"res/glTF/ReciprocatingSaw/ReciprocatingSaw.gltf";
 
+static std::string g_text;
+
 SceneTest::SceneTest() : _moveCamera(false) {
 }
 
@@ -41,7 +43,6 @@ void SceneTest::start() {
     }
 
     _font = BmpFont::createFromFile("res/fonts/arial-32.fnt");
-    _compass.setScene(_scene);
 }
 
 void SceneTest::update() {
@@ -59,7 +60,7 @@ void SceneTest::render() {
     }
 
     if (_font) {
-        _font->drawText(GLTF_PATH, 0.f, 0.f);
+        _font->drawText(g_text.c_str(), 0.f, 0.f);
     }
     _compass.draw();
 }
@@ -127,5 +128,7 @@ void SceneTest::loadSceneFromFile(const char* path) {
 
     if (_scene) {
         _orbitCamera.attach(_scene);
+        _compass.setScene(_scene);
     }
+    g_text.assign(path);
 }

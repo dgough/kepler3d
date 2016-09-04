@@ -8,6 +8,7 @@ namespace kepler {
     class AxisCompass {
     public:
         AxisCompass();
+        /// Creates the AxisCompass and adds its node to the given scene.
         explicit AxisCompass(SceneRef scene);
 
         /// Draws the AxisCompass.
@@ -15,7 +16,7 @@ namespace kepler {
         void draw();
         NodeRef getNode() const;
 
-        /// You need to set the scene so that compass can access the camera if the node wasn't added to the scene as a child.
+        /// You need to set the scene so that compass can access the camera if the node wasn't added to the scene already.
         void setScene(SceneRef scene);
 
     private:

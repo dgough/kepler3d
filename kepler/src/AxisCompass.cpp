@@ -11,6 +11,8 @@
 #include "Technique.hpp"
 #include "Logging.hpp"
 
+#include <array>
+
 namespace kepler {
 
     static constexpr float SCALE = 0.05f;
@@ -53,20 +55,21 @@ namespace kepler {
     }
 
     MeshPrimitiveRef createPrimitive() {
-        static constexpr GLfloat vertices[] = {
-            0.f, 0.f, 0.f, 0.f, 1.f, 0.f, // y-axis
-            0.f, 1.f, 0.f, 0.f, 1.f, 0.f,
-            0.f, 0.f, 0.f, 1.f, 0.f, 0.f, // x-axis
-            1.f, 0.f, 0.f, 1.f, 0.f, 0.f,
-            0.f, 0.f, 0.f, 0.0f, 0.0f, 1.f, // z-axis
-            0.f, 0.f, 1.f, 0.f, 0.0f, 1.f,
+        // x, y, z, r, g, b
+        static constexpr std::array<GLubyte, 36> vertices = {
+            0, 0, 0, 0, 1, 0, // y-axis
+            0, 1, 0, 0, 1, 0,
+            0, 0, 0, 1, 0, 0, // x-axis
+            1, 0, 0, 1, 0, 0,
+            0, 0, 0, 0, 0, 1, // z-axis
+            0, 0, 1, 0, 0, 1,
         };
-        auto vbo = VertexBuffer::create(sizeof(vertices), vertices);
-        static constexpr GLsizei stride = 6 * sizeof(GLfloat);
+        auto vbo = VertexBuffer::create(sizeof(vertices), vertices.data());
+        static constexpr GLsizei stride = 6 * sizeof(GLubyte);
         static constexpr GLsizei count = 6;
         auto prim = MeshPrimitive::create(MeshPrimitive::Mode::LINES);
-        prim->setAttribute(Attribute::Semantic::POSITION, VertexAttributeAccessor::create(vbo, 3, GL_FLOAT, false, stride, 0, count));
-        prim->setAttribute(Attribute::Semantic::COLOR, VertexAttributeAccessor::create(vbo, 3, GL_FLOAT, false, stride, 3 * sizeof(GLfloat), count));
+        prim->setAttribute(Attribute::Semantic::POSITION, VertexAttributeAccessor::create(vbo, 3, GL_UNSIGNED_BYTE, false, stride, 0, count));
+        prim->setAttribute(Attribute::Semantic::COLOR, VertexAttributeAccessor::create(vbo, 3, GL_UNSIGNED_BYTE, false, stride, 3 * sizeof(GLubyte), count));
         return prim;
     }
 

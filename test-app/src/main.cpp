@@ -6,8 +6,12 @@
 
 using namespace kepler;
 
+static constexpr int WIDTH = 1024;
+static constexpr int HEIGHT = 768;
+static constexpr bool FULLSCREEN = false;
+
 int main() {
-    App app(1024, 768, false);
+    App app(WIDTH, HEIGHT, FULLSCREEN);
     app.setDelegate(std::make_shared<TestApp>());
     app.mainLoop();
     return 0;
