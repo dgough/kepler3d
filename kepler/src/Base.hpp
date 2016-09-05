@@ -34,6 +34,7 @@ namespace kepler {
     class Sampler;
     class BmpFont;
     class DrawableComponent;
+    class Button;
 
     class App;
     class AppDelegate;
@@ -67,6 +68,7 @@ namespace kepler {
     using SamplerRef = std::shared_ptr<Sampler>; ///< Shared pointer to Sampler.
     using BmpFontRef = std::shared_ptr<BmpFont>; ///< Shared pointer to BmpFont.
     using DrawableComponentRef = std::shared_ptr<DrawableComponent>; ///< Shared pointer to DrawableComponent.
+    using ButtonRef = std::shared_ptr<Button>; ///< Shared pointer to Button.
 
     using AppDelegateRef = std::shared_ptr<AppDelegate>; ///< Shared pointer to AppDelegate.
     ///

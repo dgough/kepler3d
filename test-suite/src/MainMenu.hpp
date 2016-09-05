@@ -1,6 +1,9 @@
 #pragma once
 
 #include <AppDelegate.hpp>
+#include <Button.hpp>
+
+#include <vector>
 
 using namespace kepler;
 
@@ -22,5 +25,10 @@ public:
     static void gotoMainMenu();
 
 private:
+    void addButton(const char* text, const Rectangle& rect, std::function<void()> callback);
+    void drawButton(const Button& button);
+    bool clickButtonAt(glm::vec2 pos);
+
     BmpFontRef _font;
+    std::vector<ButtonRef> _buttons;
 };

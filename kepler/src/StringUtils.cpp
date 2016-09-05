@@ -36,7 +36,7 @@ namespace kepler {
         return stringEqual(s, prefix, ignoreCase);
     }
 
-    bool endsWith(const std::string & subject, const char* suffix, bool ignoreCase) {
+    bool endsWith(const std::string& subject, const char* suffix, bool ignoreCase) {
         if (suffix == nullptr || *suffix == '\0') {
             return true;
         }

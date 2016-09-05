@@ -19,6 +19,9 @@ using std::regex;
 
 namespace kepler {
 
+    // Disable OpenGL code to make it easier to profile font loading
+    static constexpr bool DISABLE_GL = false;
+
     /// @Internal
     class BmpFontRenderer;
     static std::weak_ptr<BmpFontRenderer> g_bmpFontRenderer;
@@ -63,8 +66,24 @@ namespace kepler {
         }
     }
 
-    static float i_to_f(const string& str, int defaultValue = 0) {
-        return static_cast<float>(to_i(str, defaultValue));
+    static bool readIntAfter(const std::string& subject, const char* target, int& num) {
+        size_t i = subject.find(target);
+        if (i >= 0) {
+            i += strlen(target);
+            if (i < subject.length()) {
+                num = std::atoi(subject.c_str() + i);
+                return true;
+            }
+        }
+        return false;
+    }
+    static bool readIntAfter(const std::string& subject, const char* target, float& f) {
+        int n;
+        if (readIntAfter(subject, target, n)) {
+            f = static_cast<float>(n);
+            return true;
+        }
+        return false;
     }
 
     /// Assigns source to destination without the surrounding double quotes.
@@ -105,16 +124,15 @@ namespace kepler {
         void loadTextures();
     private:
         void loadInfo(const string& line);
-        void loadCommon(const string& line, const regex& re);
+        void loadCommon(const string& line);
         void loadPage(const string& line);
         void loadChars(const string& line);
-        void loadChar(const string& line, const regex& re);
-        void loadKernings(const string& line, const regex& re);
-        void loadKerning(const string& line, const regex& re);
+        void loadChar(const string& line);
+        void loadKernings(const string& line);
+        void loadKerning(const string& line);
 
-        void readInfoValue(const string& key, const string& value);
-        void readCommonValue(const string& key, const string& value);
-        void readCharValue(const string& key, const string& value, Character& ch);
+        void addCharacter(const Character& ch);
+        bool getCharacter(char ch, Character& character);
 
     private:
         float _scale;
@@ -135,7 +153,7 @@ namespace kepler {
         string _baseDir;
 
         // TODO use std::vector instead
-        std::map<char, Character> _chars;
+        std::vector<Character> _chars;
         std::vector<string> _pages;
 
         std::shared_ptr<BmpFontRenderer> _renderer;
@@ -169,6 +187,9 @@ namespace kepler {
     ////////////////////////////////////////////////////////////////////////////////
 
     BmpFont::Impl::Impl() : _scale(1.f), _size(0) {
+        if (DISABLE_GL) {
+            return;
+        }
         if (auto renderer = g_bmpFontRenderer.lock()) {
             _renderer = renderer;
         }
@@ -188,11 +209,10 @@ namespace kepler {
         auto dest = buffer.begin();
 
         for (const char* c = text; *c != '\0'; ++c) {
-            auto it = _chars.find(*c);
-            if (it == _chars.end()) {
+            Character ch;
+            if (!getCharacter(*c, ch)) {
                 continue;
             }
-            auto& ch = it->second;
             GLfloat xpos = x + ch.xoffset * _scale;
             GLfloat ypos = y + ch.yoffset * _scale;
             GLfloat xpos2 = xpos + ch.width * _scale;
@@ -228,7 +248,6 @@ namespace kepler {
         _baseDir = getDirectoryName(path);
 
         string line;
-        regex keyEqualNumber("([a-zA-Z]+)=([0-9-]+)");
         while (std::getline(file, line)) {
             if (line.empty()) {
                 continue;
@@ -246,21 +265,22 @@ namespace kepler {
                 break;
             case 'c':
                 if (startsWith(line, "common")) {
-                    loadCommon(line, keyEqualNumber);
+                    loadCommon(line);
                 }
                 else if (startsWith(line, "chars")) {
                     loadChars(line);
                 }
                 else if (startsWith(line, "char")) {
-                    loadChar(line, keyEqualNumber);
+                    loadChar(line);
                 }
                 break;
             case 'k':
                 if (startsWith(line, "kernings")) {
-                    loadKerning(line, keyEqualNumber);
+                    return;
+                    //loadKerning(line);
                 }
                 else if (startsWith(line, "kerning")) {
-                    loadKernings(line, keyEqualNumber);
+                    //loadKernings(line);
                 }
                 break;
             default:
@@ -270,6 +290,9 @@ namespace kepler {
     }
 
     void BmpFont::Impl::loadTextures() {
+        if (DISABLE_GL) {
+            return;
+        }
         if (_pages.size() < 1) {
             throw BmpFontException("no font pages found");
         }
@@ -278,36 +301,23 @@ namespace kepler {
         if (image) {
             _texture = Texture::create2D(image, GL_RGBA);
             _texture->setSampler(_renderer->_sampler);
-
         }
     }
 
     void BmpFont::Impl::loadInfo(const string& line) {
-        regex re("([a-zA-Z]+)=([0-9a-zA-Z.,-]+)");
-        auto next(std::sregex_iterator(line.begin(), line.end(), re));
-        //std::sregex_iterator end;
-        //while (next != end) {
-        //    string key = next->str(1);
-        //    if (key.length() >= 2) {
-        //        readInfoValue(key, next->str(2));
-        //    }
-        //    ++next;
-        //}
+        readIntAfter(line, "size=", _size);
+        readIntAfter(line, "stretchH=", _stretchH);
+        // bold
+        // charset
+        // italic
 
-        std::for_each(next, std::sregex_iterator(), [this](const std::smatch& match) {
-            string key = match.str(1);
-            if (key.length() >= 2) {
-                readInfoValue(key, match.str(2));
-            }
-        });
-
-        regex face_regex("\\bface=(\"[\\w\\s,.-]+\"|[\\w,.-]+)");
+        regex face_regex(" face=(\"[\\w\\s,.-]+\"|[\\w,.-]+)");
         std::smatch match;
         if (std::regex_search(line, match, face_regex) && match.size() > 1) {
             assignWithoutQuotes(_face, match.str(1));
         }
 
-        regex spacing_regex("\\bspacing=([0-9-]+),([0-9-]+)");
+        regex spacing_regex(" spacing=([0-9-]+),([0-9-]+)");
         std::smatch spacingMatch;
         if (std::regex_search(line, spacingMatch, spacing_regex) && spacingMatch.size() > 2) {
             _spacingX = to_i(spacingMatch.str(1));
@@ -315,205 +325,95 @@ namespace kepler {
         }
     }
 
-    void BmpFont::Impl::loadCommon(const string& line, const regex& re) {
-        auto next(std::sregex_iterator(line.begin(), line.end(), re));
-        std::sregex_iterator end;
-        while (next != end) {
-            string key = next->str(1);
-            if (key.length() >= 2) {
-                readCommonValue(key, next->str(2));
+    void BmpFont::Impl::loadCommon(const string& line) {
+        readIntAfter(line, "lineHeight=", _lineHeight);
+        readIntAfter(line, "base=", _base);
+        readIntAfter(line, "scaleW=", _scaleW);
+        readIntAfter(line, "scaleH=", _scaleH);
+        readIntAfter(line, "packed=", _packed);
+
+        int pageCount;
+        if (readIntAfter(line, "pages=", pageCount)) {
+            if (pageCount > 0) {
+                _pages.resize(pageCount);
             }
-            ++next;
         }
     }
 
     void BmpFont::Impl::loadPage(const string& line) {
-        regex id_regex("\\bid=([0-9]+)");
-        regex file_regex("\\bfile=(\"[\\w\\s.-]+\"|[\\w.-]+)");
+        regex file_regex(" file=(\"[\\w\\s.-]+\"|[\\w.-]+)");
 
         int page_id = 0;
-        string filename;
+        readIntAfter(line, "id=", page_id);
 
+        string filename;
         std::smatch match;
-        if (std::regex_search(line, match, id_regex) && match.size() > 1) {
-            page_id = to_i(match.str(1));
-        }
         if (std::regex_search(line, match, file_regex) && match.size() > 1) {
             assignWithoutQuotes(filename, match.str(1));
         }
-
         if (page_id < _pages.size()) {
             _pages[page_id].assign(filename);
         }
     }
 
     void BmpFont::Impl::loadChars(const string& line) {
-        // TODO use a vector instead of a map and set its size here
-        //regex re("count=([0-9]+)");
-        //std::smatch match;
-        //if (std::regex_search(line, match, re) && match.size() > 1)  {
-        //    string n = match.str(1);
-        //}
+        int count;
+        if (readIntAfter(line, "count=", count)) {
+            _chars.reserve(count);
+        }
     }
 
-    void BmpFont::Impl::loadChar(const string& line, const regex& re) {
+    void BmpFont::Impl::loadChar(const string& line) {
         Character ch;
-        auto next(std::sregex_iterator(line.begin(), line.end(), re));
-        std::sregex_iterator end;
-        while (next != end) {
-            string key = next->str(1);
-            if (!key.empty()) {
-                readCharValue(key, next->str(2), ch);
+
+        int id;
+        if (readIntAfter(line, "id=", id)) {
+            if (id >= FIRST_PRINTABLE && id <= LAST_PRINTABLE) {
+                ch.ch = static_cast<char>(id);
             }
-            ++next;
+            else {
+                return;
+            }
         }
-        //std::for_each(next, std::sregex_iterator(), [this, &ch](const std::smatch& match) {
-        //    string key = match.str(1);
-        //    if (key.length() >= 2) {
-        //        readCharValue(key, match.str(2), ch);
-        //    }
-        //});
+        readIntAfter(line, "x=", ch.x);
+        readIntAfter(line, "y=", ch.y);
+        readIntAfter(line, "xoffset=", ch.xoffset);
+        readIntAfter(line, "yoffset=", ch.yoffset);
+        readIntAfter(line, "xadvance=", ch.xadvance);
+        readIntAfter(line, "width=", ch.width);
+        readIntAfter(line, "height=", ch.height);
         ch.s = (float)ch.x / (float)_scaleW;
         ch.s2 = (float)(ch.x + ch.width) / (float)_scaleW;
         ch.t = (float)ch.y / (float)_scaleH;
         ch.t2 = (float)(ch.y + ch.height) / (float)_scaleH;
-        _chars[ch.ch] = ch;
+        addCharacter(ch);
     }
 
-    void BmpFont::Impl::loadKernings(const string& line, const regex& re) {
+    void BmpFont::Impl::loadKernings(const string& line) {
         // TODO
     }
 
-    void BmpFont::Impl::loadKerning(const string& line, const regex& re) {
+    void BmpFont::Impl::loadKerning(const string& line) {
         // TODO
     }
 
-    void BmpFont::Impl::readInfoValue(const string& key, const string& value) {
-        switch (key[0]) {
-        case 'a':
-            break;
-        case 'b':
-            // bold
-            break;
-        case 'c':
-            // charset
-            break;
-        case 'i':
-            // italic
-            break;
-        case 'p':
-            break;
-        case 's':
-            switch (key.length()) {
-            case 4:
-                if (key == "size") {
-                    int size = to_i(value);
-                    if (size > 0) {
-                        _size = size;
-                    }
-                }
-                break;
-            case 6:
-                break;
-            case 7:
-                break;
-            case 8:
-                if (key == "stretchH") {
-                    _stretchH = to_i(value, 100);
-                }
-                break;
-            default:
-                break;
-            }
-            break;
-        case 'u':
-            break;
+    void BmpFont::Impl::addCharacter(const Character& ch) {
+        size_t i = ch.ch;
+        i &= 0xFF;
+        i -= FIRST_PRINTABLE;
+        if (i >= _chars.size()) {
+            _chars.resize(i + 1);
         }
+        _chars[i] = ch;
     }
 
-    void BmpFont::Impl::readCommonValue(const string& key, const string& value) {
-        switch (key[0]) {
-        case 'l':
-            if (key == "lineHeight") {
-                _lineHeight = to_i(value);
-            }
-            break;
-        case 'b':
-            if (key == "base") {
-                _base = to_i(value);
-            }
-            break;
-        case 's':
-            if (key == "scaleW") {
-                _scaleW = to_i(value);
-            }
-            else if (key == "scaleH") {
-                _scaleH = to_i(value);
-            }
-            break;
-        case 'p':
-            if (key == "pages") {
-                int pageCount = to_i(value);
-                // TODO throw exception if > 1?
-                if (pageCount > 0) {
-                    _pages.resize(pageCount);
-                }
-            }
-            else if (key == "packed") {
-                _packed = to_i(value);
-            }
-            break;
-        default:
-            break;
+    bool BmpFont::Impl::getCharacter(char ch, Character& character) {
+        size_t i = ch - FIRST_PRINTABLE;
+        if (i >= 0 && i < _chars.size()) {
+            character = _chars[i];
+            return true;
         }
-    }
-
-    void BmpFont::Impl::readCharValue(const string& key, const string& value, Character& ch) {
-        switch (key[0]) {
-        case 'i':
-            if (key == "id") {
-                int id = to_i(value);
-                if (id >= FIRST_PRINTABLE && id <= LAST_PRINTABLE) {
-                    ch.ch = static_cast<char>(id);
-                }
-            }
-            break;
-        case 'x':
-            if (key.length() == 1) {
-                ch.x = i_to_f(value);
-            }
-            else if (key == "xoffset") {
-                ch.xoffset = i_to_f(value);
-            }
-            else if (key == "xadvance") {
-                ch.xadvance = i_to_f(value);
-            }
-            break;
-        case 'y':
-            if (key.length() == 1) {
-                ch.y = i_to_f(value);
-            }
-            else if (key == "yoffset") {
-                ch.yoffset = i_to_f(value);
-            }
-            break;
-        case 'w':
-            if (key == "width") {
-                ch.width = i_to_f(value);
-            }
-            break;
-        case 'h':
-            if (key == "height") {
-                ch.height = i_to_f(value);
-            }
-            break;
-        case 'p':
-            break;
-        case 'c':
-            break;
-        default:
-            break;
-        }
+        return false;
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -605,6 +505,10 @@ namespace kepler {
 
     int BmpFont::getSize() const {
         return _impl->_size;
+    }
+
+    float BmpFont::getSizeFloat() const {
+        return static_cast<float>(getSize());
     }
 
     int BmpFont::getLineHeight() const {

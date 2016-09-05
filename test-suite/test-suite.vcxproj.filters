@@ -15,12 +15,18 @@
     <ClCompile Include="src\SceneTest.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\TextTest.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\MainMenu.hpp">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\SceneTest.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TextTest.hpp">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

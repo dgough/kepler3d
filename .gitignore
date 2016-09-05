@@ -7,6 +7,8 @@ external-deps
 html
 *.opendb
 *.ipch
+*.vsp
+*.psess
 /notes
 /unittests/test.bin
 /unittests/test.txt

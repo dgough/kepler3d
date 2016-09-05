@@ -100,7 +100,7 @@ namespace kepler {
         }
     }
 
-    MaterialParameterRef Technique::findValueParameter(const std::string & paramName) {
+    MaterialParameterRef Technique::findValueParameter(const std::string& paramName) {
         auto p = _values.find(paramName);
         if (p != _values.end()) {
             return p->second;

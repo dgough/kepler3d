@@ -15,7 +15,7 @@
 using namespace kepler;
 using glm::vec3;
 
-const char* GLTF_PATH =
+static constexpr char* GLTF_PATH =
 //"C:/dev/github/glTF/sampleModels/Buggy/glTF/Buggy.gltf";
 //"C:/dev/github/glTF/sampleModels/GearboxAssy/glTF/GearboxAssy.gltf";
 //"res/glTF/duck/Duck.gltf";

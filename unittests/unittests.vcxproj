@@ -158,6 +158,7 @@
     <ClCompile Include="src\test_gltf.cpp" />
     <ClCompile Include="src\test_node.cpp" />
     <ClCompile Include="src\test_node_transform.cpp" />
+    <ClCompile Include="src\test_rectangle.cpp" />
     <ClCompile Include="src\test_scene.cpp" />
     <ClCompile Include="src\test_string_utils.cpp" />
     <ClCompile Include="src\test_transform.cpp" />

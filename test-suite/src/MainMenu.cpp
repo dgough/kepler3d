@@ -1,5 +1,6 @@
 #include "MainMenu.hpp"
 #include "SceneTest.hpp"
+#include "TextTest.hpp"
 
 #include <BaseGL.hpp>
 #include <GLFW/glfw3.h>
@@ -51,6 +52,22 @@ MainMenu::~MainMenu() {
 
 void MainMenu::start() {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
+    if (_buttons.empty()) {
+        static constexpr float width = 300.f;
+        float height = static_cast<float>(_font->getSize()) * _font->getScale() + 6.f;
+        Rectangle rect(100.f, 100.f, width, height);
+
+        addButton("Scene Test", rect, []() {
+            app()->setDelegate(std::make_shared<SceneTest>());
+        });
+
+        rect.pos.y += height;
+
+        addButton("Text Test", rect, []() {
+            app()->setDelegate(std::make_shared<TextTest>()); // TODO 
+        });
+    }
 }
 
 void MainMenu::update() {
@@ -63,7 +80,9 @@ void MainMenu::render() {
 
     float fontSize = static_cast<float>(_font->getSize());
 
-    _font->drawText("Scene Test", 0, 0);
+    for (auto& button : _buttons) {
+        drawButton(*button);
+    }
 }
 
 void MainMenu::keyEvent(int key, int scancode, int action, int mods) {
@@ -77,7 +96,9 @@ void MainMenu::mouseEvent(double xpos, double ypos) {
 
 void MainMenu::mouseButtonEvent(int button, int action, int mods) {
     if (button == LEFT_MOUSE && action == PRESS) {
-        app()->setDelegate(std::make_shared<SceneTest>());
+        double xpos, ypos;
+        app()->getCursorPos(&xpos, &ypos);
+        clickButtonAt(glm::vec2(xpos, ypos));
     }
 }
 
@@ -90,6 +111,28 @@ std::shared_ptr<MainMenu> MainMenu::getInstance() {
 
 void MainMenu::gotoMainMenu() {
     app()->setDelegate(getInstance());
+}
+
+void MainMenu::addButton(const char* text, const Rectangle& rect, std::function<void()> callback) {
+    auto button = std::make_shared<Button>(text, rect);
+    button->setOnClick(callback);
+    _buttons.push_back(button);
+}
+
+void MainMenu::drawButton(const Button& button) {
+    float x = button.getRect().x();
+    float y = button.getRect().y();
+    _font->drawText(button.getText().c_str(), x, y);
+}
+
+bool MainMenu::clickButtonAt(glm::vec2 pos) {
+    for (auto button : _buttons) {
+        if (button->getRect().contains(pos)) {
+            button->callOnClick();
+            return true;
+        }
+    }
+    return false;
 }
 
 int main() {

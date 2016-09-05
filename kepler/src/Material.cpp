@@ -24,7 +24,7 @@ namespace kepler {
         return _technique;
     }
 
-    const std::string & Material::getName() const {
+    const std::string& Material::getName() const {
         return _name;
     }
 

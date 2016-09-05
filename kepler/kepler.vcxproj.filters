@@ -40,6 +40,9 @@
     <Filter Include="src\Utils">
       <UniqueIdentifier>{4d626487-be76-4772-8fb6-c79fafbea38d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\UI">
+      <UniqueIdentifier>{d8afc60e-6405-46c1-956a-17ee3a42eec6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\AppDelegate.cpp">
@@ -155,6 +158,12 @@
     </ClCompile>
     <ClCompile Include="src\Scene.cpp">
       <Filter>src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rectangle.cpp">
+      <Filter>src\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Button.cpp">
+      <Filter>src\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -277,6 +286,12 @@
     </ClInclude>
     <ClInclude Include="src\Scene.hpp">
       <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rectangle.hpp">
+      <Filter>src\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Button.hpp">
+      <Filter>src\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

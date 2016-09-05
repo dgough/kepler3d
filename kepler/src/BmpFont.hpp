@@ -19,6 +19,7 @@ namespace kepler {
         void drawText(const char* text, float x, float y, const glm::vec3& color = glm::vec3(1, 1, 1));
 
         int getSize() const;
+        float getSizeFloat() const;
         int getLineHeight() const;
         int getBase() const;
 
