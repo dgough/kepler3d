@@ -165,6 +165,9 @@
     <ClCompile Include="src\Button.cpp">
       <Filter>src\UI</Filter>
     </ClCompile>
+    <ClCompile Include="src\MeshUtils.cpp">
+      <Filter>src\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\App.hpp">
@@ -293,6 +296,9 @@
     <ClInclude Include="src\Button.hpp">
       <Filter>src\UI</Filter>
     </ClInclude>
+    <ClInclude Include="src\MeshUtils.hpp">
+      <Filter>src\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\cpp.hint">
@@ -300,6 +306,9 @@
     </None>
     <None Include="src\Transform.inl">
       <Filter>src\Scene</Filter>
+    </None>
+    <None Include="src\Rectangle.inl">
+      <Filter>src\Geometry</Filter>
     </None>
   </ItemGroup>
 </Project>

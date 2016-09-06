@@ -51,13 +51,13 @@ namespace kepler {
         Attribute();
         Attribute(const std::string& name, Semantic semantic, MaterialParameter::Type type);
 
-        const std::string getName() const;
+        //const std::string getName() const;
         const Semantic& getSemantic() const;
-        const MaterialParameter::Type& getType() const;
+        //const MaterialParameter::Type& getType() const;
 
     private:
-        std::string _name;
+        //std::string _name;
         Semantic _semantic;
-        MaterialParameter::Type _type;
+        //MaterialParameter::Type _type;
     };
 }

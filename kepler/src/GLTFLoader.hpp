@@ -39,6 +39,11 @@ namespace kepler {
         /// Sets if the default material should be used even if a primitive has a material listed.
         void useDefaultMaterial(bool value);
 
+        /// Sets if materials will be automatically loaded when loading scenes, nodes or meshes.
+        /// Enabled by default.
+        /// This will not affect explicitly loading materials using methods like getMaterialById().
+        void setAutoLoadMaterials(bool value);
+
         /// Sets the aspect ratio to use when loading cameras.
         /// @param[in] aspectRatio The aspect ratio to use. Zero means use what is found in the glTF file.
         void setCameraAspectRatio(float aspectRatio);

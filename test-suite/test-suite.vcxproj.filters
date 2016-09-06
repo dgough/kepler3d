@@ -7,9 +7,12 @@
     <Filter Include="res">
       <UniqueIdentifier>{e7a41c39-0111-4c5c-bc63-eb0ef05ede00}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\main">
+      <UniqueIdentifier>{70b51c8d-8817-4ae7-be2f-15dd8aeee625}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\MainMenu.cpp">
+    <ClCompile Include="src\LightTest.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\SceneTest.cpp">
@@ -18,9 +21,12 @@
     <ClCompile Include="src\TextTest.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\MainMenu.cpp">
+      <Filter>src\main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\MainMenu.hpp">
+    <ClInclude Include="src\LightTest.hpp">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\SceneTest.hpp">
@@ -28,6 +34,9 @@
     </ClInclude>
     <ClInclude Include="src\TextTest.hpp">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MainMenu.hpp">
+      <Filter>src\main</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

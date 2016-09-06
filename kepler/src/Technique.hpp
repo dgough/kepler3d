@@ -14,6 +14,7 @@ namespace kepler {
     public:
         virtual ~Technique() noexcept;
         static TechniqueRef create();
+        static TechniqueRef create(EffectRef effect);
 
         EffectRef getEffect() const;
         const AttirbuteMap& getAttirbutes() const;
@@ -25,8 +26,17 @@ namespace kepler {
         RenderState& getRenderState();
 
         void setAttribute(const std::string& glslName, const std::string& paramName, Attribute::Semantic semantic, MaterialParameter::Type type);
-        void setUniform(const std::string& glslName, const std::string& paramName);
-        void setUniformValue(const std::string& glslName, MaterialParameterRef param);
+        void setPositionAttribute3f(const std::string& glslName);
+        void setNormalAttribute3f(const std::string& glslName);
+
+        /// Sets the name of the parameter that is used to get the value for the given shader uniform.
+        /// Material paramters can be defined in either the technique or the parent material. This method tells the technique which 
+        /// material paramter it should look for. If it is not set in the technique, it will look in the material.
+        /// @param[in] glslName  The name of the shader uniform.
+        /// @param[in] paramName The name of the material parameter.
+        void setUniformName(const std::string& glslName, const std::string& paramName);
+
+        void setUniform(const std::string& glslName, MaterialParameterRef param);
         void setSemanticUniform(const std::string& glslName, const std::string& paramName, MaterialParameter::Semantic semantic, MaterialParameter::Type type);
         void setEffect(EffectRef effect);
         void setMaterial(MaterialRef material);

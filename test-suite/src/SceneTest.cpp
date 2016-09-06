@@ -109,18 +109,8 @@ void SceneTest::loadSceneFromFile(const char* path) {
         std::clog << "Invalid path" << std::endl;
         return;
     }
-
-    NodeWeakRef node;
-    if (_scene) {
-        node = _scene->findFirstNodeByName("SuperSaw");
-    }
-
     _orbitCamera.detach();
     _scene.reset();
-
-    if (auto n = node.lock()) {
-        std::clog << "node name: " << n->getName() << std::endl;
-    }
 
     GLTFLoader loader;
     loader.setCameraAspectRatio(app()->getAspectRatio());

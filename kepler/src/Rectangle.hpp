@@ -4,6 +4,7 @@
 
 namespace kepler {
 
+    /// 2D axis aligned rectangle.
     struct Rectangle {
         glm::vec2 pos;  // x, y position
         glm::vec2 size; // width and height
@@ -13,10 +14,22 @@ namespace kepler {
         Rectangle(const glm::vec2& pos, const glm::vec2& size) noexcept;
         Rectangle(const Rectangle& copy) = default;
 
-        float x() const noexcept;
-        float y() const noexcept;
-        float width() const noexcept;
-        float height() const noexcept;
+        // access
+
+        inline float x() const noexcept;
+        inline float y() const noexcept;
+        inline float width() const noexcept;
+        inline float height() const noexcept;
+
+        inline float top() const noexcept;
+        inline float bottom() const noexcept;
+        inline float left() const noexcept;
+        inline float right() const noexcept;
+
+        // modifiers
+        void move(glm::vec2 delta) noexcept;
+
+        // tests
 
         bool contains(glm::vec2 point) const noexcept;
 
@@ -31,3 +44,5 @@ namespace kepler {
         }
     };
 }
+
+#include "Rectangle.inl"

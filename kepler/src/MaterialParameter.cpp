@@ -66,7 +66,7 @@ namespace kepler {
 
     void MaterialParameter::setSemantic(Semantic semantic, Type type) {
         _semantic = semantic;
-        _type = type;
+        _type = type; // TODO remove _type?
     }
 
     Uniform* MaterialParameter::getUniform() const {

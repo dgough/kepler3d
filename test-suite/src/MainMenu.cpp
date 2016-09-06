@@ -1,33 +1,12 @@
 #include "MainMenu.hpp"
 #include "SceneTest.hpp"
 #include "TextTest.hpp"
+#include "LightTest.hpp"
 
 #include <BaseGL.hpp>
 #include <GLFW/glfw3.h>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/rotate_vector.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
 #include <App.hpp>
-#include <Node.hpp>
-#include <Transform.hpp>
-#include <Camera.hpp>
-#include <Effect.hpp>
-#include <VertexBuffer.hpp>
-#include <IndexBuffer.hpp>
-#include <Scene.hpp>
-#include <Mesh.hpp>
-#include <MeshPrimitive.hpp>
-#include <Material.hpp>
-#include <Technique.hpp>
-#include <VertexAttributeAccessor.hpp>
-#include <MeshRenderer.hpp>
-#include <FirstPersonController.hpp>
-#include <Image.hpp>
-#include <Texture.hpp>
-#include <Sampler.hpp>
 #include <BmpFont.hpp>
 
 #include <iostream>
@@ -52,6 +31,7 @@ MainMenu::~MainMenu() {
 
 void MainMenu::start() {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    app()->setSwapInterval(1);
 
     if (_buttons.empty()) {
         static constexpr float width = 300.f;
@@ -63,9 +43,13 @@ void MainMenu::start() {
         });
 
         rect.pos.y += height;
-
         addButton("Text Test", rect, []() {
-            app()->setDelegate(std::make_shared<TextTest>()); // TODO 
+            app()->setDelegate(std::make_shared<TextTest>());
+        });
+
+        rect.pos.y += height;
+        addButton("Light Test", rect, []() {
+            app()->setDelegate(std::make_shared<LightTest>());
         });
     }
 }

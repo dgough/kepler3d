@@ -49,6 +49,9 @@ namespace kepler {
             _materialBinding.release();
             return;
         }
+        if (_material) {
+            _materialBinding.release();
+        }
 
         auto tech = material->getTechnique();
         if (tech == nullptr) {

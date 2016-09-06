@@ -36,20 +36,20 @@ namespace kepler {
         "#version 330 core\n"
         "layout (location = 0) in vec4 vertex;\n"
         "uniform mat4 u_projection;\n"
-        "out vec2 v_texCoords;\n"
+        "out vec2 v_texcoord;\n"
         "void main() {\n"
-        "    v_texCoords = vertex.zw;\n"
+        "    v_texcoord = vertex.zw;\n"
         "    gl_Position = u_projection * vec4(vertex.xy, 0.0, 1.0);\n"
         "}\n";
 
     static constexpr char* fragSource =
         "#version 330 core\n"
-        "in vec2 v_texCoords;\n"
+        "in vec2 v_texcoord;\n"
         "out vec4 color;\n"
         "uniform sampler2D text;\n"
         "uniform vec3 u_textColor;\n"
         "void main() {\n"
-        "    color = vec4(u_textColor, 1.0) * texture(text, v_texCoords);\n"
+        "    color = vec4(u_textColor, 1.0) * texture(text, v_texcoord);\n"
         "}  \n";
 
     static constexpr int FIRST_PRINTABLE = 32;
@@ -68,7 +68,7 @@ namespace kepler {
 
     static bool readIntAfter(const std::string& subject, const char* target, int& num) {
         size_t i = subject.find(target);
-        if (i >= 0) {
+        if (i != string::npos) {
             i += strlen(target);
             if (i < subject.length()) {
                 num = std::atoi(subject.c_str() + i);
@@ -408,7 +408,7 @@ namespace kepler {
     }
 
     bool BmpFont::Impl::getCharacter(char ch, Character& character) {
-        size_t i = ch - FIRST_PRINTABLE;
+        int i = ch - FIRST_PRINTABLE;
         if (i >= 0 && i < _chars.size()) {
             character = _chars[i];
             return true;

@@ -30,7 +30,14 @@ namespace kepler {
         void setSampler(SamplerRef sampler);
         
         virtual ~Texture() noexcept;
-        static TextureRef create2D(ImageRef image, int internalFormat, bool generateMipmaps = false);
+
+        /// Creates a 2D texture from an Image.
+        /// @param[in] image           The image to create the texture from.
+        /// @param[in] internalFormat  Internal format of the texture (see glTexImage2D docs). GL_RGB, GL_RGBA...
+        /// @param[in] generateMipmaps True if mipmaps should be generated automatically; false otherwise.
+        /// @return Shared ptr to the texture. May be null if there was an error.
+        static TextureRef create2D(ImageRef image, int internalFormat, bool generateMipmaps = false); // TODO change to Image*
+
         // TODO immutable 2D texture
     public:
         Texture(const Texture&) = delete;

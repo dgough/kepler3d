@@ -170,6 +170,7 @@ namespace kepler {
         string uriToPath(const string& uri) const;
 
         void useDefaultMaterial(bool value);
+        void setAutoLoadMaterials(bool value);
 
     private:
         void loadTransform(const json& jNode, NodeRef node);
@@ -199,6 +200,7 @@ namespace kepler {
 
         bool _loaded;
         bool _useDefaultMaterial;
+        bool _autoLoadMaterials;
         float _aspectRatio;
 
         time_type _jsonLoadTime;
@@ -249,6 +251,10 @@ namespace kepler {
         _impl->useDefaultMaterial(value);
     }
 
+    void GLTFLoader::setAutoLoadMaterials(bool value) {
+        _impl->setAutoLoadMaterials(value);
+    }
+
     void GLTFLoader::setCameraAspectRatio(float aspectRatio) {
         _impl->_aspectRatio = aspectRatio;
     }
@@ -260,7 +266,7 @@ namespace kepler {
     ////////////////////////////////////////////////////////////////
 
     GLTFLoader::Impl::Impl()
-        : _loaded(false), _useDefaultMaterial(false), _aspectRatio(0.0f) {
+        : _loaded(false), _useDefaultMaterial(false), _autoLoadMaterials(true), _aspectRatio(0.0f) {
     }
 
     GLTFLoader::Impl::~Impl() noexcept {
@@ -430,17 +436,18 @@ namespace kepler {
                                     meshPrimitive->setIndices(indexAccessor);
                                 }
                             }
-
-                            // load material
-                            auto jMaterialId = jPrimitive.find("material");
-                            if (jMaterialId != jPrimitive.end()) {
-                                auto material = loadMaterial(jMaterialId->get<string>());
-                                if (material) {
-                                    meshPrimitive->setMaterial(material);
+                            if (_autoLoadMaterials) {
+                                // load material
+                                auto jMaterialId = jPrimitive.find("material");
+                                if (jMaterialId != jPrimitive.end()) {
+                                    auto material = loadMaterial(jMaterialId->get<string>());
+                                    if (material) {
+                                        meshPrimitive->setMaterial(material);
+                                    }
                                 }
-                            }
-                            else {
-                                meshPrimitive->setMaterial(loadDefaultMaterial());
+                                else {
+                                    meshPrimitive->setMaterial(loadDefaultMaterial());
+                                }
                             }
                             mesh->addMeshPrimitive(meshPrimitive);
                         }
@@ -788,8 +795,7 @@ namespace kepler {
                             };
                             auto param = MaterialParameter::create(paramName);
                             param->setFunction(f);
-                            tech->setUniformValue(glslName, param);
-                            tech->setUniform(glslName, paramName/*, toType(type)*/);
+                            tech->setUniform(glslName, param);
                             useSemantic = false;
                         }
                     }
@@ -806,7 +812,7 @@ namespace kepler {
                         // TODO check the type. Don't assume float.
                         auto param = MaterialParameter::create(paramName);
                         param->setValue(value.get<float>());
-                        tech->setUniformValue(glslName, param);
+                        tech->setUniform(glslName, param);
                     }
                     else if (value.is_array()) {
                         auto size = value.size();
@@ -814,25 +820,25 @@ namespace kepler {
                             auto vec = glm::make_vec2<float>(&value.get<std::vector<float>>()[0]);
                             auto param = MaterialParameter::create(paramName);
                             param->setValue(vec);
-                            tech->setUniformValue(glslName, param);
+                            tech->setUniform(glslName, param);
                         }
                         else if (size == 3) {
                             auto vec = glm::make_vec3<float>(&value.get<std::vector<float>>()[0]);
                             auto param = MaterialParameter::create(paramName);
                             param->setValue(vec);
-                            tech->setUniformValue(glslName, param);
+                            tech->setUniform(glslName, param);
                         }
                         else if (size == 4) {
                             auto vec = glm::make_vec4<float>(&value.get<std::vector<float>>()[0]);
                             auto param = MaterialParameter::create(paramName);
                             param->setValue(vec);
-                            tech->setUniformValue(glslName, param);
+                            tech->setUniform(glslName, param);
                         }
                     }
                 }
 
                 // TODO also pass the type?
-                tech->setUniform(glslName, paramName/*, toType(type)*/);
+                tech->setUniformName(glslName, paramName/*, toType(type)*/);
             }
         }
     }
@@ -994,7 +1000,7 @@ namespace kepler {
         tech->setAttribute("a_normal", "normal", Attribute::Semantic::NORMAL, MaterialParameter::Type::FLOAT_VEC3);
         tech->setAttribute("a_position", "position", Attribute::Semantic::POSITION, MaterialParameter::Type::FLOAT_VEC3);
 
-        tech->setUniform("u_emission", "emission");
+        tech->setUniformName("u_emission", "emission");
 
         tech->setSemanticUniform("u_modelViewMatrix", "modelViewMatrix", MaterialParameter::Semantic::MODELVIEW, MaterialParameter::Type::FLOAT_MAT4);
         tech->setSemanticUniform("u_normalMatrix", "normalMatrix", MaterialParameter::Semantic::MODELVIEWINVERSETRANSPOSE, MaterialParameter::Type::FLOAT_MAT3);
@@ -1044,6 +1050,10 @@ namespace kepler {
 
     void GLTFLoader::Impl::useDefaultMaterial(bool value) {
         _useDefaultMaterial = value;
+    }
+
+    void GLTFLoader::Impl::setAutoLoadMaterials(bool value) {
+        _autoLoadMaterials = value;
     }
 
     void GLTFLoader::Impl::loadTransform(const json& jNode, NodeRef node) {

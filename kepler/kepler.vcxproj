@@ -100,6 +100,7 @@
       <SDLCheck>true</SDLCheck>
       <StringPooling>true</StringPooling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -166,6 +167,7 @@
     <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\MeshPrimitive.cpp" />
     <ClCompile Include="src\MeshRenderer.cpp" />
+    <ClCompile Include="src\MeshUtils.cpp" />
     <ClCompile Include="src\Node.cpp" />
     <ClCompile Include="src\OrbitCamera.cpp" />
     <ClCompile Include="src\Rectangle.cpp" />
@@ -211,6 +213,7 @@
     <ClInclude Include="src\Mesh.hpp" />
     <ClInclude Include="src\MeshPrimitive.hpp" />
     <ClInclude Include="src\MeshRenderer.hpp" />
+    <ClInclude Include="src\MeshUtils.hpp" />
     <ClInclude Include="src\Node.hpp" />
     <ClInclude Include="src\OrbitCamera.hpp" />
     <ClInclude Include="src\Platform.hpp" />
@@ -230,6 +233,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="src\cpp.hint" />
+    <None Include="src\Rectangle.inl" />
     <None Include="src\Transform.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

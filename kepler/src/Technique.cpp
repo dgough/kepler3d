@@ -15,6 +15,12 @@ namespace kepler {
         return MAKE_SHARED(Technique);
     }
 
+    TechniqueRef Technique::create(EffectRef effect) {
+        auto tech = create();
+        tech->setEffect(effect);
+        return tech;
+    }
+
     EffectRef Technique::getEffect() const {
         return _effect;
     }
@@ -39,11 +45,20 @@ namespace kepler {
         _attributes[glslName] = Attribute(paramName, semantic, type);
     }
 
-    void Technique::setUniform(const std::string& glslName, const std::string& paramName) {
+    void Technique::setPositionAttribute3f(const std::string& glslName) {
+        setAttribute(glslName, "position", Attribute::Semantic::POSITION, MaterialParameter::Type::FLOAT_VEC3);
+    }
+
+    void Technique::setNormalAttribute3f(const std::string& glslName) {
+        setAttribute(glslName, "normal", Attribute::Semantic::NORMAL, MaterialParameter::Type::FLOAT_VEC3);
+    }
+
+    void Technique::setUniformName(const std::string& glslName, const std::string& paramName) {
         _uniforms[glslName] = paramName;
     }
 
-    void Technique::setUniformValue(const std::string& glslName, MaterialParameterRef param) {
+    void Technique::setUniform(const std::string& glslName, MaterialParameterRef param) {
+        setUniformName(glslName, param->getName());
         _values[param->getName()] = param;
         updateUniform(*param, glslName);
     }
