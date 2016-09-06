@@ -41,6 +41,10 @@ namespace kepler {
         virtual ~MaterialParameter() noexcept;
         static MaterialParameterRef create(const std::string& name);
 
+        template<typename T>
+        static MaterialParameterRef create(const std::string& name, const T& type);
+
+
         const std::string& getName() const;
 
         void setValue(float value);
@@ -49,16 +53,14 @@ namespace kepler {
         void setValue(const glm::vec2& value);
         void setValue(const glm::vec3& value);
         void setValue(const glm::vec4& value);
-
-        void setTexture(TextureRef texture);
+        void setValue(const FunctionBinding& func);
+        void setValue(TextureRef texture);
 
         Semantic getSemantic() const;
         void setSemantic(Semantic semantic);
 
         Uniform* getUniform() const;
         void setUniform(Uniform* uniform);
-
-        void setFunction(const FunctionBinding& func);
 
         void bind(EffectRef effect);
 
@@ -74,4 +76,11 @@ namespace kepler {
 
         std::function<void(Effect&, const Uniform* uniform)> _function;
     };
+
+    template<typename T>
+    inline MaterialParameterRef MaterialParameter::create(const std::string& name, const T& type) {
+        auto param = MaterialParameter::create(name);
+        param->setValue(type);
+        return param;
+    }
 }

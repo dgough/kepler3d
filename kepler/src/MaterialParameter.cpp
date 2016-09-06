@@ -54,7 +54,11 @@ namespace kepler {
         };
     }
 
-    void MaterialParameter::setTexture(TextureRef texture) {
+    void MaterialParameter::setValue(const FunctionBinding& func) {
+        _function = func;
+    }
+
+    void MaterialParameter::setValue(TextureRef texture) {
         _function = [texture](Effect& effect, const Uniform* uniform) {
             effect.setTexture(uniform, texture);
         };
@@ -74,10 +78,6 @@ namespace kepler {
 
     void MaterialParameter::setUniform(Uniform* uniform) {
         _uniform = uniform;
-    }
-
-    void MaterialParameter::setFunction(const FunctionBinding& func) {
-        _function = func;
     }
 
     void MaterialParameter::bind(EffectRef effect) {

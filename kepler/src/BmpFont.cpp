@@ -299,7 +299,7 @@ namespace kepler {
         auto path = joinPath(_baseDir, _pages[0]);
         auto image = Image::createFromFile(path.c_str());
         if (image) {
-            _texture = Texture::create2D(image, GL_RGBA);
+            _texture = Texture::create2D(image.get(), GL_RGBA);
             _texture->setSampler(_renderer->_sampler);
         }
     }

@@ -52,7 +52,7 @@ namespace kepler {
         }
     }
 
-    TextureRef Texture::create2D(ImageRef image, int internalFormat, bool generateMipmaps) {
+    TextureRef Texture::create2D(Image* image, int internalFormat, bool generateMipmaps) {
         if (image == nullptr) {
             return nullptr;
         }

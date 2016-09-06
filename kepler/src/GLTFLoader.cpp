@@ -675,7 +675,7 @@ namespace kepler {
                             // texture?
                             auto texture = loadTexture(value.get<string>());
                             if (texture) {
-                                param->setTexture(texture);
+                                param->setValue(texture);
                                 material->addParam(param);
                             }
                         }
@@ -793,7 +793,7 @@ namespace kepler {
                                 effect.setValue(uniform, node->getModelViewMatrix());
                             };
                             auto param = MaterialParameter::create(paramName);
-                            param->setFunction(f);
+                            param->setValue(f);
                             tech->setUniform(glslName, param);
                             useSemantic = false;
                         }
@@ -890,7 +890,7 @@ namespace kepler {
                     && samplerId->is_string() && imageId->is_string()) {
                     auto image = loadImage(imageId->get<string>());
                     if (image) {
-                        auto texture = Texture::create2D(image, internalFormat, true);
+                        auto texture = Texture::create2D(image.get(), internalFormat, true);
                         if (texture) {
                             auto sampler = loadSampler(samplerId->get<string>());
                             if (sampler) {

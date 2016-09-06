@@ -16,6 +16,7 @@
 #include <MeshRenderer.hpp>
 #include <MeshUtils.hpp>
 #include <Image.hpp>
+#include <Logging.hpp>
 
 #include <iostream>
 
@@ -71,7 +72,7 @@ void LightTest::start() {
 }
 
 void LightTest::update() {
-    if (_lightParent) {
+    if (_lightParent && !app()->getMouseButton(RIGHT_MOUSE)) {
         float rot = static_cast<float>(getDeltaTime() * glm::pi<double>());
         _lightParent->rotateY(rot);
     }
@@ -90,7 +91,7 @@ void LightTest::render() {
 
     if (_font) {
         _font->drawText(g_text.c_str(), 0.f, 0.f);
-        _font->drawText("[r,g,b,w] - change light color", 0.f, static_cast<float>(_font->getLineHeight()));
+        _font->drawText("[r,g,b,w] - change light color", 0.f, static_cast<float>(_font->getLineHeight()), _lightColor);
     }
     _compass.draw();
 }
@@ -181,11 +182,8 @@ static MaterialRef createCubeMaterial() {
         auto tech = Technique::create(effect);
         tech->setAttribute("a_position", AttributeSemantic::POSITION);
         tech->setSemanticUniform("mvp", "mvp", MaterialParameter::Semantic::MODELVIEWPROJECTION);
-        auto param = MaterialParameter::create("color");
-        param->setFunction([](Effect& effect, const Uniform* uniform) {
-            effect.setValue(uniform, _lightColor);
-        });
-        tech->setUniform("color", param);
+        auto f = [](Effect& effect, const Uniform* uniform) {effect.setValue(uniform, _lightColor);};
+        tech->setUniform("color", MaterialParameter::create("color", f));
 
         auto& state = tech->getRenderState();
         state.setDepthTest(true);
@@ -200,14 +198,10 @@ static MaterialRef createPointLightMaterial(const char* texture_path, NodeRef li
     static constexpr char* VERT = "res/shaders/point_light.v.glsl";
     static constexpr char* FRAG = "res/shaders/point_light.f.glsl";
     auto effect = Effect::createFromFile(VERT, FRAG);
-    if (!effect)
-        return nullptr;
     auto image = Image::createFromFile(texture_path);
-    if (!image) {
-        return nullptr;
-    }
-    auto texture = Texture::create2D(image, GL_RGB, true);
-    if (!texture) {
+    auto texture = Texture::create2D(image.get(), GL_RGB, true);
+    if (!effect || !image || !texture) {
+        loge("failed to load light material");
         return nullptr;
     }
     auto tech = Technique::create(effect);
@@ -216,27 +210,27 @@ static MaterialRef createPointLightMaterial(const char* texture_path, NodeRef li
     tech->setAttribute("a_texcoord0", AttributeSemantic::TEXCOORD_0);
 
     tech->setSemanticUniform("mvp", "mvp", MaterialParameter::Semantic::MODELVIEWPROJECTION);
-    tech->setSemanticUniform("model", "model", MaterialParameter::Semantic::MODEL);
+    tech->setSemanticUniform("modelView", "modelView", MaterialParameter::Semantic::MODELVIEW);
+    tech->setSemanticUniform("normalMatrix", "normalMatrix", MaterialParameter::Semantic::MODELVIEWINVERSETRANSPOSE);
 
-    auto lightPos = MaterialParameter::create("lightPos");
-    lightPos->setFunction([lightNode](Effect& effect, const Uniform* uniform) {
-        effect.setValue(uniform, lightNode->getWorldTransform().getTranslation());
+    auto lightPos = MaterialParameter::create("lightPos", 
+        [lightNode](Effect& effect, const Uniform* uniform) {
+        // light position in view space
+        glm::vec4 v = glm::vec4(lightNode->getWorldTransform().getTranslation(), 1.0f);
+        v = lightNode->getViewMatrix() * v;
+        effect.setValue(uniform, glm::vec3(v));
     });
     tech->setUniform("lightPos", lightPos);
 
     auto lightColor = MaterialParameter::create("lightColor");
-    lightColor->setFunction([](Effect& effect, const Uniform* uniform) {
+    lightColor->setValue([](Effect& effect, const Uniform* uniform) {
         effect.setValue(uniform, _lightColor);
     });
     tech->setUniform("lightColor", lightColor);
+    tech->setUniform("shininess", MaterialParameter::create("shininess", 32.0f));
 
-    auto ambient = MaterialParameter::create("ambient");
-    ambient->setValue(glm::vec3(0.2f, 0.2f, 0.2f));
-    tech->setUniform("ambient", ambient);
-
-    auto baseMap = MaterialParameter::create("base_texture");
-    baseMap->setTexture(texture);
-    tech->setUniform("s_baseMap", baseMap);
+    tech->setUniform("ambient", MaterialParameter::create("ambient", glm::vec3(0.2f, 0.2f, 0.2f)));
+    tech->setUniform("s_baseMap", MaterialParameter::create("base_texture", texture));
 
     auto& state = tech->getRenderState();
     state.setDepthTest(true);

@@ -35,11 +35,11 @@ namespace kepler {
 
         Rectangle& operator= (const Rectangle& r) = default;
 
-        bool operator== (const Rectangle& r) const {
+        bool operator== (const Rectangle& r) const noexcept {
             return pos == r.pos && size == r.size;
         }
 
-        bool operator!= (const Rectangle& r) const {
+        bool operator!= (const Rectangle& r) const noexcept {
             return !((*this) == r);
         }
     };

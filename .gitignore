@@ -13,6 +13,13 @@ html
 /unittests/test.bin
 /unittests/test.txt
 
+# res directories
+/test-app/res/fonts
+/test-app/res/glTF
+/test-suite/res/fonts
+/test-suite/res/glTF
+/unittests/res/fonts
+
 # Compiled Object files
 *.slo
 *.lo
