@@ -54,9 +54,6 @@
     <ClCompile Include="src\GLTFLoader.cpp">
       <Filter>src\glTF</Filter>
     </ClCompile>
-    <ClCompile Include="src\Attribute.cpp">
-      <Filter>src\Materials</Filter>
-    </ClCompile>
     <ClCompile Include="src\AxisCompass.cpp">
       <Filter>src\Utils</Filter>
     </ClCompile>
@@ -179,9 +176,6 @@
     <ClInclude Include="src\GLTFLoader.hpp">
       <Filter>src\glTF</Filter>
     </ClInclude>
-    <ClInclude Include="src\Attribute.hpp">
-      <Filter>src\Materials</Filter>
-    </ClInclude>
     <ClInclude Include="src\AxisCompass.hpp">
       <Filter>src\Utils</Filter>
     </ClInclude>
@@ -298,6 +292,9 @@
     </ClInclude>
     <ClInclude Include="src\MeshUtils.hpp">
       <Filter>src\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\AttributeSemantic.hpp">
+      <Filter>src\Materials</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

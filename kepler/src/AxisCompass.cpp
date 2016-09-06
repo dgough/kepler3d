@@ -68,8 +68,8 @@ namespace kepler {
         static constexpr GLsizei stride = 6 * sizeof(GLubyte);
         static constexpr GLsizei count = 6;
         auto prim = MeshPrimitive::create(MeshPrimitive::Mode::LINES);
-        prim->setAttribute(Attribute::Semantic::POSITION, VertexAttributeAccessor::create(vbo, 3, GL_UNSIGNED_BYTE, false, stride, 0, count));
-        prim->setAttribute(Attribute::Semantic::COLOR, VertexAttributeAccessor::create(vbo, 3, GL_UNSIGNED_BYTE, false, stride, 3 * sizeof(GLubyte), count));
+        prim->setAttribute(AttributeSemantic::POSITION, VertexAttributeAccessor::create(vbo, 3, GL_UNSIGNED_BYTE, false, stride, 0, count));
+        prim->setAttribute(AttributeSemantic::COLOR, VertexAttributeAccessor::create(vbo, 3, GL_UNSIGNED_BYTE, false, stride, 3 * sizeof(GLubyte), count));
         return prim;
     }
 
@@ -82,11 +82,11 @@ namespace kepler {
             if (effect) {
                 auto tech = Technique::create();
                 tech->setEffect(effect);
-                tech->setAttribute("a_position", "position", Attribute::Semantic::POSITION, MaterialParameter::Type::FLOAT_VEC3);
-                tech->setAttribute("a_color", "color", Attribute::Semantic::COLOR, MaterialParameter::Type::FLOAT_VEC3);
-                tech->setSemanticUniform("model", "model", MaterialParameter::Semantic::MODEL, MaterialParameter::Type::FLOAT_MAT4);
-                tech->setSemanticUniform("view", "view", MaterialParameter::Semantic::VIEW, MaterialParameter::Type::FLOAT_MAT4);
-                tech->setSemanticUniform("proj", "proj", MaterialParameter::Semantic::PROJECTION, MaterialParameter::Type::FLOAT_MAT4);
+                tech->setAttribute("a_position", AttributeSemantic::POSITION);
+                tech->setAttribute("a_color", AttributeSemantic::COLOR);
+                tech->setSemanticUniform("model", "model", MaterialParameter::Semantic::MODEL);
+                tech->setSemanticUniform("view", "view", MaterialParameter::Semantic::VIEW);
+                tech->setSemanticUniform("proj", "proj", MaterialParameter::Semantic::PROJECTION);
 
                 auto& state = tech->getRenderState();
                 state.setDepthTest(true);

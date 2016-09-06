@@ -179,8 +179,8 @@ static MaterialRef createCubeMaterial() {
     auto effect = Effect::createFromFile(VERT_PATH, FRAG_PATH);
     if (effect) {
         auto tech = Technique::create(effect);
-        tech->setAttribute("a_position", "position", Attribute::Semantic::POSITION, MaterialParameter::Type::FLOAT_VEC3);
-        tech->setSemanticUniform("mvp", "mvp", MaterialParameter::Semantic::MODELVIEWPROJECTION, MaterialParameter::Type::FLOAT_MAT4);
+        tech->setAttribute("a_position", AttributeSemantic::POSITION);
+        tech->setSemanticUniform("mvp", "mvp", MaterialParameter::Semantic::MODELVIEWPROJECTION);
         auto param = MaterialParameter::create("color");
         param->setFunction([](Effect& effect, const Uniform* uniform) {
             effect.setValue(uniform, _lightColor);
@@ -211,12 +211,12 @@ static MaterialRef createPointLightMaterial(const char* texture_path, NodeRef li
         return nullptr;
     }
     auto tech = Technique::create(effect);
-    tech->setPositionAttribute3f("a_position");
-    tech->setNormalAttribute3f("a_normal");
-    tech->setAttribute("a_texcoord0", "texcoord0", Attribute::Semantic::TEXCOORD_0, MaterialParameter::Type::FLOAT_VEC2);
+    tech->setAttribute("a_position", AttributeSemantic::POSITION);
+    tech->setAttribute("a_normal", AttributeSemantic::NORMAL);
+    tech->setAttribute("a_texcoord0", AttributeSemantic::TEXCOORD_0);
 
-    tech->setSemanticUniform("mvp", "mvp", MaterialParameter::Semantic::MODELVIEWPROJECTION, MaterialParameter::Type::FLOAT_MAT4);
-    tech->setSemanticUniform("model", "model", MaterialParameter::Semantic::MODEL, MaterialParameter::Type::FLOAT_MAT4);
+    tech->setSemanticUniform("mvp", "mvp", MaterialParameter::Semantic::MODELVIEWPROJECTION);
+    tech->setSemanticUniform("model", "model", MaterialParameter::Semantic::MODEL);
 
     auto lightPos = MaterialParameter::create("lightPos");
     lightPos->setFunction([lightNode](Effect& effect, const Uniform* uniform) {

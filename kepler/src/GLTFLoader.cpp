@@ -110,8 +110,7 @@ namespace kepler {
     // functions
     static MeshPrimitive::Mode toMode(int mode);
     static MaterialParameter::Semantic toSemantic(const string& semantic);
-    static Attribute::Semantic toAttributeSemantic(const string& semantic);
-    static MaterialParameter::Type toType(int type);
+    static AttributeSemantic toAttributeSemantic(const string& semantic);
     static Sampler::Wrap toWrapMode(int wrap);
     static Sampler::MinFilter toMinFilterMode(int filter);
     static Sampler::MagFilter toMagFilterMode(int filter);
@@ -769,7 +768,7 @@ namespace kepler {
             string semantic(jParam->value(SEMANTIC, ""));
             int type = jParam->value<int>(TYPE, 0);
             if (type != 0 && !semantic.empty()) {
-                tech->setAttribute(glslName, paramName, toAttributeSemantic(semantic), toType(type));
+                tech->setAttribute(glslName, toAttributeSemantic(semantic));
             }
         }
     }
@@ -778,7 +777,7 @@ namespace kepler {
         auto jParam = parameters.find(paramName);
         if (jParam != parameters.end()) {
             auto jSemantic = jParam->find(SEMANTIC);
-            int type = jParam->value<int>(TYPE, 0);
+            //int type = jParam->value<int>(TYPE, 0);
             // TODO check type?
             if (jSemantic != jParam->end() && jSemantic->is_string()) {
                 auto semanticValue = toSemantic(jSemantic->get<string>());
@@ -801,7 +800,7 @@ namespace kepler {
                     }
                 }
                 if (useSemantic) {
-                    tech->setSemanticUniform(glslName, paramName, semanticValue, toType(type));
+                    tech->setSemanticUniform(glslName, paramName, semanticValue);
                 }
             }
             else {
@@ -836,9 +835,7 @@ namespace kepler {
                         }
                     }
                 }
-
-                // TODO also pass the type?
-                tech->setUniformName(glslName, paramName/*, toType(type)*/);
+                tech->setUniformName(glslName, paramName);
             }
         }
     }
@@ -997,14 +994,14 @@ namespace kepler {
         auto tech = Technique::create();
         tech->setEffect(effect);
 
-        tech->setAttribute("a_normal", "normal", Attribute::Semantic::NORMAL, MaterialParameter::Type::FLOAT_VEC3);
-        tech->setAttribute("a_position", "position", Attribute::Semantic::POSITION, MaterialParameter::Type::FLOAT_VEC3);
+        tech->setAttribute("a_normal", AttributeSemantic::NORMAL);
+        tech->setAttribute("a_position", AttributeSemantic::POSITION);
 
         tech->setUniformName("u_emission", "emission");
 
-        tech->setSemanticUniform("u_modelViewMatrix", "modelViewMatrix", MaterialParameter::Semantic::MODELVIEW, MaterialParameter::Type::FLOAT_MAT4);
-        tech->setSemanticUniform("u_normalMatrix", "normalMatrix", MaterialParameter::Semantic::MODELVIEWINVERSETRANSPOSE, MaterialParameter::Type::FLOAT_MAT3);
-        tech->setSemanticUniform("u_projectionMatrix", "projectionMatrix", MaterialParameter::Semantic::PROJECTION, MaterialParameter::Type::FLOAT_MAT4);
+        tech->setSemanticUniform("u_modelViewMatrix", "modelViewMatrix", MaterialParameter::Semantic::MODELVIEW);
+        tech->setSemanticUniform("u_normalMatrix", "normalMatrix", MaterialParameter::Semantic::MODELVIEWINVERSETRANSPOSE);
+        tech->setSemanticUniform("u_projectionMatrix", "projectionMatrix", MaterialParameter::Semantic::PROJECTION);
 
         auto& state = tech->getRenderState();
         state.setCulling(true);
@@ -1136,19 +1133,19 @@ namespace kepler {
         return MaterialParameter::Semantic::NONE;
     }
 
-    Attribute::Semantic toAttributeSemantic(const string& semantic) {
+    AttributeSemantic toAttributeSemantic(const string& semantic) {
         switch (semantic[0]) {
-        case 'C': if (semantic == "COLOR") return Attribute::Semantic::COLOR;
+        case 'C': if (semantic == "COLOR") return AttributeSemantic::COLOR;
             break;
         case 'J':
-            if (semantic == "JOINT") return Attribute::Semantic::JOINT;
-            if (semantic == "JOINTMATRIX") return Attribute::Semantic::JOINTMATRIX;
+            if (semantic == "JOINT") return AttributeSemantic::JOINT;
+            if (semantic == "JOINTMATRIX") return AttributeSemantic::JOINTMATRIX;
             break;
-        case 'N': if (semantic == "NORMAL") return Attribute::Semantic::NORMAL;
+        case 'N': if (semantic == "NORMAL") return AttributeSemantic::NORMAL;
             break;
-        case 'P': if (semantic == "POSITION") return Attribute::Semantic::POSITION;
+        case 'P': if (semantic == "POSITION") return AttributeSemantic::POSITION;
             break;
-        case 'W': if (semantic == "WEIGHT") return Attribute::Semantic::WEIGHT;
+        case 'W': if (semantic == "WEIGHT") return AttributeSemantic::WEIGHT;
             break;
         case 'T':
             if (semantic.length() >= 10 && semantic[1] == 'E') {
@@ -1157,38 +1154,38 @@ namespace kepler {
                     n = n * 10 + (semantic[10] - '0');
                 }
                 switch (n) {
-                case 0: return Attribute::Semantic::TEXCOORD_0;
-                case 1: return Attribute::Semantic::TEXCOORD_1;
-                case 2: return Attribute::Semantic::TEXCOORD_2;
-                case 3: return Attribute::Semantic::TEXCOORD_3;
-                case 4: return Attribute::Semantic::TEXCOORD_4;
-                case 5: return Attribute::Semantic::TEXCOORD_5;
-                case 6: return Attribute::Semantic::TEXCOORD_6;
-                case 7: return Attribute::Semantic::TEXCOORD_7;
-                case 8: return Attribute::Semantic::TEXCOORD_8;
-                case 9: return Attribute::Semantic::TEXCOORD_9;
-                case 10: return Attribute::Semantic::TEXCOORD_10;
-                case 11: return Attribute::Semantic::TEXCOORD_11;
-                case 12: return Attribute::Semantic::TEXCOORD_12;
-                case 13: return Attribute::Semantic::TEXCOORD_13;
-                case 14: return Attribute::Semantic::TEXCOORD_14;
-                case 15: return Attribute::Semantic::TEXCOORD_15;
-                case 16: return Attribute::Semantic::TEXCOORD_16;
-                case 17: return Attribute::Semantic::TEXCOORD_17;
-                case 18: return Attribute::Semantic::TEXCOORD_18;
-                case 19: return Attribute::Semantic::TEXCOORD_19;
-                case 20: return Attribute::Semantic::TEXCOORD_20;
-                case 21: return Attribute::Semantic::TEXCOORD_21;
-                case 22: return Attribute::Semantic::TEXCOORD_22;
-                case 23: return Attribute::Semantic::TEXCOORD_23;
-                case 24: return Attribute::Semantic::TEXCOORD_24;
-                case 25: return Attribute::Semantic::TEXCOORD_25;
-                case 26: return Attribute::Semantic::TEXCOORD_26;
-                case 27: return Attribute::Semantic::TEXCOORD_27;
-                case 28: return Attribute::Semantic::TEXCOORD_28;
-                case 29: return Attribute::Semantic::TEXCOORD_29;
-                case 30: return Attribute::Semantic::TEXCOORD_30;
-                case 31: return Attribute::Semantic::TEXCOORD_31;
+                case 0: return AttributeSemantic::TEXCOORD_0;
+                case 1: return AttributeSemantic::TEXCOORD_1;
+                case 2: return AttributeSemantic::TEXCOORD_2;
+                case 3: return AttributeSemantic::TEXCOORD_3;
+                case 4: return AttributeSemantic::TEXCOORD_4;
+                case 5: return AttributeSemantic::TEXCOORD_5;
+                case 6: return AttributeSemantic::TEXCOORD_6;
+                case 7: return AttributeSemantic::TEXCOORD_7;
+                case 8: return AttributeSemantic::TEXCOORD_8;
+                case 9: return AttributeSemantic::TEXCOORD_9;
+                case 10: return AttributeSemantic::TEXCOORD_10;
+                case 11: return AttributeSemantic::TEXCOORD_11;
+                case 12: return AttributeSemantic::TEXCOORD_12;
+                case 13: return AttributeSemantic::TEXCOORD_13;
+                case 14: return AttributeSemantic::TEXCOORD_14;
+                case 15: return AttributeSemantic::TEXCOORD_15;
+                case 16: return AttributeSemantic::TEXCOORD_16;
+                case 17: return AttributeSemantic::TEXCOORD_17;
+                case 18: return AttributeSemantic::TEXCOORD_18;
+                case 19: return AttributeSemantic::TEXCOORD_19;
+                case 20: return AttributeSemantic::TEXCOORD_20;
+                case 21: return AttributeSemantic::TEXCOORD_21;
+                case 22: return AttributeSemantic::TEXCOORD_22;
+                case 23: return AttributeSemantic::TEXCOORD_23;
+                case 24: return AttributeSemantic::TEXCOORD_24;
+                case 25: return AttributeSemantic::TEXCOORD_25;
+                case 26: return AttributeSemantic::TEXCOORD_26;
+                case 27: return AttributeSemantic::TEXCOORD_27;
+                case 28: return AttributeSemantic::TEXCOORD_28;
+                case 29: return AttributeSemantic::TEXCOORD_29;
+                case 30: return AttributeSemantic::TEXCOORD_30;
+                case 31: return AttributeSemantic::TEXCOORD_31;
                 default: break;
                 }
             }
@@ -1197,34 +1194,6 @@ namespace kepler {
             break;
         }
         throw std::domain_error("Invalid attribute semantic type");
-    }
-
-    MaterialParameter::Type toType(int type) {
-        switch (type) {
-        case (int)MaterialParameter::Type::BYTE: return MaterialParameter::Type::BYTE;
-        case (int)MaterialParameter::Type::UNSIGNED_BYTE: return MaterialParameter::Type::UNSIGNED_BYTE;
-        case (int)MaterialParameter::Type::SHORT: return MaterialParameter::Type::SHORT;
-        case (int)MaterialParameter::Type::UNSIGNED_SHORT: return MaterialParameter::Type::UNSIGNED_SHORT;
-        case (int)MaterialParameter::Type::INT: return MaterialParameter::Type::INT;
-        case (int)MaterialParameter::Type::UNSIGNED_INT: return MaterialParameter::Type::UNSIGNED_INT;
-        case (int)MaterialParameter::Type::FLOAT: return MaterialParameter::Type::FLOAT;
-        case (int)MaterialParameter::Type::FLOAT_VEC2: return MaterialParameter::Type::FLOAT_VEC2;
-        case (int)MaterialParameter::Type::FLOAT_VEC3: return MaterialParameter::Type::FLOAT_VEC3;
-        case (int)MaterialParameter::Type::FLOAT_VEC4: return MaterialParameter::Type::FLOAT_VEC4;
-        case (int)MaterialParameter::Type::INT_VEC2: return MaterialParameter::Type::INT_VEC2;
-        case (int)MaterialParameter::Type::INT_VEC3: return MaterialParameter::Type::INT_VEC3;
-        case (int)MaterialParameter::Type::INT_VEC4: return MaterialParameter::Type::INT_VEC4;
-        case (int)MaterialParameter::Type::BOOL: return MaterialParameter::Type::BOOL;
-        case (int)MaterialParameter::Type::BOOL_VEC2: return MaterialParameter::Type::BOOL_VEC2;
-        case (int)MaterialParameter::Type::BOOL_VEC3: return MaterialParameter::Type::BOOL_VEC3;
-        case (int)MaterialParameter::Type::BOOL_VEC4: return MaterialParameter::Type::BOOL_VEC4;
-        case (int)MaterialParameter::Type::FLOAT_MAT2: return MaterialParameter::Type::FLOAT_MAT2;
-        case (int)MaterialParameter::Type::FLOAT_MAT3: return MaterialParameter::Type::FLOAT_MAT3;
-        case (int)MaterialParameter::Type::FLOAT_MAT4: return MaterialParameter::Type::FLOAT_MAT4;
-        case (int)MaterialParameter::Type::SAMPLER_2D: return MaterialParameter::Type::SAMPLER_2D;
-        default:
-            throw std::domain_error("Invalid semantic type");
-        }
     }
 
     Sampler::Wrap toWrapMode(int wrap) {

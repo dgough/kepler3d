@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Base.hpp"
-#include "Attribute.hpp"
+#include "AttributeSemantic.hpp"
 #include "MaterialBinding.hpp"
 
 #include <map>
@@ -27,10 +27,10 @@ namespace kepler {
 
         static MeshPrimitiveRef create(Mode mode);
 
-        VertexAttributeAccessorRef getAttribute(Attribute::Semantic semantic) const;
+        VertexAttributeAccessorRef getAttribute(AttributeSemantic semantic) const;
         IndexAccessorRef getIndices() const;
 
-        void setAttribute(Attribute::Semantic semantic, VertexAttributeAccessorRef accessor);
+        void setAttribute(AttributeSemantic semantic, VertexAttributeAccessorRef accessor);
         /// Sets the IndexAccessor.
         void setIndices(IndexAccessorRef indices);
 
@@ -54,7 +54,7 @@ namespace kepler {
         // The type of primitives to render. Allowed values are 0 (POINTS), 1 (LINES), 2 (LINE_LOOP), 3 (LINE_STRIP), 4 (TRIANGLES), 5 (TRIANGLE_STRIP), and 6 (TRIANGLE_FAN).
         Mode _mode;
         IndexAccessorRef _indices;
-        std::map<Attribute::Semantic, VertexAttributeAccessorRef> _attributes;
+        std::map<AttributeSemantic, VertexAttributeAccessorRef> _attributes;
         MaterialRef _material;
         std::unique_ptr<MaterialBinding> _materialBinding;
 

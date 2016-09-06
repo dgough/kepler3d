@@ -143,7 +143,6 @@
   <ItemGroup>
     <ClCompile Include="src\AppDelegate.cpp" />
     <ClCompile Include="src\AppGLFW.cpp" />
-    <ClCompile Include="src\Attribute.cpp" />
     <ClCompile Include="src\AxisCompass.cpp" />
     <ClCompile Include="src\BaseGL.cpp" />
     <ClCompile Include="src\BaseMath.cpp" />
@@ -189,7 +188,7 @@
   <ItemGroup>
     <ClInclude Include="src\App.hpp" />
     <ClInclude Include="src\AppDelegate.hpp" />
-    <ClInclude Include="src\Attribute.hpp" />
+    <ClInclude Include="src\AttributeSemantic.hpp" />
     <ClInclude Include="src\AxisCompass.hpp" />
     <ClInclude Include="src\Base.hpp" />
     <ClInclude Include="src\BaseGL.hpp" />

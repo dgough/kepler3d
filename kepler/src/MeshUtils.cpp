@@ -55,8 +55,8 @@ namespace kepler {
         static constexpr GLsizei stride = 6 * sizeof(GLfloat);
         static constexpr GLsizei count = 24;
         auto prim = MeshPrimitive::create(MeshPrimitive::Mode::TRIANGLES);
-        prim->setAttribute(Attribute::Semantic::POSITION, VertexAttributeAccessor::create(vbo, 3, GL_FLOAT, false, stride, 0, count));
-        prim->setAttribute(Attribute::Semantic::NORMAL, VertexAttributeAccessor::create(vbo, 3, GL_FLOAT, false, stride, 3 * sizeof(GLfloat), count));
+        prim->setAttribute(AttributeSemantic::POSITION, VertexAttributeAccessor::create(vbo, 3, GL_FLOAT, false, stride, 0, count));
+        prim->setAttribute(AttributeSemantic::NORMAL, VertexAttributeAccessor::create(vbo, 3, GL_FLOAT, false, stride, 3 * sizeof(GLfloat), count));
         static constexpr std::array<GLubyte, 36> indices = {
             0, 1, 2, 2, 1, 3, // back face
             4, 5, 6, 6, 5, 7, // right face

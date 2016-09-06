@@ -41,16 +41,8 @@ namespace kepler {
         return _renderState;
     }
 
-    void Technique::setAttribute(const std::string& glslName, const std::string& paramName, Attribute::Semantic semantic, MaterialParameter::Type type) {
-        _attributes[glslName] = Attribute(paramName, semantic, type);
-    }
-
-    void Technique::setPositionAttribute3f(const std::string& glslName) {
-        setAttribute(glslName, "position", Attribute::Semantic::POSITION, MaterialParameter::Type::FLOAT_VEC3);
-    }
-
-    void Technique::setNormalAttribute3f(const std::string& glslName) {
-        setAttribute(glslName, "normal", Attribute::Semantic::NORMAL, MaterialParameter::Type::FLOAT_VEC3);
+    void Technique::setAttribute(const std::string& glslName, AttributeSemantic semantic) {
+        _attributes[glslName] = semantic;
     }
 
     void Technique::setUniformName(const std::string& glslName, const std::string& paramName) {
@@ -63,9 +55,9 @@ namespace kepler {
         updateUniform(*param, glslName);
     }
 
-    void Technique::setSemanticUniform(const std::string& glslName, const std::string& paramName, MaterialParameter::Semantic semantic, MaterialParameter::Type type) {
+    void Technique::setSemanticUniform(const std::string& glslName, const std::string& paramName, MaterialParameter::Semantic semantic) {
         auto p = MaterialParameter::create(paramName);
-        p->setSemantic(semantic, type);
+        p->setSemantic(semantic);
         _semantics[paramName] = p;
         updateUniform(*p, glslName);
     }

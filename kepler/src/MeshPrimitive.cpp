@@ -19,7 +19,7 @@ namespace kepler {
         return MAKE_SHARED(MeshPrimitive, mode);
     }
 
-    VertexAttributeAccessorRef MeshPrimitive::getAttribute(Attribute::Semantic semantic) const {
+    VertexAttributeAccessorRef MeshPrimitive::getAttribute(AttributeSemantic semantic) const {
         auto it = _attributes.find(semantic);
         if (it != _attributes.end()) {
             return it->second;
@@ -31,7 +31,7 @@ namespace kepler {
         return _indices;
     }
 
-    void MeshPrimitive::setAttribute(Attribute::Semantic semantic, VertexAttributeAccessorRef accessor) {
+    void MeshPrimitive::setAttribute(AttributeSemantic semantic, VertexAttributeAccessorRef accessor) {
         _attributes[semantic] = accessor;
     }
 

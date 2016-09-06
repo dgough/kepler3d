@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Base.hpp"
-#include "Attribute.hpp"
+#include "AttributeSemantic.hpp"
 #include "RenderState.hpp"
 
 namespace kepler {
 
-    using AttirbuteMap = std::map<std::string, Attribute>;
+    using AttirbuteMap = std::map<std::string, AttributeSemantic>;
 
     /// A technique describes the shading used for a material.
     class Technique {
@@ -25,9 +25,7 @@ namespace kepler {
         /// Returns the RenderState for this technique.
         RenderState& getRenderState();
 
-        void setAttribute(const std::string& glslName, const std::string& paramName, Attribute::Semantic semantic, MaterialParameter::Type type);
-        void setPositionAttribute3f(const std::string& glslName);
-        void setNormalAttribute3f(const std::string& glslName);
+        void setAttribute(const std::string& glslName, AttributeSemantic semantic);
 
         /// Sets the name of the parameter that is used to get the value for the given shader uniform.
         /// Material paramters can be defined in either the technique or the parent material. This method tells the technique which 
@@ -37,7 +35,7 @@ namespace kepler {
         void setUniformName(const std::string& glslName, const std::string& paramName);
 
         void setUniform(const std::string& glslName, MaterialParameterRef param);
-        void setSemanticUniform(const std::string& glslName, const std::string& paramName, MaterialParameter::Semantic semantic, MaterialParameter::Type type);
+        void setSemanticUniform(const std::string& glslName, const std::string& paramName, MaterialParameter::Semantic semantic);
         void setEffect(EffectRef effect);
         void setMaterial(MaterialRef material);
 

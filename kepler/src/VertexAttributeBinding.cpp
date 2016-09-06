@@ -44,10 +44,9 @@ namespace kepler {
 
         for (const auto& attrib : technique->getAttirbutes()) {
             const std::string& shaderAttribName = attrib.first;
-            const auto& attribute = attrib.second;
 
             auto location = effect->getAttribLocation(shaderAttribName);
-            auto attribAccessor = meshPrim->getAttribute(attribute.getSemantic());
+            auto attribAccessor = meshPrim->getAttribute(attrib.second);
             if (location >= 0 && attribAccessor) {
                 GLuint index = static_cast<GLuint>(location);
                 attribAccessor->bind(index);

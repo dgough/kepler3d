@@ -4,7 +4,7 @@
 namespace kepler {
 
     MaterialParameter::MaterialParameter(const std::string& name)
-        : _name(name), _semantic(Semantic::NONE), _type(Type::INT), _uniform(nullptr) {
+        : _name(name), _semantic(Semantic::NONE), _uniform(nullptr) {
     }
 
     MaterialParameter::~MaterialParameter() noexcept {
@@ -64,9 +64,8 @@ namespace kepler {
         return _semantic;
     }
 
-    void MaterialParameter::setSemantic(Semantic semantic, Type type) {
+    void MaterialParameter::setSemantic(Semantic semantic) {
         _semantic = semantic;
-        _type = type; // TODO remove _type?
     }
 
     Uniform* MaterialParameter::getUniform() const {
