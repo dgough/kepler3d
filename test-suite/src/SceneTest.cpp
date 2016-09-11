@@ -69,6 +69,15 @@ void SceneTest::keyEvent(int key, int scancode, int action, int mods) {
     if (key == KEY_ESCAPE && action == PRESS) {
         MainMenu::gotoMainMenu();
     }
+    if (action == PRESS) {
+        switch (key) {
+        case KEY_F:
+            _orbitCamera.setZoom(10.f);
+            break;
+        default:
+            break;
+        }
+    }
 
     // TODO press f to focus
 }

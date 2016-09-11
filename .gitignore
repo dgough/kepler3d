@@ -18,6 +18,7 @@ html
 /test-app/res/glTF
 /test-suite/res/fonts
 /test-suite/res/glTF
+/test-suite/res/textures
 /unittests/res/fonts
 
 # Compiled Object files

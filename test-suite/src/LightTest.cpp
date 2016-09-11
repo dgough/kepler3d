@@ -16,6 +16,7 @@
 #include <MeshRenderer.hpp>
 #include <MeshUtils.hpp>
 #include <Image.hpp>
+#include <Sampler.hpp>
 #include <Logging.hpp>
 
 #include <iostream>
@@ -26,9 +27,11 @@ static constexpr char* GLTF_PATH =
 "res/glTF/duck/Duck.gltf";
 //"res/glTF/CesiumMilkTruck/CesiumMilkTruck.gltf";
 static constexpr char* DUCK_TEXTURE_PATH = "res/glTF/duck/DuckCM.png";
+static constexpr char* FLOOR_TEXTURE_PATH = "res/textures/hardwood.jpg";
 
 static std::string g_text;
 static glm::vec3 _lightColor(1);
+static bool _pause = false;
 
 static NodeRef createLamp();
 static MaterialRef createCubeMaterial();
@@ -68,11 +71,19 @@ void LightTest::start() {
         _lightParent = _scene->createChild("lamp_parent");
         _lightParent->addNode(lamp);
         _scene->addNode(_lightParent);
+
+        auto floorPrim = createTexturedLitQuadPrimitive(glm::vec2(4.f));
+        floorPrim->setMaterial(createPointLightMaterial(FLOOR_TEXTURE_PATH, lamp));
+        auto floor = _scene->createChild("floor");
+        floor->addComponent(MeshRenderer::create(Mesh::create(floorPrim)));
+        floor->translateY(-1.f);
+        floor->rotateX(-PI_OVER_2);
+        floor->scale(20.f, 20.f, 1.f);
     }
 }
 
 void LightTest::update() {
-    if (_lightParent && !app()->getMouseButton(RIGHT_MOUSE)) {
+    if (!_pause && _lightParent) {
         float rot = static_cast<float>(getDeltaTime() * glm::pi<double>());
         _lightParent->rotateY(rot);
     }
@@ -90,8 +101,11 @@ void LightTest::render() {
     }
 
     if (_font) {
-        _font->drawText(g_text.c_str(), 0.f, 0.f);
-        _font->drawText("[r,g,b,w] - change light color", 0.f, static_cast<float>(_font->getLineHeight()), _lightColor);
+        float y = 0.f;
+        float lineHeight = static_cast<float>(_font->getLineHeight());
+        _font->drawText(g_text.c_str(), 0.f, y);
+        _font->drawText("[r,g,b,w] - change light color", 0.f, y += lineHeight, _lightColor);
+        _font->drawText("[space] - pause", 0.f, y += lineHeight);
     }
     _compass.draw();
 }
@@ -113,6 +127,12 @@ void LightTest::keyEvent(int key, int scancode, int action, int mods) {
             break;
         case KEY_W:
             _lightColor = glm::vec3(1);
+            break;
+        case KEY_SPACE:
+            _pause = !_pause;
+            break;
+        case KEY_F:
+            _orbitCamera.setZoom(10.f);
             break;
         }
     }
@@ -204,6 +224,12 @@ static MaterialRef createPointLightMaterial(const char* texture_path, NodeRef li
         loge("failed to load light material");
         return nullptr;
     }
+
+    auto sampler = Sampler::create();
+    sampler->setWrapMode(Sampler::Wrap::REPEAT, Sampler::Wrap::REPEAT);
+    sampler->setFilterMode(Sampler::MinFilter::LINEAR_MIPMAP_LINEAR, Sampler::MagFilter::LINEAR);
+    texture->setSampler(sampler);
+
     auto tech = Technique::create(effect);
     tech->setAttribute("a_position", AttributeSemantic::POSITION);
     tech->setAttribute("a_normal", AttributeSemantic::NORMAL);
@@ -227,10 +253,14 @@ static MaterialRef createPointLightMaterial(const char* texture_path, NodeRef li
         effect.setValue(uniform, _lightColor);
     });
     tech->setUniform("lightColor", lightColor);
-    tech->setUniform("shininess", MaterialParameter::create("shininess", 32.0f));
-
-    tech->setUniform("ambient", MaterialParameter::create("ambient", glm::vec3(0.2f, 0.2f, 0.2f)));
+    tech->setUniform("shininess", MaterialParameter::create("shininess", 64.0f));
+    tech->setUniform("specularStrength", MaterialParameter::create("specularStrength", 0.2f));
+    tech->setUniform("ambient", MaterialParameter::create("ambient", glm::vec3(0.2f)));
     tech->setUniform("s_baseMap", MaterialParameter::create("base_texture", texture));
+
+    tech->setUniform("constantAttenuation", MaterialParameter::create("constantAttenuation", 1.f));
+    tech->setUniform("linearAttenuation", MaterialParameter::create("linearAttenuation", 0.f));
+    tech->setUniform("quadraticAttenuation", MaterialParameter::create("quadraticAttenuation", 0.0025f));
 
     auto& state = tech->getRenderState();
     state.setDepthTest(true);

@@ -15,6 +15,6 @@ void main() {
     vec4 position = vec4(a_position, 1.0);
     gl_Position = mvp * position;
     v_fragPos = vec3(modelView * position);
-    v_normal = normalMatrix * a_normal;
+    v_normal = normalize(normalMatrix * a_normal);
     v_texcoord0 = a_texcoord0;
 }

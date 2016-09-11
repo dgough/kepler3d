@@ -66,8 +66,30 @@ namespace kepler {
             20, 21, 22, 22, 21, 23 // bottom face
         };
         auto indexBuffer = IndexBuffer::create(sizeof(indices), indices.data());
-        auto indexAccessor = IndexAccessor::create(indexBuffer, 36, IndexAccessor::UNSIGNED_BYTE, 0);
+        auto indexAccessor = IndexAccessor::create(indexBuffer, static_cast<GLsizei>(indices.size()), IndexAccessor::UNSIGNED_BYTE, 0);
         prim->setIndices(indexAccessor);
+        return prim;
+    }
+
+    MeshPrimitiveRef createTexturedLitQuadPrimitive(glm::vec2 maxTexCoords) {
+        static constexpr float p = 0.5f;
+        static constexpr float n = -0.5f;
+        static constexpr float z = 0.0f;
+        const float s = maxTexCoords.x;
+        const float t = maxTexCoords.y;
+        static const std::array<GLfloat, 32> vertices = {
+            n, p, z, 0.f, 0.f, 1.f, s, t,
+            n, n, z, 0.f, 0.f, 1.f, s, z,
+            p, p, z, 0.f, 0.f, 1.f, z, t,
+            p, n, z, 0.f, 0.f, 1.f, z, z
+        };
+        auto vbo = VertexBuffer::create(sizeof(vertices), vertices.data());
+        static constexpr GLsizei stride = 8 * sizeof(GLfloat);
+        static constexpr GLsizei count = 4;
+        auto prim = MeshPrimitive::create(MeshPrimitive::Mode::TRIANGLE_STRIP);
+        prim->setAttribute(AttributeSemantic::POSITION, VertexAttributeAccessor::create(vbo, 3, GL_FLOAT, false, stride, 0, count));
+        prim->setAttribute(AttributeSemantic::NORMAL, VertexAttributeAccessor::create(vbo, 3, GL_FLOAT, false, stride, 3 * sizeof(GLfloat), count));
+        prim->setAttribute(AttributeSemantic::TEXCOORD_0, VertexAttributeAccessor::create(vbo, 2, GL_FLOAT, false, stride, 6 * sizeof(GLfloat), count));
         return prim;
     }
 

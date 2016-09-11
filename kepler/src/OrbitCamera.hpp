@@ -34,6 +34,10 @@ namespace kepler {
         /// @param[in] value Positive values will move away from the target.
         void zoomOut(float value);
 
+        /// Sets the zoom value. The zoom will be clamped to the min zoom.
+        /// @param[in] value The new zoom value. 
+        void setZoom(float value);
+
     private:
         float _yaw;
         float _pitch;

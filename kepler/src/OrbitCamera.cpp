@@ -88,8 +88,12 @@ namespace kepler {
     }
 
     void OrbitCamera::zoomOut(float value) {
+        setZoom(_radius + value);
+    }
+
+    void OrbitCamera::setZoom(float value) {
         if (_cameraNode) {
-            _radius = std::max(_radius + value, MIN_ZOOM);
+            _radius = std::max(value, MIN_ZOOM);
             _cameraNode->setTranslation(0.f, 0.f, _radius);
         }
     }
