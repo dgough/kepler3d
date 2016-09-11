@@ -26,7 +26,7 @@ External-dependencies and resource files are stored separately to keep the repo 
 ### Setup
 
 - Clone the repo
-- Download [kepler3d_deps.zip](https://github.com/dgough/kepler3d/releases/download/v0.0.1/kepler3d_deps.zip) from [releases](https://github.com/dgough/kepler3d/releases) and unzip to the kepler3d directory
+- Download [kepler3d_deps.zip](https://github.com/dgough/kepler3d/releases/download/v0.0.2/kepler3d_deps.zip) from [releases](https://github.com/dgough/kepler3d/releases) and unzip to the kepler3d directory
 - Open **kepler3d.sln**
 
 # FAQ
@@ -38,3 +38,12 @@ No. It is very incomplete and unoptimized.
 ### Are you accepting outside contributions?
 
 No. I want to stay as the sole contributor for now.
+
+# Dependencies
+
+- [glad](https://github.com/Dav1dde/glad)
+- [GLFW](http://www.glfw.org/)
+- [glm](http://glm.g-truc.net)
+- [SOIL2](https://bitbucket.org/SpartanJ/soil2)
+- [nlohmann/json](https://github.com/nlohmann/json)
+- [google test](https://github.com/google/googletest)
