@@ -29,13 +29,17 @@ namespace kepler {
     }
 
     void Mesh::setNode(NodeRef node) {
-        for (auto primitive : _primitives) {
+        for (const auto& primitive : _primitives) {
             primitive->setNode(node);
         }
     }
 
     MeshPrimitiveRef Mesh::getPrimitive(size_t index) const {
         return _primitives.at(index);
+    }
+
+    MeshPrimitive * Mesh::getPrimitivePtr(size_t index) const {
+        return _primitives[index].get();
     }
 
     size_t Mesh::getPrimitiveCount() const {

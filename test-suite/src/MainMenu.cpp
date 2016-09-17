@@ -60,11 +60,11 @@ void MainMenu::update() {
 void MainMenu::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    float height = app()->getHeightFloat();
+    float height = app()->getHeightAsFloat();
 
     float fontSize = static_cast<float>(_font->getSize());
 
-    for (auto& button : _buttons) {
+    for (const auto& button : _buttons) {
         drawButton(*button);
     }
 }
@@ -110,7 +110,7 @@ void MainMenu::drawButton(const Button& button) {
 }
 
 bool MainMenu::clickButtonAt(glm::vec2 pos) {
-    for (auto button : _buttons) {
+    for (const auto& button : _buttons) {
         if (button->getRect().contains(pos)) {
             button->callOnClick();
             return true;

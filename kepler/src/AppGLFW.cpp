@@ -47,6 +47,7 @@ namespace kepler {
         std::string _title;
 
         AppDelegateRef _delegate;
+        size_t _frameCount;
     };
 
     ////
@@ -124,7 +125,7 @@ namespace kepler {
         return _impl->_width;
     }
 
-    float App::getWidthFloat() const {
+    float App::getWidthAsFloat() const {
         return static_cast<float>(_impl->_width);
     }
 
@@ -132,7 +133,7 @@ namespace kepler {
         return _impl->_height;
     }
 
-    float App::getHeightFloat() const {
+    float App::getHeightAsFloat() const {
         return static_cast<float>(_impl->_height);
     }
 
@@ -141,6 +142,10 @@ namespace kepler {
             return 0.0f;
         }
         return static_cast<float>(_impl->_width) / static_cast<float>(_impl->_height);
+    }
+
+    size_t App::getFrameCount() const noexcept {
+        return _impl->_frameCount;
     }
 
     void App::setShouldClose(bool value) {
@@ -165,7 +170,7 @@ namespace kepler {
 
     ////
 
-    App::Impl::Impl(int width, int height, bool fullscreen) : _width(width), _height(height), _fullscreen(fullscreen) {
+    App::Impl::Impl(int width, int height, bool fullscreen) : _width(width), _height(height), _fullscreen(fullscreen), _frameCount(0) {
         _window = createWindow(_width, _height);
     }
 
@@ -222,6 +227,7 @@ namespace kepler {
     void App::Impl::mainLoop() {
         g_prevTime = glfwGetTime();
         while (!glfwWindowShouldClose(_window)) {
+            ++_frameCount;
             glfwPollEvents();
             g_currentTime = glfwGetTime();
             g_deltaTime = g_currentTime - g_prevTime;

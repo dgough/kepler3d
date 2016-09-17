@@ -114,7 +114,7 @@ void TestApp::render() {
 
     auto fps = 1.0f / g_deltaTime;
     if (fps < 55.f) {
-        std::cout << fps << std::endl;
+        //std::cout << fps << std::endl;
     }
 
     static float displayFrameTime = 0;

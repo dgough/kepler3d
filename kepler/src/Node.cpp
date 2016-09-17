@@ -317,12 +317,26 @@ namespace kepler {
         return IDENTITY_MATRIX;
     }
 
+    const glm::mat4& Node::getViewMatrix(const Camera* camera) const {
+        if (camera != nullptr) {
+            return camera->getViewMatrix();
+        }
+        return IDENTITY_MATRIX;
+    }
+
     const glm::mat4& Node::getProjectionMatrix() const {
         if (SceneRef scene = _scene.lock()) {
             auto camera = scene->getActiveCamera();
             if (camera) {
                 return camera->getProjectionMatrix();
             }
+        }
+        return IDENTITY_MATRIX;
+    }
+
+    const glm::mat4& Node::getProjectionMatrix(const Camera* camera) const {
+        if (camera != nullptr) {
+            return camera->getProjectionMatrix();
         }
         return IDENTITY_MATRIX;
     }
@@ -358,8 +372,22 @@ namespace kepler {
         return getViewMatrix() * getWorldMatrix();
     }
 
-    const glm::mat4 Node::getModelViewInverseTransposeMatrix() const {
-        return glm::transpose(glm::inverse(getModelViewMatrix()));
+    const glm::mat4 Node::getModelViewMatrix(const Camera* camera) const {
+        if (camera != nullptr) {
+            return camera->getViewMatrix() * getWorldMatrix();
+        }
+        return getWorldMatrix();
+    }
+
+    const glm::mat3 Node::getModelViewInverseTransposeMatrix() const {
+        return glm::transpose(glm::inverse(glm::mat3(getModelViewMatrix())));
+    }
+
+    const glm::mat3 Node::getModelViewInverseTransposeMatrix(const Camera* camera) const {
+        if (camera != nullptr) {
+            return glm::transpose(glm::inverse(glm::mat3(getModelViewMatrix(camera))));
+        }
+        return glm::transpose(glm::inverse(glm::mat3(getWorldMatrix())));
     }
 
     const glm::mat4 Node::getModelViewProjectionMatrix() const {
@@ -372,6 +400,13 @@ namespace kepler {
         return getWorldMatrix();
     }
 
+    const glm::mat4 Node::getModelViewProjectionMatrix(const Camera* camera) const {
+        if (camera != nullptr) {
+            return camera->getViewProjectionMatrix() * getWorldMatrix();
+        }
+        return getWorldMatrix();
+    }
+
     const glm::mat4 Node::getModelInverseMatrix() const {
         return glm::inverse(getWorldMatrix());
     }
@@ -380,16 +415,32 @@ namespace kepler {
         return glm::inverse(getViewMatrix());
     }
 
+    const glm::mat4 Node::getViewInverseMatrix(const Camera* camera) const {
+        return glm::inverse(getViewMatrix(camera));
+    }
+
     const glm::mat4 Node::getProjectionInverseMatrix() const {
         return glm::inverse(getProjectionMatrix());
+    }
+
+    const glm::mat4 Node::getProjectionInverseMatrix(const Camera* camera) const {
+        return glm::inverse(getProjectionMatrix(camera));
     }
 
     const glm::mat4 Node::getModelViewInverseMatrix() const {
         return glm::inverse(getModelViewMatrix());
     }
 
+    const glm::mat4 Node::getModelViewInverseMatrix(const Camera* camera) const {
+        return glm::inverse(getModelViewMatrix(camera));
+    }
+
     const glm::mat4 Node::getModelViewProjectionInverseMatrix() const {
         return glm::inverse(getModelViewProjectionMatrix());
+    }
+
+    const glm::mat4 Node::getModelViewProjectionInverseMatrix(const Camera* camera) const {
+        return glm::inverse(getModelViewProjectionMatrix(camera));
     }
 
     const glm::mat4 Node::getModelInverseTransposeMatrix() const {
@@ -497,7 +548,7 @@ namespace kepler {
 
     void Node::notifyTransformChanged() const {
         if (_listeners != nullptr) {
-            for (auto& l : *_listeners) {
+            for (const auto& l : *_listeners) {
                 if (auto listener = l.lock()) {
                     listener->transformChanged(this);
                 }

@@ -19,8 +19,9 @@ namespace kepler {
 
     void MeshRenderer::draw() {
         if (_mesh) {
-            for (size_t i = 0; i < _mesh->getPrimitiveCount(); ++i) {
-                _mesh->getPrimitive(i)->draw();
+            size_t count = _mesh->getPrimitiveCount();
+            for (size_t i = 0; i < count; ++i) {
+                _mesh->getPrimitivePtr(i)->draw();
             }
         }
     }

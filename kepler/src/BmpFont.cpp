@@ -507,7 +507,7 @@ namespace kepler {
         return _impl->_size;
     }
 
-    float BmpFont::getSizeFloat() const {
+    float BmpFont::getSizeAsFloat() const {
         return static_cast<float>(getSize());
     }
 

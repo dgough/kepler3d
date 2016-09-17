@@ -4,45 +4,43 @@
 #include "Technique.hpp"
 #include "MeshPrimitive.hpp"
 #include "Node.hpp"
+#include "Scene.hpp"
+#include "Camera.hpp"
 
 #include <functional>
 
 namespace kepler {
 
-    MaterialBinding::MaterialBinding(NodeWeakRef node, MaterialRef material)
-        : _material(material), _node(node) {
-    }
-
-    MaterialBinding::~MaterialBinding() noexcept {
-    }
-
-    void MaterialBinding::bind() {
-        auto tech = _material->getTechnique();
+    void MaterialBinding::bind(const Node& node, const Material& material) {
+        auto tech = material.getTechnique();
+        auto& effect = *(tech->getEffect());
         tech->bind();
-        for (auto f : _functions) {
-            f();
+
+        // Most MaterialBindings will have at least one binding that uses the camera so get it here
+        // instead of having the Node search for it.
+        CameraRef camera = nullptr;
+        Camera* cameraPtr = nullptr;
+        if (auto scene = node.getScene()) {
+            camera = scene->getActiveCamera();
+            if (camera) {
+                cameraPtr = camera.get();
+            }
         }
-        auto effect = tech->getEffect();
-        for (auto& v : _values) {
+
+        for (const auto& f : _functions) {
+            f(effect, node, cameraPtr);
+        }
+        for (const auto& v : _values) {
             v->bind(effect);
         }
     }
 
-    void MaterialBinding::updateBindings(NodeRef node) {
-        updateValues();
-        // TODO determine if the node is the same and do less work?
-        _node = node;
-
-        auto tech = _material->getTechnique();
+    void MaterialBinding::updateBindings(const Material& material) {
+        updateValues(material);
+        auto tech = material.getTechnique();
         auto effect = tech->getEffect();
-
-        for (auto& semantic : tech->getSemantics()) {
+        for (const auto& semantic : tech->getSemantics()) {
             const MaterialParameterRef& materialParam = semantic.second;
-
-            if (materialParam->getUniform() == nullptr || materialParam->getUniform()->getEffect() != effect) {
-                // materialParam->setUniform(effect->getUniform(uniformName));// TODO not needed?
-            }
-
             if (materialParam->getUniform() == nullptr) {
                 // assert?
                 continue;
@@ -50,73 +48,73 @@ namespace kepler {
 
             switch (materialParam->getSemantic()) {
             case MaterialParameter::Semantic::LOCAL:
-                _functions.push_back([this, effect, materialParam]() {
-                    effect->setValue(materialParam->getUniform(), this->getLocal());
+                _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
+                    effect.setValue(materialParam->getUniform(), node.getLocalTransform().getMatrix());
                 });
                 break;
             case MaterialParameter::Semantic::MODEL:
-                _functions.push_back([this, effect, materialParam]() {
-                    effect->setValue(materialParam->getUniform(), this->getModel());
+                _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
+                    effect.setValue(materialParam->getUniform(), node.getWorldMatrix());
                 });
                 break;
             case MaterialParameter::Semantic::VIEW:
-                _functions.push_back([this, effect, materialParam]() {
-                    effect->setValue(materialParam->getUniform(), this->getView());
+                _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
+                    effect.setValue(materialParam->getUniform(), node.getViewMatrix(camera));
                 });
                 break;
             case MaterialParameter::Semantic::PROJECTION:
-                _functions.push_back([this, effect, materialParam]() {
-                    effect->setValue(materialParam->getUniform(), this->getProjection());
+                _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
+                    effect.setValue(materialParam->getUniform(), node.getProjectionMatrix(camera));
                 });
                 break;
             case MaterialParameter::Semantic::MODELVIEW:
-                _functions.push_back([this, effect, materialParam]() {
-                    effect->setValue(materialParam->getUniform(), this->getModelView());
+                _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
+                    effect.setValue(materialParam->getUniform(), node.getModelViewMatrix(camera));
                 });
                 break;
             case MaterialParameter::Semantic::MODELVIEWPROJECTION:
-                _functions.push_back([this, effect, materialParam]() {
-                    effect->setValue(materialParam->getUniform(), this->getModelViewProjection());
+                _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
+                    effect.setValue(materialParam->getUniform(), node.getModelViewProjectionMatrix(camera));
                 });
                 break;
             case MaterialParameter::Semantic::MODELINVERSE:
-                _functions.push_back([this, effect, materialParam]() {
-                    effect->setValue(materialParam->getUniform(), this->getModelInverse());
+                _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
+                    effect.setValue(materialParam->getUniform(), node.getModelInverseMatrix());
                 });
                 break;
             case MaterialParameter::Semantic::VIEWINVERSE:
-                _functions.push_back([this, effect, materialParam]() {
-                    effect->setValue(materialParam->getUniform(), this->getViewInverse());
+                _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
+                    effect.setValue(materialParam->getUniform(), node.getViewInverseMatrix(camera));
                 });
                 break;
             case MaterialParameter::Semantic::PROJECTIONINVERSE:
-                _functions.push_back([this, effect, materialParam]() {
-                    effect->setValue(materialParam->getUniform(), this->getProjectionInverse());
+                _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
+                    effect.setValue(materialParam->getUniform(), node.getProjectionInverseMatrix(camera));
                 });
                 break;
             case MaterialParameter::Semantic::MODELVIEWINVERSE:
-                _functions.push_back([this, effect, materialParam]() {
-                    effect->setValue(materialParam->getUniform(), this->getModelViewInverse());
+                _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
+                    effect.setValue(materialParam->getUniform(), node.getModelViewInverseMatrix(camera));
                 });
                 break;
             case MaterialParameter::Semantic::MODELVIEWPROJECTIONINVERSE:
-                _functions.push_back([this, effect, materialParam]() {
-                    effect->setValue(materialParam->getUniform(), this->getModelViewProjectionInverse());
+                _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
+                    effect.setValue(materialParam->getUniform(), node.getModelViewProjectionInverseMatrix(camera));
                 });
                 break;
             case MaterialParameter::Semantic::MODELINVERSETRANSPOSE:
-                _functions.push_back([this, effect, materialParam]() {
-                    effect->setValue(materialParam->getUniform(), this->getModelInverseTranspose());
+                _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
+                    effect.setValue(materialParam->getUniform(), node.getModelInverseTransposeMatrix());
                 });
                 break;
             case MaterialParameter::Semantic::MODELVIEWINVERSETRANSPOSE:
-                _functions.push_back([this, effect, materialParam]() {
-                    effect->setValue(materialParam->getUniform(), this->getModelViewInverseTranspose());
+                _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
+                    effect.setValue(materialParam->getUniform(), node.getModelViewInverseTransposeMatrix(camera));
                 });
                 break;
             case MaterialParameter::Semantic::VIEWPORT:
-                _functions.push_back([this, effect, materialParam]() {
-                    effect->setValue(materialParam->getUniform(), this->getViewport());
+                _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
+                    effect.setValue(materialParam->getUniform(), IDENTITY_MATRIX); // TODO
                 });
                 break;
             case MaterialParameter::Semantic::NONE:
@@ -126,107 +124,8 @@ namespace kepler {
         }
     }
 
-    void MaterialBinding::updateValues() {
-        auto tech = _material->getTechnique();
+    void MaterialBinding::updateValues(const Material& material) {
+        auto tech = material.getTechnique();
         tech->findValues(_values);
-    }
-
-    const glm::mat4 MaterialBinding::getLocal() const {
-        if (NodeRef node = _node.lock()) {
-            return node->getLocalTransform().getMatrix();
-        }
-        return IDENTITY_MATRIX;
-    }
-
-    const glm::mat4 MaterialBinding::getModel() const {
-        if (NodeRef node = _node.lock()) {
-            return node->getWorldMatrix();
-        }
-        return IDENTITY_MATRIX;
-    }
-
-    const glm::mat4 MaterialBinding::getView() const {
-        if (NodeRef node = _node.lock()) {
-            return node->getViewMatrix();
-        }
-        return IDENTITY_MATRIX;
-    }
-
-    const glm::mat4& MaterialBinding::getProjection() const {
-        if (NodeRef node = _node.lock()) {
-            return node->getProjectionMatrix();
-        }
-        return IDENTITY_MATRIX;
-    }
-
-    const glm::mat4 MaterialBinding::getModelView() const {
-        if (NodeRef node = _node.lock()) {
-            return node->getModelViewMatrix();
-        }
-        return IDENTITY_MATRIX;
-    }
-
-    const glm::mat4 MaterialBinding::getModelViewProjection() const {
-        if (NodeRef node = _node.lock()) {
-            return node->getModelViewProjectionMatrix();
-        }
-        return IDENTITY_MATRIX;
-    }
-
-    const glm::mat4 MaterialBinding::getModelInverse() const {
-        if (NodeRef node = _node.lock()) {
-            return node->getModelInverseMatrix();
-        }
-        return IDENTITY_MATRIX;
-    }
-
-    const glm::mat4 MaterialBinding::getViewInverse() const {
-        if (NodeRef node = _node.lock()) {
-            return node->getViewInverseMatrix();
-        }
-        return IDENTITY_MATRIX;
-    }
-
-    const glm::mat4 MaterialBinding::getProjectionInverse() const {
-        if (NodeRef node = _node.lock()) {
-            return node->getProjectionInverseMatrix();
-        }
-        return IDENTITY_MATRIX;
-    }
-
-    const glm::mat4 MaterialBinding::getModelViewInverse() const {
-        if (NodeRef node = _node.lock()) {
-            return node->getModelViewInverseMatrix();
-        }
-        return IDENTITY_MATRIX;
-    }
-
-    const glm::mat4 MaterialBinding::getModelViewProjectionInverse() const {
-        if (NodeRef node = _node.lock()) {
-            return node->getModelViewProjectionInverseMatrix();
-        }
-        return IDENTITY_MATRIX;
-    }
-
-    const glm::mat3 MaterialBinding::getModelInverseTranspose() const {
-        if (NodeRef node = _node.lock()) {
-            return glm::mat3(node->getModelInverseTransposeMatrix());
-        }
-        return glm::mat3();
-    }
-
-    const glm::mat3 MaterialBinding::getModelViewInverseTranspose() const {
-        if (NodeRef node = _node.lock()) {
-            return glm::mat3(node->getModelViewInverseTransposeMatrix());
-        }
-        return glm::mat3();
-    }
-
-    const glm::mat4 MaterialBinding::getViewport() const {
-        // TODO
-        if (NodeRef node = _node.lock()) {
-            return glm::mat4();
-        }
-        return IDENTITY_MATRIX;
     }
 }

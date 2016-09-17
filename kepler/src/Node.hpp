@@ -198,7 +198,9 @@ namespace kepler {
         const std::shared_ptr<const Transform> getLocalTransformRef() const;
 
         const glm::mat4& getViewMatrix() const;
+        const glm::mat4& getViewMatrix(const Camera* camera) const;
         const glm::mat4& getProjectionMatrix() const;
+        const glm::mat4& getProjectionMatrix(const Camera* camera) const;
 
         const Transform& getWorldTransform() const;
         const glm::mat4& getWorldMatrix() const;
@@ -206,15 +208,24 @@ namespace kepler {
         /////////////////
         //const glm::mat4& getModelMatrix() const;
         const glm::mat4 getModelViewMatrix() const;
+        /// Returns the ModelView matrix for this node using the given camera 
+        /// instead of the active camera of the scene this node belongs to.
+        const glm::mat4 getModelViewMatrix(const Camera* camera) const;
 
-        const glm::mat4 getModelViewInverseTransposeMatrix() const;
+        const glm::mat3 getModelViewInverseTransposeMatrix() const;
+        const glm::mat3 getModelViewInverseTransposeMatrix(const Camera* camera) const;
 
         const glm::mat4 getModelViewProjectionMatrix() const;
+        const glm::mat4 getModelViewProjectionMatrix(const Camera* camera) const;
         const glm::mat4 getModelInverseMatrix() const;
         const glm::mat4 getViewInverseMatrix() const;
+        const glm::mat4 getViewInverseMatrix(const Camera* camera) const;
         const glm::mat4 getProjectionInverseMatrix() const;
+        const glm::mat4 getProjectionInverseMatrix(const Camera* camera) const;
         const glm::mat4 getModelViewInverseMatrix() const;
+        const glm::mat4 getModelViewInverseMatrix(const Camera* camera) const;
         const glm::mat4 getModelViewProjectionInverseMatrix() const;
+        const glm::mat4 getModelViewProjectionInverseMatrix(const Camera* camera) const;
         const glm::mat4 getModelInverseTransposeMatrix() const;
         const glm::mat4 getViewportMatrix() const;
 
@@ -307,7 +318,7 @@ namespace kepler {
 
     template<class T>
     std::shared_ptr<T> Node::getComponent() {
-        for (auto& c : _components) {
+        for (const auto& c : _components) {
             if (dynamic_cast<T*>(c.get()) != nullptr) {
                 return std::dynamic_pointer_cast<T>(c);
             }

@@ -80,10 +80,10 @@ namespace kepler {
         _uniform = uniform;
     }
 
-    void MaterialParameter::bind(EffectRef effect) {
-        if (effect == nullptr || _uniform == nullptr) {
+    void MaterialParameter::bind(Effect& effect) const {
+        if (_uniform == nullptr) {
             return; // TODO assert?
         }
-        _function(*effect, _uniform);
+        _function(effect, _uniform);
     }
 }

@@ -79,11 +79,13 @@ namespace kepler {
     }
 
     void MeshPrimitive::draw() {
-        if (_vertexBinding == nullptr) {
+        auto node = _node.lock();
+        if (_vertexBinding == nullptr || !node) {
             return;
         }
-        _materialBinding->bind();
-        _vertexBinding->bind();        
+        const auto& material = *_material;
+        _materialBinding->bind(*node, material);
+        _vertexBinding->bind();
         if (_indices) {
             glDrawElements(_mode, _indices->getCount(), _indices->getType(), (const GLvoid*)_indices->getOffset());
         }
@@ -102,9 +104,9 @@ namespace kepler {
             return;
         }
         if (_materialBinding == nullptr) {
-            _materialBinding = std::make_unique<MaterialBinding>(_node, _material);
+            _materialBinding = std::make_unique<MaterialBinding>();
         }
-        _materialBinding->updateBindings(_node.lock());
+        _materialBinding->updateBindings(*_material);
     }
 
     void MeshPrimitive::setNode(NodeRef node) {

@@ -62,7 +62,7 @@ namespace kepler {
         Uniform* getUniform() const;
         void setUniform(Uniform* uniform);
 
-        void bind(EffectRef effect);
+        void bind(Effect& effect) const;
 
     private:
         MaterialParameter(const MaterialParameter&) = delete;

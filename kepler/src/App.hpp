@@ -6,12 +6,15 @@
 
 namespace kepler {
 
+    /// The application class.
+    /// Don't extend this class, instead extend AppDelegate and set it as the active delegate in order to receive callbacks.
     class App {
     public:
         App();
         App(int width, int height, bool fullscreen = false);
         virtual ~App() noexcept;
 
+        /// Sets the delegate that will receive callbacks.
         void setDelegate(AppDelegateRef appDelegate);
 
         /// Starts the main loop.
@@ -62,19 +65,28 @@ namespace kepler {
 
         /// Returns the width of the client area.
         int getWidth() const;
-        float getWidthFloat() const;
+        float getWidthAsFloat() const;
 
         /// Returns the height of the client area.
         int getHeight() const;
-        float getHeightFloat() const;
+        float getHeightAsFloat() const;
 
         /// Returns the aspect ratio of the client area (width/height).
         float getAspectRatio() const;
 
+        /// The number of frames so far.
+        /// The count will be 1 at the start of the first frame.
+        size_t getFrameCount() const noexcept;
+
         /// Sets if the app should terminate at the end of this frame.
         void setShouldClose(bool value);
+
+        /// Sets the swap interval.
+        /// @param[in] interval 0 to disable vsync and 1 for 60fps.
         void setSwapInterval(int interval);
 
+        /// Sets the cursor visibility.
+        /// @param[in] visible True to make the cursor visible; false to hide the cursor.
         void setCursorVisibility(bool visible);
 
         // Returns true if the cursor is visible.

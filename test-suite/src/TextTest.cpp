@@ -49,7 +49,7 @@ void TextTest::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if (_font) {
-        float height = _font->getSizeFloat();
+        float height = _font->getSizeAsFloat();
         static constexpr float x = 0.f;
         float y = 0.f;
         _font->drawText(g_text.c_str(), x, y);
@@ -58,7 +58,7 @@ void TextTest::render() {
         _font->drawText("HHHHHH", x, y += height, glm::vec3(1, 0, 0));
 
 
-        auto bottom = app()->getHeightFloat() - static_cast<float>(_font->getLineHeight());
+        auto bottom = app()->getHeightAsFloat() - static_cast<float>(_font->getLineHeight());
         _font->drawText("Drag font into window to load.", x, bottom, glm::vec3(0, 1, 1));
     }
 }
