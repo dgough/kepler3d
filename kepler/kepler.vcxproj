@@ -141,7 +141,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\AppDelegate.cpp" />
     <ClCompile Include="src\AppGLFW.cpp" />
     <ClCompile Include="src\AxisCompass.cpp" />
     <ClCompile Include="src\BaseGL.cpp" />

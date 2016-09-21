@@ -45,9 +45,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\AppDelegate.cpp">
-      <Filter>src\Platform</Filter>
-    </ClCompile>
     <ClCompile Include="src\AppGLFW.cpp">
       <Filter>src\Platform</Filter>
     </ClCompile>
