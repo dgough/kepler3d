@@ -26,7 +26,7 @@ External-dependencies and resource files are stored separately to keep the repo 
 ### Setup
 
 - Clone the repo
-- Download [kepler3d_deps.zip](https://github.com/dgough/kepler3d/releases/download/v0.0.2/kepler3d_deps.zip) from [releases](https://github.com/dgough/kepler3d/releases) and unzip to the kepler3d directory
+- Download [kepler3d_deps.zip](https://github.com/dgough/kepler3d/releases/download/v0.0.3/kepler3d_deps.zip) from [releases](https://github.com/dgough/kepler3d/releases) and unzip to the kepler3d directory
 - Open **kepler3d.sln**
 
 # FAQ
