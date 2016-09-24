@@ -92,6 +92,7 @@ void TestApp::start() {
         app()->setShouldClose(true);
         return;
     }
+    changeBoxColor(*_scene);
 }
 
 void TestApp::update() {
@@ -349,6 +350,9 @@ SceneRef TestApp::loadDuckScene() {
     auto scene = gltf.loadSceneFromFile(DUCK_PATH);
     if (scene && scene->getChildCount() > 0) {
         scene->getChildAt(0)->translateY(1);
+        if (auto lightNode = scene->findFirstNodeByName("directionalLight1")) {
+            lightNode->rotateY(glm::pi<float>());
+        }
     }
     return scene;
 }

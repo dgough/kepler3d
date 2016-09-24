@@ -180,6 +180,7 @@ namespace kepler {
 
         std::map <string, std::shared_ptr<std::vector<ubyte>>> _buffers;
 
+        std::map<string, NodeRef> _nodes;
         std::map<string, VertexBufferRef> _vbos;
         std::map<string, IndexBufferRef> _indexBuffers;
         std::map<string, IndexAccessorRef> _indexAccessors;
@@ -357,11 +358,13 @@ namespace kepler {
     }
 
     NodeRef GLTFLoader::Impl::loadNode(const string& id) {
+        RETURN_IF_FOUND(_nodes, id);
         auto jNodes = _json.find(NODES);
         if (jNodes != _json.end()) {
             auto jNode = jNodes->find(id);
             if (jNode != jNodes->end()) {
                 auto node = loadNode(*jNode);
+                _nodes[id] = node;
                 return node;
             }
         }
