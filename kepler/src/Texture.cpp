@@ -60,13 +60,13 @@ namespace kepler {
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glGenTextures(1, &texture->_handle);
         glBindTexture(GL_TEXTURE_2D, texture->_handle);
-        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, image->getWidth(), image->getHeight(), 0, (GLenum)image->getFormat(), image->getDataType(), image->getData());
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, image->width(), image->height(), 0, (GLenum)image->format(), image->type(), image->data());
         if (generateMipmaps) {
             glGenerateMipmap(GL_TEXTURE_2D);
         }
         glBindTexture(GL_TEXTURE_2D, 0);
-        texture->_width = image->getWidth();
-        texture->_height = image->getHeight();
+        texture->_width = image->width();
+        texture->_height = image->height();
         return texture;
     }
 }

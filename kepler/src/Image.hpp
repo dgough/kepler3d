@@ -15,12 +15,22 @@ namespace kepler {
         };
 
         virtual ~Image() noexcept;
-        
+
         /// Creates an Image from a file.
         static ImageRef createFromFile(const char* path, bool flipY = false);
 
-        // Creates an Image from memory.
-        static ImageRef create(int width, int height, Format format, const unsigned char* data);
+        /// Creates an Image from memory that was loaded from a file.
+        /// The memory is the data loaded from a compressed image, like a PNG file.
+        /// The main use of this method is to load embedded images that were base 64 encoded in a GLTF file.
+        ///
+        /// @param[in] buffer       Pointer to the memory.
+        /// @param[in] bufferLength Length of the buffer.
+        /// @param[in] flipY        True if the Y-axis should be flipped; false otherwise.
+        /// @return shared_ptr to the image. Will be null if there was an error.
+        static ImageRef createFromFileMemory(const unsigned char* buffer, int bufferLength, bool flipY = false);
+
+        // Creates an Image from uncompressed memory.
+        static ImageRef createFromMemory(int width, int height, Format format, const unsigned char* data);
 
         /// Saves this image as a png file.
         static bool savePNG(const char* path, int width, int height, Format format, const unsigned char* data);
@@ -29,16 +39,20 @@ namespace kepler {
         bool savePNG(const char* path);
 
         /// Returns the width of this Image.
-        int getWidth() const;
+        int width() const;
 
         /// Returns the height of this Image.
-        int getHeight() const;
+        int height() const;
 
-        Format getFormat() const;
+        /// Returns the image format.
+        Format format() const;
 
-        unsigned char* getData() const;
+        /// Direct access to the underlying memory.
+        /// @return Pointer to the image data.
+        unsigned char* data() const;
 
-        unsigned int getDataType() const;
+        /// Returns the data type. Currently always GL_UNSIGNED_BYTE.
+        unsigned int type() const;
 
     public:
         Image(const Image&) = delete;

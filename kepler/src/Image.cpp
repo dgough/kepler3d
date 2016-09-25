@@ -9,6 +9,7 @@ namespace kepler {
 
     static Image::Format toImageFormat(int soilFormat);
     static int toSoilFormat(Image::Format format);
+    static void flipImageY(unsigned char* data, int width, int height, int format);
 
     Image::Image(int width, int height, Format format, unsigned char* data)
         : _width(width), _height(height), _format(format), _data(data) {
@@ -21,31 +22,32 @@ namespace kepler {
     }
 
     ImageRef Image::createFromFile(const char* path, bool flipY) {
-        // TODO include option to flipY
         int width, height, format;
         unsigned char* data = SOIL_load_image(path, &width, &height, &format, SOIL_LOAD_AUTO);
         if (data == nullptr) {
             loge("TEXTURE::LOAD_IMAGE ", path);
             return nullptr;
         }
-
         if (flipY) {
-            for (int y = 0; y * 2 < height; ++y) {
-                int i1 = y * width * format;
-                int i2 = (height - 1 - y) * width * format;
-                for (int x = width * format; x > 0; --x) {
-                    unsigned char temp = data[i1];
-                    data[i1] = data[i2];
-                    data[i2] = temp;
-                    ++i1;
-                    ++i2;
-                }
-            }
+            flipImageY(data, width, height, format);
         }
         return MAKE_SHARED(Image, width, height, toImageFormat(format), data);
     }
 
-    ImageRef Image::create(int width, int height, Format format, const unsigned char* data) {
+    ImageRef Image::createFromFileMemory(const unsigned char* buffer, int bufferLength, bool flipY) {
+        int width, height, format;
+        unsigned char* data = SOIL_load_image_from_memory(buffer, bufferLength, &width, &height, &format, SOIL_LOAD_AUTO);
+        if (data == nullptr) {
+            loge("TEXTURE::LOAD_IMAGE_FROM_MEMORY");
+            return nullptr;
+        }
+        if (flipY) {
+            flipImageY(data, width, height, format);
+        }
+        return MAKE_SHARED(Image, width, height, toImageFormat(format), data);
+    }
+
+    ImageRef Image::createFromMemory(int width, int height, Format format, const unsigned char* data) {
         int soilFormat = toSoilFormat(format);
         size_t size = width * height * soilFormat;
         unsigned char* d = (unsigned char*)malloc(size);
@@ -64,23 +66,23 @@ namespace kepler {
         return savePNG(path, _width, _height, _format, _data);
     }
 
-    int Image::getWidth() const {
+    int Image::width() const {
         return _width;
     }
 
-    int Image::getHeight() const {
+    int Image::height() const {
         return _height;
     }
 
-    Image::Format Image::getFormat() const {
+    Image::Format Image::format() const {
         return _format;
     }
 
-    unsigned char* Image::getData() const {
+    unsigned char* Image::data() const {
         return _data;
     }
 
-    GLenum Image::getDataType() const {
+    GLenum Image::type() const {
         return GL_UNSIGNED_BYTE;
     }
 
@@ -101,6 +103,20 @@ namespace kepler {
         case Image::Format::RGB: return SOIL_LOAD_RGB;
         case Image::Format::RGBA: return SOIL_LOAD_RGBA;
         default: return SOIL_LOAD_RGBA;
+        }
+    }
+
+    void flipImageY(unsigned char* data, int width, int height, int format) {
+        for (int y = 0; y * 2 < height; ++y) {
+            int i1 = y * width * format;
+            int i2 = (height - 1 - y) * width * format;
+            for (int x = width * format; x > 0; --x) {
+                unsigned char temp = data[i1];
+                data[i1] = data[i2];
+                data[i2] = temp;
+                ++i1;
+                ++i2;
+            }
         }
     }
 }

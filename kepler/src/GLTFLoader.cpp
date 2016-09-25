@@ -23,6 +23,10 @@
 
 #include <json.hpp>
 #include <chrono>
+#include <array>
+
+#define BUFFERSIZE 1024
+#include <b64/decode.h>
 
 using std::string;
 using json = nlohmann::basic_json<std::map, std::vector, std::string, bool, std::int64_t, std::uint64_t, float>;
@@ -92,6 +96,9 @@ namespace kepler {
     static const string URI = "uri";
 
     static const string SEMANTIC = "semantic";
+    static const string DATA_APP_BASE64 = "data:application/octet-stream;base64,";
+    static const string DATA_IMAGE_BASE64 = "data:image/";
+    static const string DATA_TEXT_BASE64 = "data:text/plain;base64,";
 
     static constexpr float DEFAULT_ASPECT_RATIO = 1.5f;
     static constexpr float DEFAULT_NEAR = 0.1f;
@@ -117,6 +124,9 @@ namespace kepler {
     static GLint numComponentsOfType(const string& type);
     static void setState(int state, RenderState& block);
     static void setFunction(RenderState& renderState, const string& key, const json& value);
+    static void base64Decode(const string& text, size_t offset, string& destination);
+    static void base64Decode(std::istream& istream, std::vector<ubyte>& out);
+    static BufferRef createBufferFromBase64(const std::string& text, size_t offset);
 
     using time_type = std::chrono::nanoseconds;
     static time_type __totalTime;
@@ -508,20 +518,27 @@ namespace kepler {
             auto jBuffer = buffers->find(id);
             if (jBuffer != buffers->end()) {
                 auto type = jBuffer->value(TYPE, "arraybuffer");
-
                 if (type == ARRAY_BUFFER) {
-                    auto uri = jBuffer->value(URI, "");
-                    if (uri.length() > 0) {
-                        string path = uriToPath(uri);
-                        auto buffer = std::make_shared<std::vector<ubyte>>();
-                        if (readBinaryFile(path.c_str(), *buffer.get())) {
+                    auto jUri = jBuffer->find(URI);
+                    if (jUri != jBuffer->end() && jUri->is_string()) {
+                        const auto& uri = jUri->get_ref<const string&>();
+                        if (startsWith(uri, DATA_APP_BASE64)) {
+                            auto buffer = createBufferFromBase64(uri, DATA_APP_BASE64.length());
                             _buffers[id] = buffer;
                             return buffer;
+                        }
+                        else {
+                            string path = uriToPath(uri);
+                            auto buffer = std::make_shared<std::vector<ubyte>>();
+                            if (readBinaryFile(path.c_str(), *buffer.get())) {
+                                _buffers[id] = buffer;
+                                return buffer;
+                            }
                         }
                     }
                 }
                 else if (type == TEXT) {
-                    // TODO load base 64 text
+                    // TODO type="text"?
                 }
             }
         }
@@ -530,30 +547,29 @@ namespace kepler {
     }
 
     VertexBufferRef GLTFLoader::Impl::loadVertexBuffer(const string& id) {
-        // TODO check if it was already loaded
         RETURN_IF_FOUND(_vbos, id);
         if (id.empty()) {
             return nullptr;
         }
-
-        try {
-            auto jBufferView = _json[BUFFER_VIEWS][id];
-
-            // TODO load the buffer
-            auto bufferId = jBufferView.value(BUFFER, "");
-            if (bufferId.length() > 0) {
-                auto buffer = loadBuffer(bufferId);
-                if (buffer) {
-                    GLsizeiptr byteLength = jBufferView.value<GLsizeiptr>("byteLength", 0);
-                    size_t byteOffset = jBufferView.value<size_t>("byteOffset", 0);
-                    auto vbo = VertexBuffer::create(byteLength, &(*buffer)[0] + byteOffset, GL_STATIC_DRAW);
-                    _vbos[id] = vbo;
-                    return vbo;
+        auto jViews = _json.find(BUFFER_VIEWS);
+        if (jViews != _json.end()) {
+            auto jBufferView = jViews->find(id);
+            if (jBufferView != jViews->end()) {
+                auto jBuffer = jBufferView->find(BUFFER);
+                if (jBuffer != jBufferView->end() && jBuffer->is_string()) {
+                    const auto& bufferId = jBuffer->get_ref<const string&>();
+                    if (bufferId.length() > 0) {
+                        auto buffer = loadBuffer(bufferId);
+                        if (buffer) {
+                            GLsizeiptr byteLength = jBufferView->value<GLsizeiptr>("byteLength", 0);
+                            size_t byteOffset = jBufferView->value<size_t>("byteOffset", 0);
+                            auto vbo = VertexBuffer::create(byteLength, &(*buffer)[0] + byteOffset, GL_STATIC_DRAW);
+                            _vbos[id] = vbo;
+                            return vbo;
+                        }
+                    }
                 }
             }
-        }
-        catch (const std::domain_error&) {
-
         }
         return nullptr;
     }
@@ -564,24 +580,25 @@ namespace kepler {
 
         // TODO this is very similar to loadVertexBuffer. Move to common function.
 
-        try {
-            auto jBufferView = _json[BUFFER_VIEWS][id];
-
-            // TODO load the buffer
-            auto bufferId = jBufferView.value(BUFFER, "");
-            if (bufferId.length() > 0) {
-                auto buffer = loadBuffer(bufferId);
-                if (buffer) {
-                    GLsizeiptr byteLength = jBufferView.value<GLsizeiptr>("byteLength", 0);
-                    size_t byteOffset = jBufferView.value<size_t>("byteOffset", 0);
-                    auto indexBuffer = IndexBuffer::create(byteLength, &(*buffer)[0] + byteOffset, GL_STATIC_DRAW);
-                    _indexBuffers[id] = indexBuffer;
-                    return indexBuffer;
+        auto jViews = _json.find(BUFFER_VIEWS);
+        if (jViews != _json.end()) {
+            auto jBufferView = jViews->find(id);
+            if (jBufferView != jViews->end()) {
+                auto jBuffer = jBufferView->find(BUFFER);
+                if (jBuffer != jBufferView->end() && jBuffer->is_string()) {
+                    const auto& bufferId = jBuffer->get_ref<const string&>();
+                    if (bufferId.length() > 0) {
+                        auto buffer = loadBuffer(bufferId);
+                        if (buffer) {
+                            GLsizeiptr byteLength = jBufferView->value<GLsizeiptr>("byteLength", 0);
+                            size_t byteOffset = jBufferView->value<size_t>("byteOffset", 0);
+                            auto indexBuffer = IndexBuffer::create(byteLength, &(*buffer)[0] + byteOffset, GL_STATIC_DRAW);
+                            _indexBuffers[id] = indexBuffer;
+                            return indexBuffer;
+                        }
+                    }
                 }
             }
-        }
-        catch (const std::domain_error&) {
-
         }
         return nullptr;
     }
@@ -942,14 +959,21 @@ namespace kepler {
                 // TODO is name needed?
                 const auto jUri = jImage->find(URI);
                 if (jUri != jImage->end() && jUri->is_string()) {
-                    auto uri(jUri->get<string>());
-                    if (!startsWith(uri, "data:image")) {
-                        // TODO Should Y be flipped?
+                    const auto& uri = jUri->get_ref<const string&>();
+                    ImageRef image;
+                    if (startsWith(uri, DATA_IMAGE_BASE64)) {
+                        auto index = uri.find_first_of(',');
+                        if (index != string::npos) {
+                            auto buffer = createBufferFromBase64(uri, index + 1);
+                            image = Image::createFromFileMemory(&((*buffer)[0]), static_cast<int>(buffer->size()));
+                        }
+                    }
+                    else {
                         auto path = uriToPath(uri);
 
                         auto start = std::chrono::system_clock::now();
 
-                        auto image = Image::createFromFile(path.c_str(), false);
+                        image = Image::createFromFile(path.c_str(), false);
 
                         auto end = std::chrono::system_clock::now();
                         auto time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
@@ -958,7 +982,8 @@ namespace kepler {
                         std::clog << static_cast<double>(time.count());
                         std::clog.width(clogWidth);
                         std::clog << " ms to load " << path.c_str() << std::endl;
-
+                    }
+                    if (image) {
                         _images[id] = image;
                         return image;
                     }
@@ -1019,10 +1044,16 @@ namespace kepler {
         if (jShaders != _json.end()) {
             auto jShader = jShaders->find(id);
             if (jShader != jShaders->end()) {
-                auto uri = jShader->value(URI, "");
-                if (!uri.empty()) {
-                    string path = uriToPath(uri);
-                    readTextFile(path.c_str(), destination);
+                auto jUri = jShader->find(URI);
+                if (jUri != jShader->end() && jUri->is_string()) {
+                    const auto& uri = jUri->get_ref<const string&>();
+                    if (startsWith(uri, DATA_TEXT_BASE64)) {
+                        base64Decode(uri, DATA_TEXT_BASE64.length(), destination);
+                    }
+                    else if (!uri.empty()) {
+                        string path = uriToPath(uri);
+                        readTextFile(path.c_str(), destination);
+                    }
                 }
             }
         }
@@ -1381,5 +1412,38 @@ namespace kepler {
             logw("Unknown state function", key.c_str());
             break;
         }
+    }
+
+    void base64Decode(const string& text, size_t offset, string& destination) {
+        base64::decoder d;
+        std::istringstream in(text);
+        in.seekg(offset);
+        std::ostringstream out;
+        d.decode(in, out);
+        destination = out.str();
+    }
+
+    void base64Decode(std::istream& in, std::vector<ubyte>& out) {
+        base64::decoder decoder;
+        base64::base64_init_decodestate(&decoder._state);
+        std::array<char, BUFFERSIZE> code;
+        std::array<char, BUFFERSIZE> plaintext;
+        int codelength;
+        do {
+            in.read(code.data(), code.size());
+            codelength = static_cast<int>(in.gcount());
+            int plainlength = decoder.decode(code.data(), codelength, plaintext.data());
+            out.insert(out.end(), plaintext.begin(), plaintext.begin() + plainlength);
+        } while (in.good() && codelength > 0);
+        base64_init_decodestate(&decoder._state);
+    }
+
+    BufferRef createBufferFromBase64(const std::string& text, size_t offset) {
+        std::istringstream in(text);
+        in.seekg(offset);
+        auto buffer = std::make_shared<std::vector<ubyte>>();
+        buffer->reserve(text.length() * 3 >> 2); // the data will be roughly 75% the size of the base64 text
+        base64Decode(in, *buffer);
+        return buffer;
     }
 }
