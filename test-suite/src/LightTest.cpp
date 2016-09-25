@@ -59,9 +59,9 @@ void LightTest::start() {
             return;
         }
         _scene->visit([material](Node* node) {
-            auto renderer = node->getComponent<MeshRenderer>();
+            auto renderer = node->component<MeshRenderer>();
             if (renderer) {
-                auto prim = renderer->getMesh()->getPrimitive(0);
+                auto prim = renderer->mesh()->primitiveAt(0);
                 if (prim) {
                     prim->setMaterial(material);
                 }
@@ -84,7 +84,7 @@ void LightTest::start() {
 
 void LightTest::update() {
     if (!_pause && _lightParent) {
-        float rot = static_cast<float>(getDeltaTime() * glm::pi<double>());
+        float rot = static_cast<float>(deltaTime() * glm::pi<double>());
         _lightParent->rotateY(rot);
     }
 }
@@ -94,7 +94,7 @@ void LightTest::render() {
 
     if (_scene) {
         _scene->visit([](Node* node) {
-            if (auto renderer = node->getDrawable()) {
+            if (auto renderer = node->drawable()) {
                 renderer->draw();
             }
         });
@@ -102,7 +102,7 @@ void LightTest::render() {
 
     if (_font) {
         float y = 0.f;
-        float lineHeight = static_cast<float>(_font->getLineHeight());
+        float lineHeight = static_cast<float>(_font->lineHeight());
         _font->drawText(g_text.c_str(), 0.f, y);
         _font->drawText("[r,g,b,w] - change light color", 0.f, y += lineHeight, _lightColor);
         _font->drawText("[space] - pause", 0.f, y += lineHeight);
@@ -149,7 +149,7 @@ void LightTest::mouseEvent(double xpos, double ypos) {
 void LightTest::mouseButtonEvent(int button, int action, int mods) {
     if (button == LEFT_MOUSE && action == PRESS) {
         double x, y;
-        app()->getCursorPos(&x, &y);
+        app()->cursorPosition(&x, &y);
         _orbitCamera.start(static_cast<float>(x), static_cast<float>(y));
         _moveCamera = true;
     }
@@ -170,7 +170,7 @@ void LightTest::loadSceneFromFile(const char* path) {
 
     GLTFLoader loader;
     loader.setAutoLoadMaterials(false);
-    loader.setCameraAspectRatio(app()->getAspectRatio());
+    loader.setCameraAspectRatio(app()->aspectRatio());
     _scene = loader.loadSceneFromFile(path);
 
     if (_scene) {
@@ -205,7 +205,7 @@ static MaterialRef createCubeMaterial() {
         auto f = [](Effect& effect, const Uniform* uniform) {effect.setValue(uniform, _lightColor);};
         tech->setUniform("color", MaterialParameter::create("color", f));
 
-        auto& state = tech->getRenderState();
+        auto& state = tech->renderState();
         state.setDepthTest(true);
         state.setCulling(true);
 
@@ -242,8 +242,8 @@ static MaterialRef createPointLightMaterial(const char* texture_path, NodeRef li
     auto lightPos = MaterialParameter::create("lightPos", 
         [lightNode](Effect& effect, const Uniform* uniform) {
         // light position in view space
-        glm::vec4 v = glm::vec4(lightNode->getWorldTransform().getTranslation(), 1.0f);
-        v = lightNode->getViewMatrix() * v;
+        glm::vec4 v = glm::vec4(lightNode->worldTransform().translation(), 1.0f);
+        v = lightNode->viewMatrix() * v;
         effect.setValue(uniform, glm::vec3(v));
     });
     tech->setUniform("lightPos", lightPos);
@@ -262,7 +262,7 @@ static MaterialRef createPointLightMaterial(const char* texture_path, NodeRef li
     tech->setUniform("linearAttenuation", MaterialParameter::create("linearAttenuation", 0.f));
     tech->setUniform("quadraticAttenuation", MaterialParameter::create("quadraticAttenuation", 0.0025f));
 
-    auto& state = tech->getRenderState();
+    auto& state = tech->renderState();
     state.setDepthTest(true);
     state.setCulling(true);
     return Material::create(tech);

@@ -17,7 +17,7 @@ namespace kepler {
 
         /// Returns the Node that this component belongs to.
         /// Will return nullptr if the component is not attached to a node or the node was cleaned up.
-        NodeRef getNode() const;
+        NodeRef node() const;
 
         // TODO remove from node
 
@@ -26,7 +26,7 @@ namespace kepler {
 
         /// Returns the name of the component.
         /// For example, Camera should return "Camera".
-        virtual const std::string& getTypeName() const = 0;
+        virtual const std::string& typeName() const = 0;
     public:
         Component(const Component&) = delete;
         Component& operator=(const Component&) = delete;

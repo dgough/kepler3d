@@ -13,7 +13,7 @@ namespace kepler {
     static constexpr unsigned char ALL_DIRTY = (VIEW_DIRTY | PROJ_DIRTY | VIEW_PROJ_DIRTY | INV_VIEW_DIRTY | INV_VIEW_PROJ_DIRTY | BOUNDS_DIRTY);
     static constexpr unsigned char TRANSFORM_CHANGE = ALL_DIRTY & ~PROJ_DIRTY;
 
-    static std::string typeName("Camera");
+    static std::string _typeName("Camera");
 
     Camera::Camera(float fov, float aspectRatio, float near, float far)
         : _type(Type::PERSPECTIVE), _fov(fov), _aspectRatio(aspectRatio), _near(near), _far(far) {
@@ -49,11 +49,11 @@ namespace kepler {
         }
     }
 
-    const std::string& Camera::getTypeName() const {
-        return typeName;
+    const std::string& Camera::typeName() const {
+        return _typeName;
     }
 
-    Camera::Type Camera::getCameraType() const {
+    Camera::Type Camera::cameraType() const {
         return _type;
     }
 
@@ -61,10 +61,10 @@ namespace kepler {
         _dirtyBits |= TRANSFORM_CHANGE;
     }
 
-    const glm::mat4& Camera::getViewMatrix() const {
+    const glm::mat4& Camera::viewMatrix() const {
         if (_dirtyBits & VIEW_DIRTY) {
             if (NodeRef node = _node.lock()) {
-                glm::mat4 m = node->getWorldMatrix();
+                glm::mat4 m = node->worldMatrix();
                 _view = glm::inverse(m);
             }
             else {
@@ -75,7 +75,7 @@ namespace kepler {
         return _view;
     }
 
-    const glm::mat4& Camera::getProjectionMatrix() const {
+    const glm::mat4& Camera::projectionMatrix() const {
         if (_dirtyBits & PROJ_DIRTY) {
             if (_type == Type::PERSPECTIVE) {
                 // TODO check GLM_FORCE_RADIANS?
@@ -91,9 +91,9 @@ namespace kepler {
         return _projection;
     }
 
-    const glm::mat4& Camera::getViewProjectionMatrix() const {
+    const glm::mat4& Camera::viewProjectionMatrix() const {
         if (_dirtyBits & VIEW_PROJ_DIRTY) {
-            _viewProjection = getProjectionMatrix() * getViewMatrix();
+            _viewProjection = projectionMatrix() * viewMatrix();
             _dirtyBits &= ~VIEW_PROJ_DIRTY;
         }
         return _viewProjection;

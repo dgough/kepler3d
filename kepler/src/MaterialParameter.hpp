@@ -45,7 +45,7 @@ namespace kepler {
         static MaterialParameterRef create(const std::string& name, const T& type);
 
 
-        const std::string& getName() const;
+        const std::string& name() const;
 
         void setValue(float value);
         void setValue(int value);
@@ -56,10 +56,10 @@ namespace kepler {
         void setValue(const FunctionBinding& func);
         void setValue(TextureRef texture);
 
-        Semantic getSemantic() const;
+        Semantic semantic() const;
         void setSemantic(Semantic semantic);
 
-        Uniform* getUniform() const;
+        Uniform* uniform() const;
         void setUniform(Uniform* uniform);
 
         void bind(Effect& effect) const;

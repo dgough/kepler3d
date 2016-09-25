@@ -4,7 +4,7 @@
 using std::string;
 
 namespace kepler {
-    string getDirectoryName(const char* path) {
+    string directoryName(const char* path) {
         // From gameplay3d
         if (path == nullptr || strlen(path) == 0) {
             return "";

@@ -38,13 +38,13 @@ namespace kepler {
 
     void AxisCompass::draw() {
         if (_node) {
-            if (auto renderer = _node->getDrawable()) {
+            if (auto renderer = _node->drawable()) {
                 renderer->draw();
             }
         }
     }
 
-    NodeRef AxisCompass::getNode() const {
+    NodeRef AxisCompass::node() const {
         return _node;
     }
 
@@ -88,7 +88,7 @@ namespace kepler {
                 tech->setSemanticUniform("view", "view", MaterialParameter::Semantic::VIEW);
                 tech->setSemanticUniform("proj", "proj", MaterialParameter::Semantic::PROJECTION);
 
-                auto& state = tech->getRenderState();
+                auto& state = tech->renderState();
                 state.setDepthTest(true);
                 //state.setLineWidth(4.f);
 

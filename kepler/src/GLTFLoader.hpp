@@ -20,7 +20,7 @@ namespace kepler {
 
         /// Loads a GLTF file.
         /// @param[in] path The file path.
-        /// @return True if the GLTFL was loaded successfully; false otherwise;
+        /// @return True if the GLTF was loaded successfully; false otherwise;
         bool load(const char* path);
 
         /// Loads the default scene from the given GLTF file.
@@ -28,10 +28,10 @@ namespace kepler {
         /// @return A reference to the newly loaded scene. Will be empty if there was an error.
         SceneRef loadSceneFromFile(const char* path);
 
-        MaterialRef getMaterialById(const std::string& id);
-        MaterialRef getMaterialByName(const std::string& name);
+        MaterialRef findMaterialById(const std::string& id);
+        MaterialRef findMaterialByName(const std::string& name);
 
-        MeshRef getMeshById(const std::string& id);
+        MeshRef findMeshById(const std::string& id);
 
         /// Clears all of the data held by this loader.
         void clear();
@@ -41,7 +41,7 @@ namespace kepler {
 
         /// Sets if materials will be automatically loaded when loading scenes, nodes or meshes.
         /// Enabled by default.
-        /// This will not affect explicitly loading materials using methods like getMaterialById().
+        /// This will not affect explicitly loading materials using methods like findMaterialById().
         void setAutoLoadMaterials(bool value);
 
         /// Sets the aspect ratio to use when loading cameras.

@@ -34,7 +34,7 @@ namespace kepler {
 
         /// @param[in] button The mouse button that was pressed. (See enum MouseButton).
         /// @param[in] action Either PRESS or RELEASE.
-        /// @param[in] mods   The modifer keys that are pressed. (MOD_SHIFT, MOD_CTRL, MOD_ALT, MOD_SUPER)
+        /// @param[in] mods   The modifier keys that are pressed. (MOD_SHIFT, MOD_CTRL, MOD_ALT, MOD_SUPER)
         void mouseButtonEvent(int button, int action, int mods);
 
         /// Scroll event. 
@@ -59,24 +59,24 @@ namespace kepler {
         int getMouseButton(int button);
 
         /// Gets the cursor position.
-        /// @param[out] xpos The cursor x-positon relative to the left of the client area.
+        /// @param[out] xpos The cursor x-position relative to the left of the client area.
         /// @param[out] ypos The cursor y-position relative to the top of the client area.
-        void getCursorPos(double* xpos, double* ypos);
+        void cursorPosition(double* xpos, double* ypos);
 
         /// Returns the width of the client area.
-        int getWidth() const;
-        float getWidthAsFloat() const;
+        int width() const;
+        float widthAsFloat() const;
 
         /// Returns the height of the client area.
-        int getHeight() const;
-        float getHeightAsFloat() const;
+        int height() const;
+        float heightAsFloat() const;
 
         /// Returns the aspect ratio of the client area (width/height).
-        float getAspectRatio() const;
+        float aspectRatio() const;
 
         /// The number of frames so far.
         /// The count will be 1 at the start of the first frame.
-        size_t getFrameCount() const noexcept;
+        size_t frameCount() const noexcept;
 
         /// Sets if the app should terminate at the end of this frame.
         void setShouldClose(bool value);
@@ -92,7 +92,7 @@ namespace kepler {
         // Returns true if the cursor is visible.
         bool isCursorVisible() const;
 
-        static App* getInstance();
+        static App* instance();
 
     public:
         App(const App&) = delete;
@@ -102,9 +102,9 @@ namespace kepler {
         std::unique_ptr<Impl> _impl;
     };
 
-    /// Alternative to using App::getInstance().
+    /// Alternative to using App::instance().
     App* app();
 
     /// Convenience function for getting the delta time.
-    double getDeltaTime();
+    double deltaTime();
 }

@@ -2,7 +2,6 @@
 
 #include <BaseGL.hpp>
 
-// GLFW
 #include <GLFW/glfw3.h>
 
 #include <Node.hpp>
@@ -29,6 +28,6 @@ TEST(fonts, load_font) {
     {
         auto font = BmpFont::createFromFile(ARIAL_15);
         EXPECT_NE(font, nullptr);
-        EXPECT_EQ(font->getSize(), 15);
+        EXPECT_EQ(font->size(), 15);
     }
 }

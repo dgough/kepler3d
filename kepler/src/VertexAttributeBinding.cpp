@@ -8,16 +8,16 @@
 #include "Logging.hpp"
 
 namespace kepler {
-    VertexAttributeBinding::VertexAttributeBinding() : _handle(0) {
-
+    VertexAttributeBinding::VertexAttributeBinding(GLuint handle) : _handle(handle) {
     }
+
     VertexAttributeBinding::~VertexAttributeBinding() noexcept {
         if (_handle != 0) {
             glDeleteVertexArrays(1, &_handle);
         }
     }
 
-    VertexAttributeBindingRef VertexAttributeBinding::create(const MeshPrimitiveRef& meshPrim, const TechniqueRef& technique) {
+    std::unique_ptr<VertexAttributeBinding> VertexAttributeBinding::createUnique(const MeshPrimitiveRef& meshPrim, const TechniqueRef& technique) {
         if (meshPrim == nullptr || technique == nullptr) {
             return nullptr;
         }
@@ -31,33 +31,28 @@ namespace kepler {
         }
         glBindVertexArray(handle);
 
-        auto effect = technique->getEffect();
+        auto effect = technique->effect();
         if (effect == nullptr) {
             glDeleteVertexArrays(1, &handle);
             return nullptr;
         }
-
-        auto indices = meshPrim->getIndices();
+        auto indices = meshPrim->indices();
         if (indices) {
             indices->bind();
         }
-
-        for (const auto& attrib : technique->getAttirbutes()) {
-            const std::string& shaderAttribName = attrib.first;
-
-            auto location = effect->getAttribLocation(shaderAttribName);
-            auto attribAccessor = meshPrim->getAttribute(attrib.second);
+        for (const auto& attrib : technique->attributes()) {
+            const auto& shaderAttribName = attrib.first;
+            auto location = effect->attribLocation(shaderAttribName);
+            auto attribAccessor = meshPrim->attribute(attrib.second);
             if (location >= 0 && attribAccessor) {
-                GLuint index = static_cast<GLuint>(location);
+                auto index = static_cast<GLuint>(location);
                 attribAccessor->bind(index);
                 glEnableVertexAttribArray(index);
             }
         }
         glBindVertexArray(0); // Unbind VAO
 
-        auto binding = MAKE_SHARED(VertexAttributeBinding);
-        binding->_handle = handle;
-        return binding;
+        return std::make_unique<VertexAttributeBinding>(handle);
     }
 
     void VertexAttributeBinding::bind() {

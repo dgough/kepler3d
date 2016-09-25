@@ -4,6 +4,7 @@
 
 namespace kepler {
 
+    /// Uncompressed image data.
     class Image {
         ALLOW_MAKE_SHARED(Image);
     public:

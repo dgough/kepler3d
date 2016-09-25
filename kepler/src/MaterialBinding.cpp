@@ -12,16 +12,16 @@
 namespace kepler {
 
     void MaterialBinding::bind(const Node& node, const Material& material) {
-        auto tech = material.getTechnique();
-        auto& effect = *(tech->getEffect());
+        auto tech = material.technique();
+        auto& effect = *(tech->effect());
         tech->bind();
 
         // Most MaterialBindings will have at least one binding that uses the camera so get it here
         // instead of having the Node search for it.
         CameraRef camera = nullptr;
         Camera* cameraPtr = nullptr;
-        if (auto scene = node.getScene()) {
-            camera = scene->getActiveCamera();
+        if (auto scene = node.scene()) {
+            camera = scene->activeCamera();
             if (camera) {
                 cameraPtr = camera.get();
             }
@@ -37,84 +37,84 @@ namespace kepler {
 
     void MaterialBinding::updateBindings(const Material& material) {
         updateValues(material);
-        auto tech = material.getTechnique();
-        auto effect = tech->getEffect();
-        for (const auto& semantic : tech->getSemantics()) {
+        auto tech = material.technique();
+        auto effect = tech->effect();
+        for (const auto& semantic : tech->semantics()) {
             const MaterialParameterRef& materialParam = semantic.second;
-            if (materialParam->getUniform() == nullptr) {
+            if (materialParam->uniform() == nullptr) {
                 // assert?
                 continue;
             }
 
-            switch (materialParam->getSemantic()) {
+            switch (materialParam->semantic()) {
             case MaterialParameter::Semantic::LOCAL:
                 _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
-                    effect.setValue(materialParam->getUniform(), node.getLocalTransform().getMatrix());
+                    effect.setValue(materialParam->uniform(), node.localTransform().matrix());
                 });
                 break;
             case MaterialParameter::Semantic::MODEL:
                 _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
-                    effect.setValue(materialParam->getUniform(), node.getWorldMatrix());
+                    effect.setValue(materialParam->uniform(), node.worldMatrix());
                 });
                 break;
             case MaterialParameter::Semantic::VIEW:
                 _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
-                    effect.setValue(materialParam->getUniform(), node.getViewMatrix(camera));
+                    effect.setValue(materialParam->uniform(), node.viewMatrix(camera));
                 });
                 break;
             case MaterialParameter::Semantic::PROJECTION:
                 _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
-                    effect.setValue(materialParam->getUniform(), node.getProjectionMatrix(camera));
+                    effect.setValue(materialParam->uniform(), node.projectionMatrix(camera));
                 });
                 break;
             case MaterialParameter::Semantic::MODELVIEW:
                 _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
-                    effect.setValue(materialParam->getUniform(), node.getModelViewMatrix(camera));
+                    effect.setValue(materialParam->uniform(), node.modelViewMatrix(camera));
                 });
                 break;
             case MaterialParameter::Semantic::MODELVIEWPROJECTION:
                 _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
-                    effect.setValue(materialParam->getUniform(), node.getModelViewProjectionMatrix(camera));
+                    effect.setValue(materialParam->uniform(), node.modelViewProjectionMatrix(camera));
                 });
                 break;
             case MaterialParameter::Semantic::MODELINVERSE:
                 _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
-                    effect.setValue(materialParam->getUniform(), node.getModelInverseMatrix());
+                    effect.setValue(materialParam->uniform(), node.modelInverseMatrix());
                 });
                 break;
             case MaterialParameter::Semantic::VIEWINVERSE:
                 _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
-                    effect.setValue(materialParam->getUniform(), node.getViewInverseMatrix(camera));
+                    effect.setValue(materialParam->uniform(), node.viewInverseMatrix(camera));
                 });
                 break;
             case MaterialParameter::Semantic::PROJECTIONINVERSE:
                 _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
-                    effect.setValue(materialParam->getUniform(), node.getProjectionInverseMatrix(camera));
+                    effect.setValue(materialParam->uniform(), node.projectionInverseMatrix(camera));
                 });
                 break;
             case MaterialParameter::Semantic::MODELVIEWINVERSE:
                 _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
-                    effect.setValue(materialParam->getUniform(), node.getModelViewInverseMatrix(camera));
+                    effect.setValue(materialParam->uniform(), node.modelViewInverseMatrix(camera));
                 });
                 break;
             case MaterialParameter::Semantic::MODELVIEWPROJECTIONINVERSE:
                 _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
-                    effect.setValue(materialParam->getUniform(), node.getModelViewProjectionInverseMatrix(camera));
+                    effect.setValue(materialParam->uniform(), node.modelViewProjectionInverseMatrix(camera));
                 });
                 break;
             case MaterialParameter::Semantic::MODELINVERSETRANSPOSE:
                 _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
-                    effect.setValue(materialParam->getUniform(), node.getModelInverseTransposeMatrix());
+                    effect.setValue(materialParam->uniform(), node.modelInverseTransposeMatrix());
                 });
                 break;
             case MaterialParameter::Semantic::MODELVIEWINVERSETRANSPOSE:
                 _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
-                    effect.setValue(materialParam->getUniform(), node.getModelViewInverseTransposeMatrix(camera));
+                    effect.setValue(materialParam->uniform(), node.modelViewInverseTransposeMatrix(camera));
                 });
                 break;
             case MaterialParameter::Semantic::VIEWPORT:
                 _functions.emplace_back([materialParam](const Effect& effect, const Node& node, const Camera* camera) {
-                    effect.setValue(materialParam->getUniform(), IDENTITY_MATRIX); // TODO
+                    effect.setValue(materialParam->uniform(), IDENTITY_MATRIX); // TODO
                 });
                 break;
             case MaterialParameter::Semantic::NONE:
@@ -125,7 +125,6 @@ namespace kepler {
     }
 
     void MaterialBinding::updateValues(const Material& material) {
-        auto tech = material.getTechnique();
-        tech->findValues(_values);
+        material.technique()->findValues(_values);
     }
 }

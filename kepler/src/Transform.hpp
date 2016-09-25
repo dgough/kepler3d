@@ -20,9 +20,9 @@ namespace kepler {
         inline bool operator==(const Transform& v) const;
         inline bool operator!=(const Transform& v) const;
 
-        inline const glm::vec3& getTranslation() const;
-        inline const glm::quat& getRotation() const;
-        inline const glm::vec3& getScale() const;
+        inline const glm::vec3& translation() const;
+        inline const glm::quat& rotation() const;
+        inline const glm::vec3& scale() const;
 
         /// Sets the translation to the given vector.
         void setTranslation(const glm::vec3& translation);
@@ -39,6 +39,7 @@ namespace kepler {
         void translate(const glm::vec3& translation);
         void translate(float x, float y, float z);
 
+        /// Scales by the given value.
         void scale(const glm::vec3& scale);
         void scale(float scale);
         void scale(float x, float y, float z);
@@ -46,7 +47,7 @@ namespace kepler {
         void rotate(const glm::quat& rotation);
 
         /// Returns the 4x4 matrix representation of this transform.
-        const glm::mat4& getMatrix() const;
+        const glm::mat4& matrix() const;
 
         void set(const glm::vec3& translation, const glm::quat& rotation, const glm::vec3& scale);
 

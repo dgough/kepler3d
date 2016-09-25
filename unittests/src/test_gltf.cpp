@@ -2,7 +2,6 @@
 
 #include <BaseGL.hpp>
 
-// GLFW
 #include <GLFW/glfw3.h>
 
 #include <Node.hpp>
@@ -54,17 +53,17 @@ TEST(gltf, load_gltf) {
         GLTFLoader gltf;
         auto scene = gltf.loadSceneFromFile(BOX_PATH);
         EXPECT_TRUE(scene != nullptr);
-        EXPECT_EQ(scene->getChildCount(), 1);
+        EXPECT_EQ(scene->childCount(), 1);
 
-        auto root = scene->getChildAt(0);
-        EXPECT_EQ(root->getName(), "Y_UP_Transform");
-        EXPECT_EQ(root->getChildCount(), 1);
+        auto root = scene->childAt(0);
+        EXPECT_EQ(root->name(), "Y_UP_Transform");
+        EXPECT_EQ(root->childCount(), 1);
 
-        auto child = root->getChildAt(0);
-        EXPECT_EQ(child->getName(), "Mesh");
-        EXPECT_EQ(child->getChildCount(), 0);
+        auto child = root->childAt(0);
+        EXPECT_EQ(child->name(), "Mesh");
+        EXPECT_EQ(child->childCount(), 0);
 
-        auto mesh = gltf.getMeshById("Geometry-mesh002");
+        auto mesh = gltf.findMeshById("Geometry-mesh002");
         EXPECT_TRUE(mesh != nullptr);
     }
 
@@ -73,7 +72,7 @@ TEST(gltf, load_gltf) {
         GLTFLoader gltf;
         auto scene = gltf.loadSceneFromFile(ANIMATED_BOX_PATH);
         EXPECT_TRUE(scene != nullptr);
-        EXPECT_EQ(scene->getChildCount(), 5);
+        EXPECT_EQ(scene->childCount(), 5);
     }
 
     // load duck
@@ -84,9 +83,9 @@ TEST(gltf, load_gltf) {
 
         auto cameraNode = scene->findFirstNodeByName("camera1");
         EXPECT_TRUE(cameraNode != nullptr);
-        auto camera = cameraNode->getComponent<Camera>();
+        auto camera = cameraNode->component<Camera>();
         EXPECT_TRUE(camera != nullptr);
-        EXPECT_EQ(camera->getCameraType(), Camera::Type::PERSPECTIVE);
+        EXPECT_EQ(camera->cameraType(), Camera::Type::PERSPECTIVE);
     }
 
     // load truck
@@ -97,9 +96,9 @@ TEST(gltf, load_gltf) {
 
         // test getMaterialByName
         const std::string wheelsName("wheels");
-        auto wheelsMaterial = gltf.getMaterialByName(wheelsName);
+        auto wheelsMaterial = gltf.findMaterialByName(wheelsName);
         EXPECT_TRUE(wheelsMaterial != nullptr);
-        EXPECT_EQ(wheelsName, wheelsMaterial->getName());
+        EXPECT_EQ(wheelsName, wheelsMaterial->name());
     }
 
     glfwTerminate();

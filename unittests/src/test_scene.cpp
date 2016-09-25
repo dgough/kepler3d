@@ -6,34 +6,34 @@
 using namespace kepler;
 
 static void expectAllChildrenInScene(NodeRef& node, SceneRef& scene) {
-    for (size_t i = 0; i < node->getChildCount(); ++i) {
-        auto& child = node->getChildAt(i);
-        EXPECT_EQ(child->getScene(), scene);
-        EXPECT_EQ(child->getParent(), node);
+    for (size_t i = 0; i < node->childCount(); ++i) {
+        auto& child = node->childAt(i);
+        EXPECT_EQ(child->scene(), scene);
+        EXPECT_EQ(child->parent(), node);
         expectAllChildrenInScene(child, scene);
     }
 }
 
 TEST(scene, initial_scene) {
     auto scene = Scene::create();
-    EXPECT_EQ(scene->getChildCount(), 0);
+    EXPECT_EQ(scene->childCount(), 0);
 }
 
 TEST(scene, create_child) {
     auto scene = Scene::create();
     auto n1 = scene->createChild();
-    EXPECT_EQ(scene->getChildCount(), 1);
-    EXPECT_EQ(n1->getScene(), scene);
-    EXPECT_EQ(n1->getParent(), nullptr);
-    EXPECT_EQ(n1->getRoot(), n1);
+    EXPECT_EQ(scene->childCount(), 1);
+    EXPECT_EQ(n1->scene(), scene);
+    EXPECT_EQ(n1->parent(), nullptr);
+    EXPECT_EQ(n1->root(), n1);
 
     const std::string nodeName("Node Name");
     auto n2 = scene->createChild(nodeName);
-    EXPECT_EQ(scene->getChildCount(), 2);
-    EXPECT_EQ(n2->getName(), nodeName);
-    EXPECT_EQ(n1->getScene(), scene);
-    EXPECT_EQ(n2->getParent(), nullptr);
-    EXPECT_EQ(n2->getRoot(), n2);
+    EXPECT_EQ(scene->childCount(), 2);
+    EXPECT_EQ(n2->name(), nodeName);
+    EXPECT_EQ(n1->scene(), scene);
+    EXPECT_EQ(n2->parent(), nullptr);
+    EXPECT_EQ(n2->root(), n2);
 }
 
 TEST(scene, add_child) {
@@ -41,11 +41,11 @@ TEST(scene, add_child) {
 
     auto root = Node::create("root");
     root->createChildren({ "A1", "A2" });
-    root->getChildAt(0)->createChildren({ "B1", "B2" });
+    root->childAt(0)->createChildren({ "B1", "B2" });
     (*root)[1]->createChildren({ "C1", "C2", "C3" });
 
     scene->addNode(root);
-    EXPECT_EQ(root->getScene(), scene);
+    EXPECT_EQ(root->scene(), scene);
     expectAllChildrenInScene(root, scene);
 }
 
@@ -55,9 +55,9 @@ TEST(scene, add_child_from_other_scene) {
     auto s2 = Scene::create();
     auto node = s1->createChild("node");
     s2->addNode(node);
-    EXPECT_EQ(s1->getChildCount(), 0);
-    EXPECT_EQ(s2->getChildCount(), 1);
-    EXPECT_EQ(s2, node->getScene());
+    EXPECT_EQ(s1->childCount(), 0);
+    EXPECT_EQ(s2->childCount(), 1);
+    EXPECT_EQ(s2, node->scene());
 }
 
 TEST(scene, find_first) {
@@ -65,8 +65,8 @@ TEST(scene, find_first) {
     auto root = Node::create("root");
     scene->addNode(root);
     root->createChildren({ "A1", "A2" });
-    auto a1 = root->getChildAt(0);
-    auto a2 = root->getChildAt(1);
+    auto a1 = root->childAt(0);
+    auto a2 = root->childAt(1);
     a1->createChildren({ "B1", "B2" });
     a2->createChildren({ "C1", "C2", "C3", "C4", "C5" });
 
@@ -108,8 +108,8 @@ TEST(scene, find_first_eval) {
     auto root = Node::create("root");
     scene->addNode(root);
     root->createChildren({ "A1", "A2" });
-    auto a1 = root->getChildAt(0);
-    auto a2 = root->getChildAt(1);
+    auto a1 = root->childAt(0);
+    auto a2 = root->childAt(1);
     a1->createChildren({ "B1", "B2" });
     a2->createChildren({ "C1", "C2", "C3", "C4", "C5" });
 
@@ -118,31 +118,31 @@ TEST(scene, find_first_eval) {
     c3->addComponent(camera);
 
     auto containsCamera = [](Node* node) -> bool {
-        return node->getComponent<Camera>() != nullptr;
+        return node->component<Camera>() != nullptr;
     };
     EXPECT_EQ(c3, scene->findFirstNode(containsCamera));
 
     auto isLeaf = [](Node* node) -> bool {
-        return node->getChildCount() == 0;
+        return node->childCount() == 0;
     };
     EXPECT_EQ(scene->findFirstNodeByName("B1"), scene->findFirstNode(isLeaf));
 }
 
 TEST(scene, get_children) {
     auto scene = Scene::create();
-    EXPECT_EQ(scene->getLastChild(), nullptr);
+    EXPECT_EQ(scene->lastChild(), nullptr);
 
     auto n1 = scene->createChild("1");
-    EXPECT_EQ(scene->getLastChild(), n1);
+    EXPECT_EQ(scene->lastChild(), n1);
     auto n2 = scene->createChild("2");
     auto n3 = scene->createChild("3");
     auto n4 = scene->createChild("4");
     auto n5 = scene->createChild("5");
-    EXPECT_EQ(scene->getLastChild(), n5);
-    EXPECT_EQ(scene->getChildAt(3), n4);
+    EXPECT_EQ(scene->lastChild(), n5);
+    EXPECT_EQ(scene->childAt(3), n4);
 
-    EXPECT_EQ(scene->getChildCount(), scene->getChildren().size());
-    for (auto& child : scene->getChildren()) {
+    EXPECT_EQ(scene->childCount(), scene->children().size());
+    for (auto& child : scene->children()) {
 
     }
 }
@@ -152,8 +152,8 @@ TEST(scene, visit) {
     auto root = Node::create("root");
     scene->addNode(root);
     root->createChildren({ "A1", "A2" });
-    auto a1 = root->getChildAt(0);
-    auto a2 = root->getChildAt(1);
+    auto a1 = root->childAt(0);
+    auto a2 = root->childAt(1);
     a1->createChildren({ "B1", "B2" });
     a2->createChildren({ "C1", "C2", "C3", "C4", "C5" });
 
@@ -162,7 +162,7 @@ TEST(scene, visit) {
     std::vector<std::string> expectedOrder{ "root", "A1", "B1", "D1", "B2", "A2", "C1", "C2", "C3", "C4", "C5" };
     std::vector<std::string> actualOrder;
     auto orderTest = [&actualOrder](Node* node) {
-        actualOrder.push_back(node->getName());
+        actualOrder.push_back(node->name());
     };
     scene->visit(orderTest);
     EXPECT_EQ(expectedOrder, actualOrder);
@@ -180,20 +180,20 @@ TEST(scene, move_nodes_from) {
     auto a = Scene::create();
     auto b = Scene::create();
     b->createChildren({ "A1", "A2", "A3" });
-    b->getChildAt(0)->createChildren({ "B1", "B2" });
-    b->getChildAt(1)->createChildren({ "C1", "C2", "C3" });
-    b->getChildAt(2)->createChildren({ "D1" });
-    b->getChildAt(1)->getChildAt(1)->createChildren({ "E1", "E2", "E3" });
+    b->childAt(0)->createChildren({ "B1", "B2" });
+    b->childAt(1)->createChildren({ "C1", "C2", "C3" });
+    b->childAt(2)->createChildren({ "D1" });
+    b->childAt(1)->childAt(1)->createChildren({ "E1", "E2", "E3" });
 
-    auto childCount = b->getChildCount();
+    auto childCount = b->childCount();
     a->moveNodesFrom(b);
-    EXPECT_EQ(b->getChildCount(), 0);
-    EXPECT_EQ(a->getChildCount(), childCount);
+    EXPECT_EQ(b->childCount(), 0);
+    EXPECT_EQ(a->childCount(), childCount);
     // check order
-    EXPECT_EQ(a->getChildAt(0)->getName(), "A1");
-    EXPECT_EQ(a->getChildAt(2)->getName(), "A3");
+    EXPECT_EQ(a->childAt(0)->name(), "A1");
+    EXPECT_EQ(a->childAt(2)->name(), "A3");
 
     a->visit([a](Node* node) {
-        EXPECT_EQ(node->getScene(), a);
+        EXPECT_EQ(node->scene(), a);
     });
 }

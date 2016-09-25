@@ -22,7 +22,7 @@ namespace kepler {
     static double g_currentTime;
     static double g_prevTime;
 
-    double getDeltaTime() {
+    double deltaTime() {
         return g_deltaTime;
     }
 
@@ -117,34 +117,34 @@ namespace kepler {
         return glfwGetMouseButton(_impl->_window, button);
     }
 
-    void App::getCursorPos(double* xpos, double* ypos) {
+    void App::cursorPosition(double* xpos, double* ypos) {
         glfwGetCursorPos(_impl->_window, xpos, ypos);
     }
 
-    int App::getWidth() const {
+    int App::width() const {
         return _impl->_width;
     }
 
-    float App::getWidthAsFloat() const {
+    float App::widthAsFloat() const {
         return static_cast<float>(_impl->_width);
     }
 
-    int App::getHeight() const {
+    int App::height() const {
         return _impl->_height;
     }
 
-    float App::getHeightAsFloat() const {
+    float App::heightAsFloat() const {
         return static_cast<float>(_impl->_height);
     }
 
-    float App::getAspectRatio() const {
+    float App::aspectRatio() const {
         if (_impl->_height == 0.0f) {
             return 0.0f;
         }
         return static_cast<float>(_impl->_width) / static_cast<float>(_impl->_height);
     }
 
-    size_t App::getFrameCount() const noexcept {
+    size_t App::frameCount() const noexcept {
         return _impl->_frameCount;
     }
 
@@ -164,7 +164,7 @@ namespace kepler {
         return glfwGetInputMode(_impl->_window, GLFW_CURSOR) != GLFW_CURSOR_DISABLED;
     }
 
-    App* App::getInstance() {
+    App* App::instance() {
         return g_app;
     }
 

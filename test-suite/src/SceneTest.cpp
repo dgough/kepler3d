@@ -53,7 +53,7 @@ void SceneTest::render() {
 
     if (_scene) {
         _scene->visit([](Node* node) {
-            if (auto renderer = node->getDrawable()) {
+            if (auto renderer = node->drawable()) {
                 renderer->draw();
             }
         });
@@ -91,7 +91,7 @@ void SceneTest::mouseEvent(double xpos, double ypos) {
 void SceneTest::mouseButtonEvent(int button, int action, int mods) {
     if (button == LEFT_MOUSE && action == PRESS) {
         double x, y;
-        app()->getCursorPos(&x, &y);
+        app()->cursorPosition(&x, &y);
         _orbitCamera.start(static_cast<float>(x), static_cast<float>(y));
         _moveCamera = true;
     }
@@ -122,7 +122,7 @@ void SceneTest::loadSceneFromFile(const char* path) {
     _scene.reset();
 
     GLTFLoader loader;
-    loader.setCameraAspectRatio(app()->getAspectRatio());
+    loader.setCameraAspectRatio(app()->aspectRatio());
     _scene = loader.loadSceneFromFile(path);
 
     if (_scene) {

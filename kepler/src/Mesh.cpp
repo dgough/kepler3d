@@ -34,15 +34,15 @@ namespace kepler {
         }
     }
 
-    MeshPrimitiveRef Mesh::getPrimitive(size_t index) const {
+    MeshPrimitiveRef Mesh::primitiveAt(size_t index) const {
         return _primitives.at(index);
     }
 
-    MeshPrimitive * Mesh::getPrimitivePtr(size_t index) const {
+    MeshPrimitive * Mesh::primitivePtr(size_t index) const {
         return _primitives[index].get();
     }
 
-    size_t Mesh::getPrimitiveCount() const {
+    size_t Mesh::primitiveCount() const {
         return _primitives.size();
     }
 }

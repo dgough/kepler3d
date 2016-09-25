@@ -21,15 +21,15 @@ namespace kepler {
         void createChildren(std::initializer_list<std::string> names);
 
         /// Returns the number of direct child nodes.
-        size_t getChildCount() const;
+        size_t childCount() const;
 
         // Similar to std::vector::at()
-        NodeRef getChildAt(size_t index) const;
+        NodeRef childAt(size_t index) const;
 
         /// Returns the last child or nullptr if there are no children.
-        NodeRef getLastChild() const;
+        NodeRef lastChild() const;
 
-        const NodeList& getChildren() const;
+        const NodeList& children() const;
 
         /// Removes the node at the given index.
         /// Does nothing if the index is out of bounds.
@@ -49,7 +49,7 @@ namespace kepler {
         template <class NodeEval>
         NodeRef findFirstNode(const NodeEval& eval, bool recursive = true) const;
 
-        CameraRef getActiveCamera() const;
+        CameraRef activeCamera() const;
         void setActiveCamera(const CameraRef& camera);
 
         /// Visits each node and calls the given function pass a pointer to the current node.

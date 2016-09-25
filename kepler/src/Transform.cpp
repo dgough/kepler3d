@@ -87,7 +87,7 @@ namespace kepler {
         _rotation = rotation * _rotation;
     }
 
-    const glm::mat4& Transform::getMatrix() const {
+    const glm::mat4& Transform::matrix() const {
         if ((_dirtyBits & ALL_TRANSFORM_DIRTY) == 0) {
             return _matrix;
         }

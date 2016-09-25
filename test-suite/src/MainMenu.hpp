@@ -10,7 +10,7 @@ using namespace kepler;
 /// The main menu of the test suite.
 class MainMenu : public AppDelegate {
 public:
-    /// Use getInstance() instead.
+    /// Use instance() instead.
     MainMenu();
     ~MainMenu();
 
@@ -21,7 +21,7 @@ public:
     void mouseEvent(double xpos, double ypos) override;
     void mouseButtonEvent(int button, int action, int mods) override;
 
-    static std::shared_ptr<MainMenu> getInstance();
+    static std::shared_ptr<MainMenu> instance();
     static void gotoMainMenu();
 
 private:

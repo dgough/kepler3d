@@ -27,7 +27,7 @@ namespace kepler {
             _callback();
         }
     }
-    const std::string& Button::getText() const {
+    const std::string& Button::text() const {
         return _text;
     }
     void Button::setText(const char* text) {
@@ -36,7 +36,7 @@ namespace kepler {
     void Button::setText(const std::string& text) {
         _text.assign(text);
     }
-    const Rectangle& Button::getRect() const {
+    const Rectangle& Button::rect() const {
         return _rect;
     }
 }

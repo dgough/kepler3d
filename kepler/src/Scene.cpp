@@ -44,21 +44,21 @@ namespace kepler {
         }
     }
 
-    size_t Scene::getChildCount() const {
+    size_t Scene::childCount() const {
         return _children.size();
     }
 
-    NodeRef Scene::getChildAt(size_t index) const {
+    NodeRef Scene::childAt(size_t index) const {
         return _children.at(index);
     }
 
-    NodeRef Scene::getLastChild() const {
+    NodeRef Scene::lastChild() const {
         auto count = _children.size();
         if (count == 0) return nullptr;
         return _children[count - 1];
     }
 
-    const NodeList& Scene::getChildren() const {
+    const NodeList& Scene::children() const {
         return _children;
     }
 
@@ -76,14 +76,14 @@ namespace kepler {
     void Scene::moveNodesFrom(const SceneRef src) {
         if (src == nullptr) return;
         while (!src->_children.empty()) {
-            auto child = src->getChildAt(0);
+            auto child = src->childAt(0);
             addNode(child);
         }
     }
 
     NodeRef Scene::findFirstNodeByName(const std::string& name, bool recursive) const {
         for (const auto& child : _children) {
-            if (child->getName() == name) {
+            if (child->name() == name) {
                 return child;
             }
         }
@@ -98,7 +98,7 @@ namespace kepler {
         return nullptr;
     }
 
-    CameraRef Scene::getActiveCamera() const {
+    CameraRef Scene::activeCamera() const {
         return _activeCamera;
     }
 

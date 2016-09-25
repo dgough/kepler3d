@@ -27,11 +27,11 @@ namespace kepler {
 
         /// Returns the MeshPrimitive at the given index.
         /// @param[in] index The index of the MeshPrimitive.
-        MeshPrimitiveRef getPrimitive(size_t index) const;
-        MeshPrimitive* getPrimitivePtr(size_t index) const;
+        MeshPrimitiveRef primitiveAt(size_t index) const;
+        MeshPrimitive* primitivePtr(size_t index) const;
 
         /// Returns the number of MeshPrimitives held by this Mesh.
-        size_t getPrimitiveCount() const;
+        size_t primitiveCount() const;
 
     public:
         Mesh(const Mesh&) = delete;

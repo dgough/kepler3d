@@ -16,7 +16,7 @@ namespace kepler {
 
         void bind(GLuint location) const noexcept; // TODO should this be GLint so we can detect negative numbers?
 
-        GLsizei getCount() const;
+        GLsizei count() const;
 
     private:
         VertexBufferRef _vbo;

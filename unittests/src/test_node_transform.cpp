@@ -17,13 +17,13 @@ TEST(node_transform, parent_transform) {
     auto b = a->createChild("B");
     auto c = b->createChild("C");
 
-    const Transform& t = root->getLocalTransform();
-    float x = t.getTranslation().x;
+    const Transform& t = root->localTransform();
+    float x = t.translation().x;
 
     vec3 translation(1.0, 2.0, 3.0);
     root->editLocalTransform().translate(translation);
-    EXPECT_EQ(c->getWorldTransform().getTranslation(), root->getLocalTransform().getTranslation());
-    EXPECT_EQ(c->getWorldTransform().getTranslation(), translation);
+    EXPECT_EQ(c->worldTransform().translation(), root->localTransform().translation());
+    EXPECT_EQ(c->worldTransform().translation(), translation);
     //root->editLocalTransform().rotate(glm::quat(glm::vec3(0.0f, glm::radians(45.0f), 0.0f)));
 }
 
@@ -35,11 +35,11 @@ TEST(node_transform, forward) {
     //a->scale(5.0f);
 
     vec3 forward(0, 0, -1);
-    EXPECT_EQ(b->getForwardVectorWorld(), forward);
+    EXPECT_EQ(b->forwardVectorWorld(), forward);
     {
         a->rotate(quat(vec3(0, radians(45.0f), 0)));
         vec3 normalized = normalize(vec3(-1, 0, -1));
-        vec3 f = normalize(b->getForwardVectorWorld());
+        vec3 f = normalize(b->forwardVectorWorld());
         EXPECT_VE3_EQ(f, normalized);
     }
 
@@ -48,7 +48,7 @@ TEST(node_transform, forward) {
         a->rotate(quat(vec3(radians(-45.0f), radians(45.0f), 0.0f)));
         rotate(quat(), vec3());
         vec3 normalized = normalize(vec3(-1.0f, -sqrtf(2.0f), -1.0f));
-        vec3 f = normalize(b->getForwardVectorWorld());
+        vec3 f = normalize(b->forwardVectorWorld());
         EXPECT_VE3_EQ(f, normalized);
     }
 }
@@ -64,7 +64,7 @@ TEST(node_transform, rotate_forward_pitch_node) {
     {
         auto node = Node::create();
         node->rotate(quat(vec3(radians(45.0f), 0.0f, 0.0f)));
-        vec3 forward = node->getForwardVectorWorld();
+        vec3 forward = node->forwardVectorWorld();
         vec3 expected = normalize(vec3(0.0f, 1.0f, -1.0f));
         EXPECT_VE3_EQ(forward, expected);
     }
@@ -73,7 +73,7 @@ TEST(node_transform, rotate_forward_pitch_node) {
 TEST(node_transform, local_transform_ref) {
     auto root = Node::create();
     root->createChildren({ "A", "B", "C", "D" });
-    auto  transform = root->findFirstNodeByName("C")->getLocalTransformRef();
+    auto  transform = root->findFirstNodeByName("C")->localTransformRef();
     std::weak_ptr<Node> weakref = root->findFirstNodeByName("C");
 
     root.reset();
@@ -87,7 +87,7 @@ TEST(node_transform, rotate_axis) {
     auto n = Node::create("n");
     n->rotateY(glm::quarter_pi<float>());
     n->rotateY(glm::quarter_pi<float>());
-    glm::vec4 result = glm::vec4(0, 0, 1, 1) * n->getWorldMatrix();
+    glm::vec4 result = glm::vec4(0, 0, 1, 1) * n->worldMatrix();
     EXPECT_FLOAT_CLOSE(result.x, -1.0f, float_err);
     EXPECT_FLOAT_CLOSE(result.y, 0.0f, float_err);
     EXPECT_FLOAT_CLOSE(result.z, 0.0f, float_err);
@@ -99,11 +99,11 @@ TEST(node_transform, set_translation) {
     auto v2 = vec3(534, -54.054, 865.43f);
     auto v3 = vec3(93.27149192724909f, -54.054, 865.43f);
     n->setTranslation(v1);
-    EXPECT_VE3_EQ(n->getLocalTransform().getTranslation(), v1);
+    EXPECT_VE3_EQ(n->localTransform().translation(), v1);
     n->setTranslation(v2);
-    EXPECT_VE3_EQ(n->getLocalTransform().getTranslation(), v2);
+    EXPECT_VE3_EQ(n->localTransform().translation(), v2);
     n->setTranslation(v3.x, v3.y, v3.z);
-    EXPECT_VE3_EQ(n->getLocalTransform().getTranslation(), v3);
+    EXPECT_VE3_EQ(n->localTransform().translation(), v3);
 }
 
 TEST(node_transform, set_scale) {
@@ -112,11 +112,11 @@ TEST(node_transform, set_scale) {
     auto v2 = vec3(534, -54.054, 865.43f);
     auto v3 = vec3(93.27149192724909f, -54.054, 865.43f);
     n->setScale(v1);
-    EXPECT_VE3_EQ(n->getLocalTransform().getScale(), v1);
+    EXPECT_VE3_EQ(n->localTransform().scale(), v1);
     n->setScale(v2);
-    EXPECT_VE3_EQ(n->getLocalTransform().getScale(), v2);
+    EXPECT_VE3_EQ(n->localTransform().scale(), v2);
     n->setScale(v3.x, v3.y, v3.z);
-    EXPECT_VE3_EQ(n->getLocalTransform().getScale(), v3);
+    EXPECT_VE3_EQ(n->localTransform().scale(), v3);
 }
 
 TEST(node_transform, set_rotation) {
@@ -126,7 +126,7 @@ TEST(node_transform, set_rotation) {
     n->rotateZ(PI / 16.0f);
     quat q(-0.353553414f, 0.353553414f, 0.146446630f, 0.853553355f);
     n->setRotation(q);
-    auto r = n->getLocalTransform().getRotation();
+    auto r = n->localTransform().rotation();
     EXPECT_FLOAT_EQ(r.x, q.x);
     EXPECT_FLOAT_EQ(r.y, q.y);
     EXPECT_FLOAT_EQ(r.z, q.z);
@@ -151,8 +151,8 @@ TEST(node_transform, get_world) {
     root->translate(1, 0, 0);
     n1->translate(0, 1, 0);
     n2->translate(0, 0, 1);
-    auto n3Transform = n3->getWorldTransform();
-    auto n4Transform = n4->getWorldTransform();
+    auto n3Transform = n3->worldTransform();
+    auto n4Transform = n4->worldTransform();
 
 }
 
@@ -164,8 +164,8 @@ TEST(node, world_rotation) {
     root->rotateY(PI / 2.0f);
     root->rotateX(PI / 2.0f);
 
-    auto t = n1->getWorldTransform();
-    auto m = n1->getWorldMatrix();
+    auto t = n1->worldTransform();
+    auto m = n1->worldMatrix();
 
     auto v = m * glm::vec4(1, 0, 0, 1);
     EXPECT_TRUE(glm::abs(v.x) < float_err);
@@ -182,7 +182,7 @@ TEST(node, set_matrix) {
     n->setLocalTransform(matrix);
     n->rotate(glm::quat()); // force rotation to be dirty
     auto matrixResult = matrix * vec;
-    auto nodeResult = n->getWorldMatrix() * vec;
+    auto nodeResult = n->worldMatrix() * vec;
 
     EXPECT_FLOAT_CLOSE(matrixResult.x, nodeResult.x, float_err);
     EXPECT_FLOAT_CLOSE(matrixResult.y, nodeResult.y, float_err);

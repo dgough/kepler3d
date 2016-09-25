@@ -8,7 +8,7 @@ namespace kepler {
     Component::~Component() noexcept {
     }
 
-    NodeRef Component::getNode() const {
+    NodeRef Component::node() const {
         return _node.lock();
     }
 

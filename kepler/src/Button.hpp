@@ -23,11 +23,11 @@ namespace kepler {
         /// Calls the OnClick callback directly.
         void callOnClick() const;
 
-        const std::string& getText() const;
+        const std::string& text() const;
         void setText(const char* text);
         void setText(const std::string& text);
 
-        const Rectangle& getRect() const;
+        const Rectangle& rect() const;
 
         
         Button(const Button&) = delete;

@@ -37,16 +37,16 @@ namespace kepler {
         static CameraRef createOrthographic(float zoomX, float zoomY, float aspectRatio, float near, float far);
 
         void onNodeChanged(const NodeRef& oldNode, const NodeRef& newNode) override;
-        const std::string& getTypeName() const override;
+        const std::string& typeName() const override;
 
-        Camera::Type getCameraType() const;
+        Camera::Type cameraType() const;
 
         void transformChanged(const Node* node) override;
 
 
-        const glm::mat4& getViewMatrix() const;
-        const glm::mat4& getProjectionMatrix() const;
-        const glm::mat4& getViewProjectionMatrix() const;
+        const glm::mat4& viewMatrix() const;
+        const glm::mat4& projectionMatrix() const;
+        const glm::mat4& viewProjectionMatrix() const;
 
     public:
         Camera(const Camera&) = delete;

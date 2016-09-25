@@ -16,32 +16,32 @@ CameraRef createCamera() {
 TEST(node, initial_node) {
     const std::string name("asdf");
     auto node = Node::create(name);
-    EXPECT_EQ(node->getChildCount(), 0);
+    EXPECT_EQ(node->childCount(), 0);
     EXPECT_EQ(node->hasParent(), false);
-    EXPECT_EQ(node->getParent(), nullptr);
-    EXPECT_EQ(node->getRoot(), node);
-    EXPECT_EQ(node->getScene(), nullptr);
-    EXPECT_STREQ(node->getNamePtr(), name.c_str());
-    EXPECT_EQ(node->getName(), name);
+    EXPECT_EQ(node->parent(), nullptr);
+    EXPECT_EQ(node->root(), node);
+    EXPECT_EQ(node->scene(), nullptr);
+    EXPECT_STREQ(node->namePtr(), name.c_str());
+    EXPECT_EQ(node->name(), name);
 }
 
 TEST(node, node_create_and_remove) {
     std::string rootName("root");
     auto root = Node::create();
     root->setName(rootName);
-    EXPECT_EQ(rootName, root->getName());
+    EXPECT_EQ(rootName, root->name());
     root->createChild("child 01");
     root->createChild("child 02");
     root->createChild("child 03");
-    EXPECT_EQ(root->getChildCount(), 3);
-    root->getChildAt(1)->removeFromParent();
-    EXPECT_EQ(root->getChildCount(), 2);
+    EXPECT_EQ(root->childCount(), 3);
+    root->childAt(1)->removeFromParent();
+    EXPECT_EQ(root->childCount(), 2);
 }
 
 TEST(node, add_nullptr) {
     auto n = Node::create();
     n->addNode(NodeRef(nullptr));
-    EXPECT_EQ(n->getChildCount(), 0);
+    EXPECT_EQ(n->childCount(), 0);
 }
 
 TEST(node, get_root_node) {
@@ -59,11 +59,11 @@ TEST(node, get_root_node) {
     mid->setName("mid");
     auto leaf = n;
     while (n != root) {
-        EXPECT_EQ(n->getRoot(), root);
-        n = n->getParent();
+        EXPECT_EQ(n->root(), root);
+        n = n->parent();
     }
     mid->removeFromParent();
-    EXPECT_EQ(leaf->getRoot(), mid);
+    EXPECT_EQ(leaf->root(), mid);
 
     NodeWeakRef rootWeak = root;
     root.reset();
@@ -76,20 +76,20 @@ TEST(node, get_root_node_2) {
 
     NodeWeakRef b = root->findFirstNodeByName("B");
 
-    EXPECT_TRUE(n->getRoot() == root);
-    EXPECT_TRUE(n->getParent() == b.lock());
+    EXPECT_TRUE(n->root() == root);
+    EXPECT_TRUE(n->parent() == b.lock());
     root = nullptr;
-    EXPECT_TRUE(n->getRoot() == n);
-    EXPECT_TRUE(n->getParent() == nullptr);
+    EXPECT_TRUE(n->root() == n);
+    EXPECT_TRUE(n->parent() == nullptr);
 }
 
 TEST(node, initializer_list) {
     auto root = Node::create("root");
     constexpr size_t count = 5;
     root->createChildren({ "1", "2", "3", "4", "5" });
-    EXPECT_EQ(root->getChildCount(), count);
+    EXPECT_EQ(root->childCount(), count);
     for (size_t i = 0; i < count; ++i) {
-        const std::string& name = root->getChildAt(i)->getName();
+        const std::string& name = root->childAt(i)->name();
         char ch = '1' + (char)i;
         EXPECT_EQ(ch, name.at(0));
     }
@@ -98,8 +98,8 @@ TEST(node, initializer_list) {
 TEST(node, find_first) {
     auto root = Node::create("root");
     root->createChildren({ "A1", "A2" });
-    root->getChildAt(0)->createChildren({ "B1", "B2" });
-    root->getChildAt(1)->createChildren({ "C1", "C2", "C3", "C4", "C5" });
+    root->childAt(0)->createChildren({ "B1", "B2" });
+    root->childAt(1)->createChildren({ "C1", "C2", "C3", "C4", "C5" });
 
     // found
     EXPECT_NE(root->findFirstNodeByName("C3"), nullptr);
@@ -121,20 +121,20 @@ TEST(node, find_first) {
 TEST(node, find_first_eval) {
     auto root = Node::create("root");
     root->createChildren({ "A1", "A2" });
-    root->getChildAt(0)->createChildren({ "B1", "B2" });
-    root->getChildAt(1)->createChildren({ "C1", "C2", "C3", "C4", "C5" });
+    root->childAt(0)->createChildren({ "B1", "B2" });
+    root->childAt(1)->createChildren({ "C1", "C2", "C3", "C4", "C5" });
 
     auto c3 = root->findFirstNodeByName("C3");
     auto camera = createCamera();
     c3->addComponent(camera);
 
     auto containsCamera = [](Node* node) -> bool {
-        return node->getComponent<Camera>() != nullptr;
+        return node->component<Camera>() != nullptr;
     };
     EXPECT_EQ(c3, root->findFirstNode(containsCamera));
 
     auto isLeaf = [](Node* node) -> bool {
-        return node->getChildCount() == 0;
+        return node->childCount() == 0;
     };
     EXPECT_EQ(root->findFirstNodeByName("B1"), root->findFirstNode(isLeaf));
 }
@@ -179,29 +179,29 @@ TEST(node, contains_component) {
     NodeRef root = Node::create("root");
     auto camera = createCamera();
     
-    EXPECT_FALSE(root->containsComponent(camera->getTypeName()));
-    EXPECT_FALSE(root->getComponent<Camera>() != nullptr);
+    EXPECT_FALSE(root->containsComponent(camera->typeName()));
+    EXPECT_FALSE(root->component<Camera>() != nullptr);
     root->addComponent(camera);
-    EXPECT_TRUE(root->containsComponent(camera->getTypeName()));
-    EXPECT_TRUE(root->getComponent<Camera>() != nullptr);
+    EXPECT_TRUE(root->containsComponent(camera->typeName()));
+    EXPECT_TRUE(root->component<Camera>() != nullptr);
     root->removeComponent(camera.get());
-    EXPECT_FALSE(root->containsComponent(camera->getTypeName()));
-    EXPECT_FALSE(root->getComponent<Camera>() != nullptr);
+    EXPECT_FALSE(root->containsComponent(camera->typeName()));
+    EXPECT_FALSE(root->component<Camera>() != nullptr);
     // TODO add other types of components
 }
 
 TEST(node, get_drawable) {
     NodeRef node = Node::create();
-    EXPECT_TRUE(node->getDrawable() == nullptr);
+    EXPECT_TRUE(node->drawable() == nullptr);
     
     auto camera = createCamera();
     node->addComponent(camera);
-    EXPECT_TRUE(node->getDrawable() == nullptr);
+    EXPECT_TRUE(node->drawable() == nullptr);
 
     auto meshRenderer = MeshRenderer::create(Mesh::create());
     node->addComponent(meshRenderer);
 
-    EXPECT_FALSE(node->getDrawable() == nullptr);
+    EXPECT_FALSE(node->drawable() == nullptr);
 }
 
 class TestNodeListener : public Node::Listener {

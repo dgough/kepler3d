@@ -18,14 +18,14 @@ namespace kepler {
 
         void drawText(const char* text, float x, float y, const glm::vec3& color = glm::vec3(1, 1, 1));
 
-        int getSize() const;
-        float getSizeAsFloat() const;
-        int getLineHeight() const;
-        int getBase() const;
+        int size() const;
+        float sizeAsFloat() const;
+        int lineHeight() const;
+        int base() const;
 
-        const std::string& getFace() const;
+        const std::string& face() const;
 
-        float getScale() const;
+        float scale() const;
         void setScale(float scale);
 
     public:

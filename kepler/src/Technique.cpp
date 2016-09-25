@@ -21,23 +21,23 @@ namespace kepler {
         return tech;
     }
 
-    EffectRef Technique::getEffect() const {
+    EffectRef Technique::effect() const {
         return _effect;
     }
 
-    const AttirbuteMap& Technique::getAttirbutes() const {
+    const AttributeMap& Technique::attributes() const {
         return _attributes;
     }
 
-    const std::map<std::string, std::string>& Technique::getUniforms() const {
+    const std::map<std::string, std::string>& Technique::uniforms() const {
         return _uniforms;
     }
 
-    const std::map<std::string, MaterialParameterRef>& Technique::getSemantics() const {
+    const std::map<std::string, MaterialParameterRef>& Technique::semantics() const {
         return _semantics;
     }
 
-    RenderState& Technique::getRenderState() {
+    RenderState& Technique::renderState() {
         return _renderState;
     }
 
@@ -50,8 +50,8 @@ namespace kepler {
     }
 
     void Technique::setUniform(const std::string& glslName, MaterialParameterRef param) {
-        setUniformName(glslName, param->getName());
-        _values[param->getName()] = param;
+        setUniformName(glslName, param->name());
+        _values[param->name()] = param;
         updateUniform(*param, glslName);
     }
 
@@ -92,7 +92,7 @@ namespace kepler {
                 MaterialParameterRef materialParam = findValueParameter(paramName);
 
                 if (materialParam == nullptr && material) {
-                    auto param = material->getParam(paramName);
+                    auto param = material->param(paramName);
                     if (param) {
                         materialParam = param;
                     }
@@ -117,8 +117,8 @@ namespace kepler {
     }
 
     bool Technique::updateUniform(MaterialParameter& materialParam, const std::string& uniformName) {
-        if (_effect && (materialParam.getUniform() == nullptr || materialParam.getUniform()->getEffect() != _effect)) {
-            Uniform* uniform = _effect->getUniform(uniformName);
+        if (_effect && (materialParam.uniform() == nullptr || materialParam.uniform()->effect() != _effect)) {
+            Uniform* uniform = _effect->uniform(uniformName);
             if (uniform == nullptr) {
                 return false;
             }

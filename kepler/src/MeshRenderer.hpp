@@ -6,7 +6,7 @@
 namespace kepler {
 
     // DrawableComponent for rendering a Mesh.
-    class MeshRenderer : public DrawableComponent {
+    class MeshRenderer : public virtual DrawableComponent {
         ALLOW_MAKE_SHARED(MeshRenderer);
     public:
         virtual ~MeshRenderer() noexcept;
@@ -17,9 +17,9 @@ namespace kepler {
 
         void onNodeChanged(const NodeRef& oldNode, const NodeRef& newNode) override;
 
-        MeshRef getMesh() const;
+        MeshRef mesh() const;
 
-        const std::string& getTypeName() const override;
+        const std::string& typeName() const override;
 
     public:
         MeshRenderer(const MeshRenderer&) = delete;

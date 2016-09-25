@@ -6,7 +6,7 @@
 namespace kepler {
 
     /// A Node Component that can draw itself.
-    class DrawableComponent : public Component {
+    class DrawableComponent : public virtual Component {
     public:
         DrawableComponent();
         virtual ~DrawableComponent() noexcept;

@@ -22,23 +22,23 @@ namespace kepler {
         }
     }
 
-    Texture::Type Texture::getType() const {
+    Texture::Type Texture::type() const {
         return _type;
     }
 
-    TextureHandle Texture::getHandle() const {
+    TextureHandle Texture::handle() const {
         return _handle;
     }
 
-    int Texture::getWidth() const {
+    int Texture::width() const {
         return _width;
     }
 
-    int Texture::getHeight() const {
+    int Texture::height() const {
         return _height;
     }
 
-    SamplerRef Texture::getSampler() const {
+    SamplerRef Texture::sampler() const {
         return _sampler;
     }
 

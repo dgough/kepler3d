@@ -22,7 +22,7 @@ namespace kepler {
         void bind() const noexcept;
         void unbind() const noexcept;
 
-        GLint getAttribLocation(const std::string& attribName) const;
+        GLint attribLocation(const std::string& attribName) const;
 
         /// Returns the uniform location by searching through the pre-fetched uniforms.
         /// @param[in] uniformName The name of the uniform.
@@ -31,8 +31,8 @@ namespace kepler {
         /// Returns the uniform location using the gl function.
         GLint getUniformLocation(const char* uniformName) const noexcept;
 
-        Uniform* getUniform(const std::string& uniformName) const;
-        ProgramHandle getProgram() const noexcept;
+        Uniform* uniform(const std::string& uniformName) const;
+        ProgramHandle program() const noexcept;
 
         void setValue(GLint location, float value) const noexcept;
         void setValue(const Uniform* uniform, float value) const noexcept;
@@ -70,7 +70,7 @@ namespace kepler {
     public:
         ~Uniform() noexcept;
 
-        EffectRef getEffect() const;
+        EffectRef effect() const;
 
         Uniform(const Uniform&) = delete;
         Uniform& operator=(const Uniform&) = delete;

@@ -19,13 +19,13 @@ namespace kepler {
 
         void bind(GLenum textureUnit) const noexcept;
 
-        Type getType() const;
-        TextureHandle getHandle() const;
+        Type type() const;
+        TextureHandle handle() const;
 
-        int getWidth() const;
-        int getHeight() const;
+        int width() const;
+        int height() const;
 
-        SamplerRef getSampler() const;
+        SamplerRef sampler() const;
 
         void setSampler(SamplerRef sampler);
         

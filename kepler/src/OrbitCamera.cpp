@@ -19,7 +19,7 @@ namespace kepler {
     static constexpr float DEFAULT_ASPECT_RATIO = 4.f / 3.f;
 
     static inline float getDefaultAspectRatio() {
-        return app() ? app()->getAspectRatio() : DEFAULT_ASPECT_RATIO;
+        return app() ? app()->aspectRatio() : DEFAULT_ASPECT_RATIO;
     }
 
     OrbitCamera::OrbitCamera() : _yaw(DEFAULT_YAW), _pitch(DEFAULT_PITCH), _radius(DEFAULT_RADIUS) {
@@ -30,8 +30,8 @@ namespace kepler {
             return;
         }
 
-        if (scene->getActiveCamera()) {
-            _oldCameraNode = scene->getActiveCamera()->getNode();
+        if (scene->activeCamera()) {
+            _oldCameraNode = scene->activeCamera()->node();
         }
 
         if (!_cameraNode) {
@@ -47,19 +47,19 @@ namespace kepler {
             _lookatNode->addNode(_cameraNode);
         }
         scene->addNode(_lookatNode);
-        scene->setActiveCamera(_cameraNode->getComponent<Camera>()); // save ref to camera?
+        scene->setActiveCamera(_cameraNode->component<Camera>()); // save ref to camera?
     }
 
     void OrbitCamera::detach() {
         if (_lookatNode) {
-            if (auto scene = _lookatNode->getScene()) {
+            if (auto scene = _lookatNode->scene()) {
                 scene->setActiveCamera(nullptr);
                 scene->removeChild(_lookatNode);
             }
         }
         if (auto n = _oldCameraNode.lock()) {
-            if (auto scene = n->getScene()) {
-                scene->setActiveCamera(n->getComponent<Camera>());
+            if (auto scene = n->scene()) {
+                scene->setActiveCamera(n->component<Camera>());
             }
         }
         _oldCameraNode.reset();

@@ -53,7 +53,7 @@ static std::string g_frame_time_str;
 static int g_frame_count = 0;
 
 static void renderAll(Node* node) {
-    auto renderer = node->getComponent<DrawableComponent>();
+    auto renderer = node->component<DrawableComponent>();
     if (renderer) {
         renderer->draw();
     }
@@ -72,14 +72,14 @@ void TestApp::start() {
     app()->setSwapInterval(g_use_vsync ? 1 : 0);
     loadScenes();
 
-    float width = static_cast<float>(app()->getWidth());
-    float height = static_cast<float>(app()->getHeight());
+    float width = static_cast<float>(app()->width());
+    float height = static_cast<float>(app()->height());
     _firstPerson = std::make_unique<FirstPersonController>(45.0f, width, height, 0.1f, 200.0f);
     _firstPerson->setInvertY(false);
     _firstPerson->moveBackward(5.0f);
     if (_scene) {
-        _scene->addNode(_firstPerson->getRootNode());
-        _scene->setActiveCamera(_firstPerson->getCamera());
+        _scene->addNode(_firstPerson->rootNode());
+        _scene->setActiveCamera(_firstPerson->camera());
     }
 
     _compass = std::make_unique<AxisCompass>(_scene);
@@ -101,7 +101,7 @@ void TestApp::update() {
 
 void TestApp::render() {
     ++g_frame_count;
-    g_deltaTime = static_cast<float>(getDeltaTime());
+    g_deltaTime = static_cast<float>(deltaTime());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     static auto truck = _scene->findFirstNodeByName("Cesium_Milk_Truck");
@@ -164,7 +164,7 @@ void TestApp::keyEvent(int key, int scancode, int action, int mods) {
         case KEY_U:
         {
             double x, y;
-            app()->getCursorPos(&x, &y);
+            app()->cursorPosition(&x, &y);
             std::clog << "x=" << x << " y=" << y << std::endl;
             break;
         }
@@ -180,8 +180,8 @@ void TestApp::mouseEvent(double xpos, double ypos) {
         firstMouse = true;
         return;
     }
-    float width = static_cast<float>(app()->getWidth());
-    float height = static_cast<float>(app()->getHeight());
+    float width = static_cast<float>(app()->width());
+    float height = static_cast<float>(app()->height());
     static GLfloat lastX = width * 0.5f;
     static GLfloat lastY = height * 0.5f;
     if (firstMouse) {
@@ -258,9 +258,9 @@ void TestApp::doMovement() {
 
 void TestApp::drawText() {
     float y = 0.0f;
-    auto lineHeight = _font->getLineHeight();
+    auto lineHeight = _font->lineHeight();
 
-    float size = static_cast<float>(_font->getSize());
+    float size = static_cast<float>(_font->size());
 
     _font->drawText(g_frame_time_str.c_str(), 0.f, y, glm::vec3(1, 0, 0));
     _font->drawText(g_fps_str.c_str(), 0.f, y += size, glm::vec3(0, 0.8f, 0.2f));
@@ -279,10 +279,10 @@ void TestApp::drawText() {
 
     static glm::vec3 clickColor(1.0f, 0.7686f, 0.4f);
     if (app()->getMouseButton(LEFT_MOUSE)) {
-        _font->drawText("LEFT PRESS", 0, app()->getHeight() - size, clickColor);
+        _font->drawText("LEFT PRESS", 0, app()->height() - size, clickColor);
     }
     else {
-        _font->drawText("LEFT RELEASE", 0, app()->getHeight() - size, clickColor);
+        _font->drawText("LEFT RELEASE", 0, app()->height() - size, clickColor);
     }
 }
 
@@ -309,8 +309,8 @@ void TestApp::loadScenes() {
         //cyLoader.useDefaultMaterial(true);
         SceneRef cylinder = nullptr;// cyLoader.loadSceneFromFile("res/glTF/2CylinderEngine.gltf");
         if (scene && cylinder) {
-            for (const auto& n : cylinder->getChildren()) {
-                if (n->getLocalTransform().getScale().x >= 0.9f) {
+            for (const auto& n : cylinder->children()) {
+                if (n->localTransform().scale().x >= 0.9f) {
                     n->scale(0.003f);
                 }
             }
@@ -328,9 +328,9 @@ void TestApp::loadScenes() {
         }
 
         scene->moveNodesFrom(GLTFLoader().loadSceneFromFile(BOX_PATH));
-        scene->getLastChild()->setTranslation(glm::vec3(0, -2, 0));
+        scene->lastChild()->setTranslation(glm::vec3(0, -2, 0));
         scene->moveNodesFrom(GLTFLoader().loadSceneFromFile(BOX_NO_INDICES_PATH));
-        scene->getLastChild()->setTranslation(glm::vec3(2, -2, 0));
+        scene->lastChild()->setTranslation(glm::vec3(2, -2, 0));
         scene->moveNodesFrom(GLTFLoader().loadSceneFromFile(BOX_TEXTURED_PATH));
     }
 
@@ -347,8 +347,8 @@ void TestApp::loadScenes() {
 SceneRef TestApp::loadDuckScene() {
     GLTFLoader gltf;
     auto scene = gltf.loadSceneFromFile(DUCK_PATH);
-    if (scene && scene->getChildCount() > 0) {
-        scene->getChildAt(0)->translateY(1);
+    if (scene && scene->childCount() > 0) {
+        scene->childAt(0)->translateY(1);
         if (auto lightNode = scene->findFirstNodeByName("directionalLight1")) {
             lightNode->rotateY(glm::pi<float>());
         }
@@ -373,12 +373,12 @@ void changeBoxColor(const Scene& scene) {
 
     auto redBox = scene.findFirstNodeByName("Mesh");
     if (redBox) {
-        auto mesh = redBox->getComponent<MeshRenderer>()->getMesh();
+        auto mesh = redBox->component<MeshRenderer>()->mesh();
         if (mesh) {
-            auto prim = mesh->getPrimitive(0);
+            auto prim = mesh->primitiveAt(0);
             if (prim) {
-                auto mat = prim->getMaterial();
-                auto param = mat->getParam("diffuse");
+                auto mat = prim->material();
+                auto param = mat->param("diffuse");
                 if (param) {
                     param->setValue(color);
                 }
@@ -392,8 +392,8 @@ MeshRef createCubeMesh() {
     if (prim) {
         GLTFLoader gltf;
         gltf.load(BOX_PATH);
-        auto material = gltf.getMaterialById("Effect-Red");
-        if (auto param = material->getParam("diffuse")) {
+        auto material = gltf.findMaterialById("Effect-Red");
+        if (auto param = material->param("diffuse")) {
             param->setValue(glm::vec4(1.f, 0.5f, 0.f, 1.0f));
         }
         prim->setMaterial(material);

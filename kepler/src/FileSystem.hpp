@@ -22,7 +22,7 @@ namespace kepler {
     ///
     /// @param[in] path The file path. May be relative or absolute, forward or back slashes. May be nullptr.
     /// @return The directory name with the trailing '/'. Returns "" if path is nullptr or the path does not contain a directory.
-    std::string getDirectoryName(const char* path);
+    std::string directoryName(const char* path);
 
     std::string joinPath(const std::string& path1, const std::string& path2);
 

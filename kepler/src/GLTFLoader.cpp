@@ -80,11 +80,17 @@ namespace kepler {
     static const string MESHES = "meshes";
     static const string PRIMITIVES = "primitives";
     static const string MODE = "mode";
+    static const string INDICES = "indices";
+    static const string ATTRIBUTES = "attributes";
     static const string CAMERA = "camera";
     static const string CAMERAS = "cameras";
     static const string TYPE = "type";
     static const string PERSPECTIVE = "perspective";
     static const string ORTHOGRAPHIC = "orthographic";
+    static const string MATERIAL = "material";
+    static const string MATERIALS = "materials";
+    static const string TECHNIQUE = "technique";
+    static const string TECHNIQUES = "techniques";
 
     static const string ACCESSORS = "accessors";
     static const string BUFFER = "buffer";
@@ -126,7 +132,7 @@ namespace kepler {
     static void setFunction(RenderState& renderState, const string& key, const json& value);
     static void base64Decode(const string& text, size_t offset, string& destination);
     static void base64Decode(std::istream& istream, std::vector<ubyte>& out);
-    static BufferRef createBufferFromBase64(const std::string& text, size_t offset);
+    static BufferRef createBufferFromBase64(const string& text, size_t offset);
 
     using time_type = std::chrono::nanoseconds;
     static time_type __totalTime;
@@ -240,15 +246,15 @@ namespace kepler {
         return _impl->loadSceneFromFile(path);
     }
 
-    MaterialRef GLTFLoader::getMaterialById(const std::string& id) {
+    MaterialRef GLTFLoader::findMaterialById(const std::string& id) {
         return _impl->loadMaterial(id);
     }
 
-    MaterialRef GLTFLoader::getMaterialByName(const std::string& name) {
+    MaterialRef GLTFLoader::findMaterialByName(const std::string& name) {
         return _impl->loadMaterialByName(name);
     }
 
-    MeshRef GLTFLoader::getMeshById(const std::string& id) {
+    MeshRef GLTFLoader::findMeshById(const std::string& id) {
         return _impl->loadMesh(id);
     }
 
@@ -283,7 +289,7 @@ namespace kepler {
     }
 
     bool GLTFLoader::Impl::loadJson(const char* path) {
-        _baseDir = getDirectoryName(path);
+        _baseDir = directoryName(path);
         std::ifstream file;
         //file.exceptions(std::ifstream::badbit);
         file.open(path);
@@ -341,7 +347,7 @@ namespace kepler {
     SceneRef GLTFLoader::Impl::loadDefaultScene() {
         auto scene = _json.find(SCENE);
         if (scene != _json.end() && scene->is_string()) {
-            return loadScene(scene->get<string>());
+            return loadScene(scene->get_ref<const string&>());
         }
         // TODO load the first scene in the "scenes" list?
         return nullptr;
@@ -356,8 +362,7 @@ namespace kepler {
                 if (jNodes->is_array()) {
                     auto scene = Scene::create();
                     for (auto& jNode : *jNodes) {
-                        auto node = loadNode(jNode.get<string>());
-                        scene->addNode(node);
+                        scene->addNode(loadNode(jNode.get_ref<const string&>()));
                     }
                     // TODO active camera?
                     return scene;
@@ -392,7 +397,7 @@ namespace kepler {
         if (meshes != jNode.end() && meshes->is_array() && meshes->size() > 0) {
             // TODO for now, only load one mesh
             const auto& meshId = meshes->at(0);
-            auto mesh = loadMesh(meshId.get<string>());
+            auto mesh = loadMesh(meshId.get_ref<const string&>());
             if (mesh) {
                 node->addComponent(MeshRenderer::create(mesh));
             }
@@ -401,7 +406,7 @@ namespace kepler {
         // load camera
         auto cameraId = jNode.find(CAMERA);
         if (cameraId != jNode.end()) {
-            node->addComponent(loadCamera(cameraId->get<string>()));
+            node->addComponent(loadCamera(cameraId->get_ref<const string&>()));
         }
 
         // load children
@@ -409,7 +414,7 @@ namespace kepler {
         if (children->is_array() && children->size() > 0) {
             for (const auto& child : *children) {
                 if (child.is_string()) {
-                    node->addNode(loadNode(child.get<string>()));
+                    node->addNode(loadNode(child.get_ref<const string&>()));
                 }
             }
         }
@@ -431,7 +436,7 @@ namespace kepler {
                             int mode = jPrimitive[MODE].get<int>();
                             auto meshPrimitive = MeshPrimitive::create(toMode(mode));
 
-                            auto jAttribs = jPrimitive.find("attributes");
+                            auto jAttribs = jPrimitive.find(ATTRIBUTES);
                             if (jAttribs != jPrimitive.end() && jAttribs->is_object()) {
                                 for (auto jAttrib = jAttribs->begin(); jAttrib != jAttribs->end(); ++jAttrib) {
                                     auto vertexAttributeAccessor = loadVertexAttributeAccessor(jAttrib.value());
@@ -441,18 +446,18 @@ namespace kepler {
                                 }
                             }
                             // load indices
-                            auto jIndices = jPrimitive.find("indices");
+                            auto jIndices = jPrimitive.find(INDICES);
                             if (jIndices != jPrimitive.end()) {
-                                auto indexAccessor = loadIndexAccessor(jIndices->get<string>());
+                                auto indexAccessor = loadIndexAccessor(jIndices->get_ref<const string&>());
                                 if (indexAccessor) {
                                     meshPrimitive->setIndices(indexAccessor);
                                 }
                             }
                             if (_autoLoadMaterials) {
                                 // load material
-                                auto jMaterialId = jPrimitive.find("material");
+                                auto jMaterialId = jPrimitive.find(MATERIAL);
                                 if (jMaterialId != jPrimitive.end()) {
-                                    auto material = loadMaterial(jMaterialId->get<string>());
+                                    auto material = loadMaterial(jMaterialId->get_ref<const string&>());
                                     if (material) {
                                         meshPrimitive->setMaterial(material);
                                     }
@@ -463,7 +468,7 @@ namespace kepler {
                             }
                             mesh->addMeshPrimitive(meshPrimitive);
                         }
-                        if (mesh->getPrimitiveCount() > 0) {
+                        if (mesh->primitiveCount() > 0) {
                             return mesh;
                         }
                         else {
@@ -517,7 +522,7 @@ namespace kepler {
         if (buffers != _json.end()) {
             auto jBuffer = buffers->find(id);
             if (jBuffer != buffers->end()) {
-                auto type = jBuffer->value(TYPE, "arraybuffer");
+                auto type = jBuffer->value(TYPE, ARRAY_BUFFER);
                 if (type == ARRAY_BUFFER) {
                     auto jUri = jBuffer->find(URI);
                     if (jUri != jBuffer->end() && jUri->is_string()) {
@@ -659,7 +664,7 @@ namespace kepler {
         if (_useDefaultMaterial) {
             return loadDefaultMaterial();
         }
-        auto jMaterials = _json.find("materials");
+        auto jMaterials = _json.find(MATERIALS);
         if (jMaterials != _json.end()) {
             auto jMaterial = jMaterials->find(id);
             if (jMaterial != jMaterials->end()) {
@@ -693,7 +698,7 @@ namespace kepler {
                         }
                         else if (value.is_string()) {
                             // texture?
-                            auto texture = loadTexture(value.get<string>());
+                            auto texture = loadTexture(value.get_ref<const string&>());
                             if (texture) {
                                 param->setValue(texture);
                                 material->addParam(param);
@@ -703,7 +708,7 @@ namespace kepler {
                         // TODO need 2, 3 and maybe other sizes
                     }
                 }
-                auto techniqueId = jMaterial->value("technique", "");
+                auto techniqueId = jMaterial->value(TECHNIQUE, "");
                 if (!techniqueId.empty()) {
                     material->setTechnique(loadTechnique(techniqueId));
                     _materials[id] = material;
@@ -721,7 +726,7 @@ namespace kepler {
             return loadDefaultTechnique();
         }
 
-        auto jTechniques = _json.find("techniques");
+        auto jTechniques = _json.find(TECHNIQUES);
         if (jTechniques != _json.end()) {
             auto jTechnique = jTechniques->find(id);
             if (jTechnique != jTechniques->end()) {
@@ -739,7 +744,7 @@ namespace kepler {
                 auto jParams = jTechnique->find("parameters");
                 if (jParams != jTechnique->end()) {
                     // attributes
-                    auto jAttribs = jTechnique->find("attributes");
+                    auto jAttribs = jTechnique->find(ATTRIBUTES);
                     if (jAttribs != jTechnique->end()) {
                         for (auto attrib = jAttribs->begin(); attrib != jAttribs->end(); ++attrib) {
                             loadTechniqueAttribute(attrib.key(), attrib.value(), *jParams, tech);
@@ -762,7 +767,7 @@ namespace kepler {
                         for (auto e : *jEnable) {
                             int state = e.get<int>();
                             if (state > 0) {
-                                setState(state, tech->getRenderState());
+                                setState(state, tech->renderState());
                             }
                         }
                     }
@@ -770,7 +775,7 @@ namespace kepler {
                     auto jFunctions = jStates->find("functions");
                     if (jFunctions != jStates->end()) {
                         for (auto f = jFunctions->begin(); f != jFunctions->end(); ++f) {
-                            setFunction(tech->getRenderState(), f.key(), f.value());
+                            setFunction(tech->renderState(), f.key(), f.value());
                         }
                     }
                 }
@@ -800,17 +805,17 @@ namespace kepler {
             //int type = jParam->value<int>(TYPE, 0);
             // TODO check type?
             if (jSemantic != jParam->end() && jSemantic->is_string()) {
-                auto semanticValue = toSemantic(jSemantic->get<string>());
+                auto semanticValue = toSemantic(jSemantic->get_ref<const string&>());
 
                 bool useSemantic = true;
                 auto jNodeId = jParam->find("node");
                 if (jNodeId != jParam->end() && jNodeId->is_string()) {
-                    auto node = loadNode(jNodeId->get<string>());
+                    auto node = loadNode(jNodeId->get_ref<const string&>());
                     if (node) {
                         // TODO this is cheating
                         if (semanticValue == MaterialParameter::Semantic::MODELVIEW) {
                             auto f = [node](Effect& effect, const Uniform* uniform) {
-                                effect.setValue(uniform, node->getModelViewMatrix());
+                                effect.setValue(uniform, node->modelViewMatrix());
                             };
                             auto param = MaterialParameter::create(paramName);
                             param->setValue(f);
@@ -908,16 +913,16 @@ namespace kepler {
                 // TODO support more than just GL_TEXTURE_2D
                 if (target == GL_TEXTURE_2D && samplerId != jTexture->end() && imageId != jTexture->end()
                     && samplerId->is_string() && imageId->is_string()) {
-                    auto image = loadImage(imageId->get<string>());
+                    auto image = loadImage(imageId->get_ref<const string&>());
                     if (image) {
                         auto texture = Texture::create2D(image.get(), internalFormat, true);
                         if (texture) {
-                            auto sampler = loadSampler(samplerId->get<string>());
+                            auto sampler = loadSampler(samplerId->get_ref<const string&>());
                             if (sampler) {
                                 texture->setSampler(sampler);
                             }
                             else {
-                                loge("LOAD_GLTF_SAMPLER ", samplerId->get<string>().c_str());
+                                loge("LOAD_GLTF_SAMPLER ", samplerId->get_ref<const string&>().c_str());
                             }
                             _textures[id] = texture;
                             return texture;
@@ -1031,7 +1036,7 @@ namespace kepler {
         tech->setSemanticUniform("u_normalMatrix", "normalMatrix", MaterialParameter::Semantic::MODELVIEWINVERSETRANSPOSE);
         tech->setSemanticUniform("u_projectionMatrix", "projectionMatrix", MaterialParameter::Semantic::PROJECTION);
 
-        auto& state = tech->getRenderState();
+        auto& state = tech->renderState();
         state.setCulling(true);
         state.setDepthTest(true);
 
@@ -1060,12 +1065,12 @@ namespace kepler {
     }
 
     MaterialRef GLTFLoader::Impl::loadMaterialByName(const string& name) {
-        auto jMaterials = _json.find("materials");
+        auto jMaterials = _json.find(MATERIALS);
         if (jMaterials != _json.end()) {
             for (auto it = jMaterials->begin(); it != jMaterials->end(); ++it) {
                 auto jName = it->find("name");
                 if (jName != it->end()) {
-                    if (name == jName->get<string>()) {
+                    if (name == jName->get_ref<const string&>()) {
                         return loadMaterial(it.key());
                     }
                 }
@@ -1438,7 +1443,7 @@ namespace kepler {
         base64_init_decodestate(&decoder._state);
     }
 
-    BufferRef createBufferFromBase64(const std::string& text, size_t offset) {
+    BufferRef createBufferFromBase64(const string& text, size_t offset) {
         std::istringstream in(text);
         in.seekg(offset);
         auto buffer = std::make_shared<std::vector<ubyte>>();

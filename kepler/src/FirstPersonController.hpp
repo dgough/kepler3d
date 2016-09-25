@@ -18,10 +18,10 @@ namespace kepler {
         FirstPersonController(float fov, float width, float height, float near, float far);
 
         /// Returns the root camera Node.
-        NodeRef getRootNode() const;
+        NodeRef rootNode() const;
 
         /// Returns the Camera.
-        CameraRef getCamera() const;
+        CameraRef camera() const;
 
         /// Sets the position of the camera.
         /// @param[in] position The position to move to.

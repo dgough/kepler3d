@@ -43,7 +43,7 @@ namespace kepler {
         void addNode(const NodeRef& child);
 
         /// Returns the number of direct child nodes.
-        size_t getChildCount() const;
+        size_t childCount() const;
 
         /// Removes the node at the given index.
         /// Does nothing if the index is out of bounds.
@@ -54,7 +54,7 @@ namespace kepler {
         void removeChild(const NodeRef& child);
 
         /// Returns a reference to the parent node. May be null.
-        NodeRef getParent() const;
+        NodeRef parent() const;
 
         /// Returns true if this node has a parent; false otherwise.
         bool hasParent() const;
@@ -67,10 +67,10 @@ namespace kepler {
 
         /// Returns the root node.
         /// This node will be the root node if it doesn't have a parent.
-        NodeRef getRoot();
+        NodeRef root();
 
         /// Returns the scene that this node belongs to. May be null.
-        SceneRef getScene() const;
+        SceneRef scene() const;
 
         /// Sets this node's scene. 
         /// Normally you shouldn't used this method but it is handy when a node doesn't 
@@ -107,10 +107,10 @@ namespace kepler {
         // std::unique_ptr<Node> clone() const;
 
         /// Returns a char pointer to this node's name.
-        const char* getNamePtr() const;
+        const char* namePtr() const;
 
         /// Returns the name of this node.
-        const std::string& getName() const;
+        const std::string& name() const;
 
         /// Sets this node's name.
         /// Node names are not unique.
@@ -122,7 +122,7 @@ namespace kepler {
         /// throwing an out_of_range exception if it is not.
         /// Similar to std::vector::at().
         /// @throws out_of_range exception.
-        NodeRef getChildAt(size_t index) const;
+        NodeRef childAt(size_t index) const;
 
         /// Returns the Node at specified location pos. No bounds checking is performed.
         NodeRef operator[](size_t index);
@@ -137,11 +137,11 @@ namespace kepler {
 
         /// Returns the component of the specified type.
         template<class T>
-        std::shared_ptr<T> getComponent();
+        std::shared_ptr<T> component();
 
         /// Returns the first drawable component of this node.
         /// @return Shared ref to a DrawableComponent; may be null.
-        DrawableComponentRef getDrawable();
+        DrawableComponentRef drawable();
 
         /// Returns true if this node contains the component.
         /// You cannot search for abstract components because this is a simple string comparison.
@@ -192,45 +192,44 @@ namespace kepler {
         /// Be sure you modify the returned transform instead of making a copy.
         Transform& editLocalTransform();
 
-        const Transform& getLocalTransform() const;
+        const Transform& localTransform() const;
 
         /// Returns a shared pointer that points to the local transform buy holds a reference to the Node.
-        const std::shared_ptr<const Transform> getLocalTransformRef() const;
+        const std::shared_ptr<const Transform> localTransformRef() const;
 
-        const glm::mat4& getViewMatrix() const;
-        const glm::mat4& getViewMatrix(const Camera* camera) const;
-        const glm::mat4& getProjectionMatrix() const;
-        const glm::mat4& getProjectionMatrix(const Camera* camera) const;
+        const glm::mat4& viewMatrix() const;
+        const glm::mat4& viewMatrix(const Camera* camera) const;
+        const glm::mat4& projectionMatrix() const;
+        const glm::mat4& projectionMatrix(const Camera* camera) const;
 
-        const Transform& getWorldTransform() const;
-        const glm::mat4& getWorldMatrix() const;
+        const Transform& worldTransform() const;
+        const glm::mat4& worldMatrix() const;
 
         /////////////////
-        //const glm::mat4& getModelMatrix() const;
-        const glm::mat4 getModelViewMatrix() const;
+        const glm::mat4 modelViewMatrix() const;
         /// Returns the ModelView matrix for this node using the given camera 
         /// instead of the active camera of the scene this node belongs to.
-        const glm::mat4 getModelViewMatrix(const Camera* camera) const;
+        const glm::mat4 modelViewMatrix(const Camera* camera) const;
 
-        const glm::mat3 getModelViewInverseTransposeMatrix() const;
-        const glm::mat3 getModelViewInverseTransposeMatrix(const Camera* camera) const;
+        const glm::mat3 modelViewInverseTransposeMatrix() const;
+        const glm::mat3 modelViewInverseTransposeMatrix(const Camera* camera) const;
 
-        const glm::mat4 getModelViewProjectionMatrix() const;
-        const glm::mat4 getModelViewProjectionMatrix(const Camera* camera) const;
-        const glm::mat4 getModelInverseMatrix() const;
-        const glm::mat4 getViewInverseMatrix() const;
-        const glm::mat4 getViewInverseMatrix(const Camera* camera) const;
-        const glm::mat4 getProjectionInverseMatrix() const;
-        const glm::mat4 getProjectionInverseMatrix(const Camera* camera) const;
-        const glm::mat4 getModelViewInverseMatrix() const;
-        const glm::mat4 getModelViewInverseMatrix(const Camera* camera) const;
-        const glm::mat4 getModelViewProjectionInverseMatrix() const;
-        const glm::mat4 getModelViewProjectionInverseMatrix(const Camera* camera) const;
-        const glm::mat4 getModelInverseTransposeMatrix() const;
-        const glm::mat4 getViewportMatrix() const;
+        const glm::mat4 modelViewProjectionMatrix() const;
+        const glm::mat4 modelViewProjectionMatrix(const Camera* camera) const;
+        const glm::mat4 modelInverseMatrix() const;
+        const glm::mat4 viewInverseMatrix() const;
+        const glm::mat4 viewInverseMatrix(const Camera* camera) const;
+        const glm::mat4 projectionInverseMatrix() const;
+        const glm::mat4 projectionInverseMatrix(const Camera* camera) const;
+        const glm::mat4 modelViewInverseMatrix() const;
+        const glm::mat4 modelViewInverseMatrix(const Camera* camera) const;
+        const glm::mat4 modelViewProjectionInverseMatrix() const;
+        const glm::mat4 modelViewProjectionInverseMatrix(const Camera* camera) const;
+        const glm::mat4 modelInverseTransposeMatrix() const;
+        const glm::mat4 viewportMatrix() const;
 
         /// Returns the vector (0, 0 -1) transformed by this node's world matrix.
-        glm::vec3 getForwardVectorWorld() const;
+        glm::vec3 forwardVectorWorld() const;
 
         void setLocalTransform(const Transform& transform);
         void setLocalTransform(const glm::vec3& translation, const glm::quat& rotation, const glm::vec3& scale);
@@ -317,7 +316,7 @@ namespace kepler {
     }
 
     template<class T>
-    std::shared_ptr<T> Node::getComponent() {
+    std::shared_ptr<T> Node::component() {
         for (const auto& c : _components) {
             if (dynamic_cast<T*>(c.get()) != nullptr) {
                 return std::dynamic_pointer_cast<T>(c);

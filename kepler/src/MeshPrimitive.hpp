@@ -8,6 +8,7 @@
 
 namespace kepler {
 
+    /// A MeshPrimitive is the data required to draw a primitive with glDrawArrays or glDrawElements.
     class MeshPrimitive : public std::enable_shared_from_this<MeshPrimitive> {
         ALLOW_MAKE_SHARED(MeshPrimitive);
         friend Mesh;
@@ -27,14 +28,18 @@ namespace kepler {
 
         static MeshPrimitiveRef create(Mode mode);
 
-        VertexAttributeAccessorRef getAttribute(AttributeSemantic semantic) const;
-        IndexAccessorRef getIndices() const;
+        /// Returns the attribute with the given semantic. May be null.
+        VertexAttributeAccessorRef attribute(AttributeSemantic semantic) const;
+
+        /// Returns the indices for this mesh primitive. May be null.
+        IndexAccessorRef indices() const;
 
         void setAttribute(AttributeSemantic semantic, VertexAttributeAccessorRef accessor);
         /// Sets the IndexAccessor.
         void setIndices(IndexAccessorRef indices);
 
-        MaterialRef getMaterial() const;
+        /// Returns the material this primitive is bound to. May return null.
+        MaterialRef material() const;
 
         /// Sets the Material that will be used to draw with.
         void setMaterial(MaterialRef material);
@@ -58,7 +63,7 @@ namespace kepler {
         MaterialRef _material;
         std::unique_ptr<MaterialBinding> _materialBinding;
 
-        VertexAttributeBindingRef _vertexBinding;
+        std::unique_ptr<VertexAttributeBinding> _vertexBinding;
         NodeWeakRef _node;
     };
 }

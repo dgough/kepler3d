@@ -26,9 +26,9 @@ namespace kepler {
 
         void bind();
 
-        GLsizei getCount() const;
-        GLenum getType() const;
-        GLintptr getOffset() const;
+        GLsizei count() const;
+        GLenum type() const;
+        GLintptr offset() const;
 
     private:
         IndexBufferRef _buffer;

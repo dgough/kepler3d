@@ -49,7 +49,7 @@ namespace kepler {
         glUseProgram(0);
     }
 
-    GLint Effect::getAttribLocation(const std::string& attribName) const {
+    GLint Effect::attribLocation(const std::string& attribName) const {
         auto it = _attribLocations.find(attribName);
         if (it != _attribLocations.end()) {
             return it->second;
@@ -69,7 +69,7 @@ namespace kepler {
         return glGetUniformLocation(_program, uniformName);
     }
 
-    Uniform* Effect::getUniform(const std::string& uniformName) const {
+    Uniform* Effect::uniform(const std::string& uniformName) const {
         auto it = _uniforms.find(uniformName);
         if (it != _uniforms.end()) {
             return it->second.get();
@@ -77,7 +77,7 @@ namespace kepler {
         return nullptr;
     }
 
-    ProgramHandle Effect::getProgram() const noexcept {
+    ProgramHandle Effect::program() const noexcept {
         return _program;
     }
 
@@ -230,7 +230,7 @@ namespace kepler {
 
     }
 
-    EffectRef Uniform::getEffect() const {
+    EffectRef Uniform::effect() const {
         return _effect.lock();
     }
 

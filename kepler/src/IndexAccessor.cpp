@@ -19,15 +19,15 @@ namespace kepler {
         _buffer->bind();
     }
 
-    GLsizei IndexAccessor::getCount() const {
+    GLsizei IndexAccessor::count() const {
         return _count;
     }
 
-    GLenum IndexAccessor::getType() const {
+    GLenum IndexAccessor::type() const {
         return _type;
     }
 
-    GLintptr IndexAccessor::getOffset() const {
+    GLintptr IndexAccessor::offset() const {
         return _offset;
     }
 }

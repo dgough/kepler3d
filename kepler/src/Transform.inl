@@ -12,15 +12,15 @@ namespace kepler {
         return !(*this == v);
     }
 
-    inline const glm::vec3& Transform::getTranslation() const {
+    inline const glm::vec3& Transform::translation() const {
         return _translation;
     }
 
-    inline const glm::quat& Transform::getRotation() const {
+    inline const glm::quat& Transform::rotation() const {
         return _rotation;
     }
 
-    inline const glm::vec3& Transform::getScale() const {
+    inline const glm::vec3& Transform::scale() const {
         return _scale;
     }
 

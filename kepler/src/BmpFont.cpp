@@ -245,7 +245,7 @@ namespace kepler {
     }
 
     void BmpFont::Impl::loadFromFile(const char* path, std::ifstream& file) {
-        _baseDir = getDirectoryName(path);
+        _baseDir = directoryName(path);
 
         string line;
         while (std::getline(file, line)) {
@@ -421,7 +421,7 @@ namespace kepler {
     BmpFontRenderer::BmpFontRenderer() : _vao(0), _vbo(0) {
         _effect = Effect::createFromSource(vertSource, fragSource);
         _effect->bind();
-        glm::mat4 projection = glm::ortho(0.f, static_cast<GLfloat>(app()->getWidth()), static_cast<GLfloat>(app()->getHeight()), 0.f);
+        glm::mat4 projection = glm::ortho(0.f, static_cast<GLfloat>(app()->width()), static_cast<GLfloat>(app()->height()), 0.f);
         _effect->setValue(_effect->getUniformLocation("u_projection"), projection);
 
         _state.setBlend(true);
@@ -503,27 +503,27 @@ namespace kepler {
         _impl->drawText(text, x, y, color);
     }
 
-    int BmpFont::getSize() const {
+    int BmpFont::size() const {
         return _impl->_size;
     }
 
-    float BmpFont::getSizeAsFloat() const {
-        return static_cast<float>(getSize());
+    float BmpFont::sizeAsFloat() const {
+        return static_cast<float>(size());
     }
 
-    int BmpFont::getLineHeight() const {
+    int BmpFont::lineHeight() const {
         return _impl->_lineHeight;
     }
 
-    int BmpFont::getBase() const {
+    int BmpFont::base() const {
         return _impl->_base;
     }
 
-    const std::string& BmpFont::getFace() const {
+    const std::string& BmpFont::face() const {
         return _impl->_face;
     }
 
-    float BmpFont::getScale() const {
+    float BmpFont::scale() const {
         return _impl->_scale;
     }
 

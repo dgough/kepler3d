@@ -20,11 +20,11 @@ namespace kepler {
         return mat;
     }
 
-    TechniqueRef Material::getTechnique() const {
+    TechniqueRef Material::technique() const {
         return _technique;
     }
 
-    const std::string& Material::getName() const {
+    const std::string& Material::name() const {
         return _name;
     }
 
@@ -45,10 +45,10 @@ namespace kepler {
     }
 
     void Material::addParam(const MaterialParameterRef& param) {
-        _parameters[param->getName()] = param;
+        _parameters[param->name()] = param;
     }
 
-    MaterialParameterRef Material::getParam(const std::string& name) const {
+    MaterialParameterRef Material::param(const std::string& name) const {
         auto p = _parameters.find(name);
         if (p != _parameters.end()) {
             return p->second;

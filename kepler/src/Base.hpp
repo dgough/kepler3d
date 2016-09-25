@@ -57,7 +57,6 @@ namespace kepler {
     using IndexBufferRef = std::shared_ptr<IndexBuffer>; ///< Shared pointer to IndexBuffer.
     using IndexAccessorRef = std::shared_ptr<IndexAccessor>; ///< Shared pointer to IndexAccessor.
     using VertexAttributeAccessorRef = std::shared_ptr<VertexAttributeAccessor>; ///< Shared pointer to VertexAttributeAccessor.
-    using VertexAttributeBindingRef = std::shared_ptr<VertexAttributeBinding>; ///< Shared pointer to VertexAttributeBinding.
     using EffectRef = std::shared_ptr<Effect>; ///< Shared pointer to Effect.
     using MaterialRef = std::shared_ptr<Material>; ///< Shared pointer to Material.
     using MaterialParameterRef = std::shared_ptr<MaterialParameter>; ///< Shared pointer to MaterialParameter.

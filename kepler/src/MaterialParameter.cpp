@@ -14,7 +14,7 @@ namespace kepler {
         return MAKE_SHARED(MaterialParameter, name);
     }
 
-    const std::string& MaterialParameter::getName() const {
+    const std::string& MaterialParameter::name() const {
         return _name;
     }
 
@@ -64,7 +64,7 @@ namespace kepler {
         };
     }
 
-    MaterialParameter::Semantic MaterialParameter::getSemantic() const {
+    MaterialParameter::Semantic MaterialParameter::semantic() const {
         return _semantic;
     }
 
@@ -72,7 +72,7 @@ namespace kepler {
         _semantic = semantic;
     }
 
-    Uniform* MaterialParameter::getUniform() const {
+    Uniform* MaterialParameter::uniform() const {
         return _uniform;
     }
 

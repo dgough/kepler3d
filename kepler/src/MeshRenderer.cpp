@@ -5,7 +5,7 @@
 
 namespace kepler {
 
-    static std::string typeName("MeshRenderer");
+    static std::string _typeName("MeshRenderer");
 
     MeshRenderer::MeshRenderer(MeshRef mesh) : _mesh(mesh) {
     }
@@ -19,24 +19,24 @@ namespace kepler {
 
     void MeshRenderer::draw() {
         if (_mesh) {
-            size_t count = _mesh->getPrimitiveCount();
+            size_t count = _mesh->primitiveCount();
             for (size_t i = 0; i < count; ++i) {
-                _mesh->getPrimitivePtr(i)->draw();
+                _mesh->primitivePtr(i)->draw();
             }
         }
     }
 
     void MeshRenderer::onNodeChanged(const NodeRef&, const NodeRef&) {
         if (_mesh) {
-            _mesh->setNode(getNode());
+            _mesh->setNode(node());
         }
     }
 
-    MeshRef MeshRenderer::getMesh() const {
+    MeshRef MeshRenderer::mesh() const {
         return _mesh;
     }
 
-    const std::string& MeshRenderer::getTypeName() const {
-        return typeName;
+    const std::string& MeshRenderer::typeName() const {
+        return _typeName;
     }
 }

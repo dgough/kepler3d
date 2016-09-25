@@ -19,7 +19,7 @@ namespace kepler {
         return MAKE_SHARED(MeshPrimitive, mode);
     }
 
-    VertexAttributeAccessorRef MeshPrimitive::getAttribute(AttributeSemantic semantic) const {
+    VertexAttributeAccessorRef MeshPrimitive::attribute(AttributeSemantic semantic) const {
         auto it = _attributes.find(semantic);
         if (it != _attributes.end()) {
             return it->second;
@@ -27,7 +27,7 @@ namespace kepler {
         return nullptr;
     }
 
-    IndexAccessorRef MeshPrimitive::getIndices() const {
+    IndexAccessorRef MeshPrimitive::indices() const {
         return _indices;
     }
 
@@ -39,7 +39,7 @@ namespace kepler {
         _indices = indices;
     }
 
-    MaterialRef MeshPrimitive::getMaterial() const {
+    MaterialRef MeshPrimitive::material() const {
         return _material;
     }
 
@@ -53,13 +53,13 @@ namespace kepler {
             _materialBinding.release();
         }
 
-        auto tech = material->getTechnique();
+        auto tech = material->technique();
         if (tech == nullptr) {
             return;
         }
         // TODO pass?
 
-        auto effect = tech->getEffect();
+        auto effect = tech->effect();
         if (effect == nullptr) {
             return;
         }
@@ -70,11 +70,7 @@ namespace kepler {
         // TODO should this be a weak reference?
         // should attributes be in another object? A geometry?
         _material = material;
-        auto binding = VertexAttributeBinding::create(shared_from_this(), tech);
-        if (binding) {
-            _vertexBinding = binding;
-        }
-
+        _vertexBinding = VertexAttributeBinding::createUnique(shared_from_this(), tech);
         updateBindings();
     }
 
@@ -87,12 +83,12 @@ namespace kepler {
         _materialBinding->bind(*node, material);
         _vertexBinding->bind();
         if (_indices) {
-            glDrawElements(_mode, _indices->getCount(), _indices->getType(), (const GLvoid*)_indices->getOffset());
+            glDrawElements(_mode, _indices->count(), _indices->type(), (const GLvoid*)_indices->offset());
         }
         else {
             auto attrib = _attributes.begin();
             if (attrib != _attributes.end()) {
-                glDrawArrays(_mode, 0, attrib->second->getCount());
+                glDrawArrays(_mode, 0, attrib->second->count());
             }
         }
         _vertexBinding->unbind();

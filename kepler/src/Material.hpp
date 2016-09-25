@@ -17,9 +17,9 @@ namespace kepler {
         static MaterialRef create(TechniqueRef technique);
 
         /// Returns the Technique in this Material.
-        TechniqueRef getTechnique() const;
+        TechniqueRef technique() const;
 
-        const std::string& getName() const;
+        const std::string& name() const;
         void setName(const std::string& name);
         void setTechnique(const TechniqueRef& technique);
 
@@ -27,7 +27,7 @@ namespace kepler {
         void addParam(const MaterialParameterRef& param);
 
         /// Returns the MaterialParameter matching the given name.
-        MaterialParameterRef getParam(const std::string& name) const;
+        MaterialParameterRef param(const std::string& name) const;
 
         void bind();
 

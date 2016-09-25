@@ -35,7 +35,7 @@ void MainMenu::start() {
 
     if (_buttons.empty()) {
         static constexpr float width = 300.f;
-        float height = static_cast<float>(_font->getSize()) * _font->getScale() + 6.f;
+        float height = static_cast<float>(_font->size()) * _font->scale() + 6.f;
         Rectangle rect(100.f, 100.f, width, height);
 
         addButton("Scene Test", rect, []() {
@@ -76,12 +76,12 @@ void MainMenu::mouseEvent(double xpos, double ypos) {
 void MainMenu::mouseButtonEvent(int button, int action, int mods) {
     if (button == LEFT_MOUSE && action == PRESS) {
         double xpos, ypos;
-        app()->getCursorPos(&xpos, &ypos);
+        app()->cursorPosition(&xpos, &ypos);
         clickButtonAt(glm::vec2(xpos, ypos));
     }
 }
 
-std::shared_ptr<MainMenu> MainMenu::getInstance() {
+std::shared_ptr<MainMenu> MainMenu::instance() {
     if (!__instance) {
         __instance = std::make_shared<MainMenu>();
     }
@@ -89,7 +89,7 @@ std::shared_ptr<MainMenu> MainMenu::getInstance() {
 }
 
 void MainMenu::gotoMainMenu() {
-    app()->setDelegate(getInstance());
+    app()->setDelegate(instance());
 }
 
 void MainMenu::addButton(const char* text, const Rectangle& rect, std::function<void()> callback) {
@@ -99,14 +99,14 @@ void MainMenu::addButton(const char* text, const Rectangle& rect, std::function<
 }
 
 void MainMenu::drawButton(const Button& button) {
-    float x = button.getRect().x();
-    float y = button.getRect().y();
-    _font->drawText(button.getText().c_str(), x, y);
+    float x = button.rect().x();
+    float y = button.rect().y();
+    _font->drawText(button.text().c_str(), x, y);
 }
 
 bool MainMenu::clickButtonAt(glm::vec2 pos) {
     for (const auto& button : _buttons) {
-        if (button->getRect().contains(pos)) {
+        if (button->rect().contains(pos)) {
             button->callOnClick();
             return true;
         }

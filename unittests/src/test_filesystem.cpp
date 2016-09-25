@@ -9,12 +9,12 @@ using std::string;
 static constexpr char* TEST_PATH = "test.bin";
 
 TEST(filesystem, get_directory_name) {
-    EXPECT_EQ(getDirectoryName(nullptr), "");
-    EXPECT_EQ(getDirectoryName(""), "");
-    EXPECT_EQ(getDirectoryName("asdf.txt"), "");
-    EXPECT_EQ(getDirectoryName("c:\\foo\\bar.txt"), "c:/foo/");
-    EXPECT_EQ(getDirectoryName("d:/asdf/image.png"), "d:/asdf/");
-    EXPECT_EQ(getDirectoryName("folder/subfolder/data.bin"), "folder/subfolder/");
+    EXPECT_EQ(directoryName(nullptr), "");
+    EXPECT_EQ(directoryName(""), "");
+    EXPECT_EQ(directoryName("asdf.txt"), "");
+    EXPECT_EQ(directoryName("c:\\foo\\bar.txt"), "c:/foo/");
+    EXPECT_EQ(directoryName("d:/asdf/image.png"), "d:/asdf/");
+    EXPECT_EQ(directoryName("folder/subfolder/data.bin"), "folder/subfolder/");
     //EXPECT_EQ(getDirectoryName("folder/subfolder/"), "folder/"); // TODO
 }
 
@@ -23,7 +23,7 @@ TEST(filesystem, joinPath) {
     EXPECT_EQ(joinPath("asdf", "image.png"), "asdf/image.png");
     EXPECT_EQ(joinPath("a/", "image.png"), "a/image.png");
 
-    EXPECT_EQ(joinPath(getDirectoryName("res/box.gltf"), "image.png"), "res/image.png");
+    EXPECT_EQ(joinPath(directoryName("res/box.gltf"), "image.png"), "res/image.png");
 }
 
 TEST(filesystem, read_write_binary_file) {

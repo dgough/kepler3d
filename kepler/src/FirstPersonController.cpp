@@ -17,12 +17,12 @@ namespace kepler {
         _pitchNode->addComponent(camera);
     }
 
-    NodeRef FirstPersonController::getRootNode() const {
+    NodeRef FirstPersonController::rootNode() const {
         return _root;
     }
 
-    CameraRef FirstPersonController::getCamera() const {
-        return _pitchNode->getComponent<Camera>();
+    CameraRef FirstPersonController::camera() const {
+        return _pitchNode->component<Camera>();
     }
 
     void FirstPersonController::setPosition(const glm::vec3& position) {
@@ -31,7 +31,7 @@ namespace kepler {
     }
 
     void FirstPersonController::moveForward(float value) {
-        _root->translate(glm::normalize(_pitchNode->getForwardVectorWorld()) * value);
+        _root->translate(glm::normalize(_pitchNode->forwardVectorWorld()) * value);
     }
 
     void FirstPersonController::moveBackward(float value) {
@@ -43,7 +43,7 @@ namespace kepler {
     }
 
     void FirstPersonController::moveRight(float value) {
-        glm::vec3 v = glm::normalize(glm::cross(_pitchNode->getForwardVectorWorld(), glm::vec3(0, 1, 0)));
+        glm::vec3 v = glm::normalize(glm::cross(_pitchNode->forwardVectorWorld(), glm::vec3(0, 1, 0)));
         _root->translate(v * value);
     }
 

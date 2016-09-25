@@ -18,7 +18,7 @@ namespace kepler {
         glVertexAttribPointer(location, _componentSize, _type, _normalized, _stride, (GLvoid *)_offset);
     }
 
-    GLsizei VertexAttributeAccessor::getCount() const {
+    GLsizei VertexAttributeAccessor::count() const {
         return _count;
     }
 }

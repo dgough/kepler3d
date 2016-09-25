@@ -67,7 +67,7 @@ namespace kepler {
         child->_scene = _scene;
     }
 
-    size_t Node::getChildCount() const {
+    size_t Node::childCount() const {
         return _children.size();
     }
 
@@ -82,7 +82,7 @@ namespace kepler {
         }
     }
 
-    NodeRef Node::getParent() const {
+    NodeRef Node::parent() const {
         return _parent.lock();
     }
 
@@ -106,7 +106,7 @@ namespace kepler {
         }
     }
 
-    NodeRef Node::getRoot() {
+    NodeRef Node::root() {
         if (NodeRef parent = _parent.lock()) {
             while (!parent->_parent.expired()) {
                 parent = parent->_parent.lock();
@@ -116,7 +116,7 @@ namespace kepler {
         return shared_from_this();
     }
 
-    SceneRef Node::getScene() const {
+    SceneRef Node::scene() const {
         return _scene.lock();
     }
 
@@ -126,7 +126,7 @@ namespace kepler {
 
     NodeRef Node::findFirstNodeByName(const std::string& name, bool recursive) const {
         for (const auto& child : _children) {
-            if (child->getName() == name) {
+            if (child->name() == name) {
                 return child;
             }
         }
@@ -141,11 +141,11 @@ namespace kepler {
         return nullptr;
     }
 
-    const char* Node::getNamePtr() const {
+    const char* Node::namePtr() const {
         return _name.c_str();
     }
 
-    const std::string& Node::getName() const {
+    const std::string& Node::name() const {
         return _name;
     }
 
@@ -153,7 +153,7 @@ namespace kepler {
         _name.assign(name);
     }
 
-    NodeRef Node::getChildAt(size_t index) const {
+    NodeRef Node::childAt(size_t index) const {
         return _children.at(index);
     }
 
@@ -167,7 +167,7 @@ namespace kepler {
 
     void Node::addComponent(const std::shared_ptr<Component>& component) {
         if (component) {
-            if (!containsComponent(component->getTypeName())) {
+            if (!containsComponent(component->typeName())) {
                 _components.push_back(component);
                 component->setNode(shared_from_this());
             }
@@ -184,14 +184,14 @@ namespace kepler {
         _components.erase(it, _components.end());
     }
 
-    DrawableComponentRef Node::getDrawable() {
+    DrawableComponentRef Node::drawable() {
         // TODO make this faster
-        return getComponent<DrawableComponent>();
+        return component<DrawableComponent>();
     }
 
     bool Node::containsComponent(const std::string& typeName) const {
         for (const auto& c : _components) {
-            if (typeName == c->getTypeName()) {
+            if (typeName == c->typeName()) {
                 return true;
             }
         }
@@ -299,56 +299,56 @@ namespace kepler {
         return _local;
     }
 
-    const Transform& Node::getLocalTransform() const {
+    const Transform& Node::localTransform() const {
         return _local;
     }
 
-    const std::shared_ptr<const Transform> Node::getLocalTransformRef() const {
+    const std::shared_ptr<const Transform> Node::localTransformRef() const {
         return std::shared_ptr<const Transform>(shared_from_this(), &_local);
     }
 
-    const glm::mat4& Node::getViewMatrix() const {
+    const glm::mat4& Node::viewMatrix() const {
         if (SceneRef scene = _scene.lock()) {
-            auto camera = scene->getActiveCamera();
+            auto camera = scene->activeCamera();
             if (camera) {
-                return camera->getViewMatrix();
+                return camera->viewMatrix();
             }
         }
         return IDENTITY_MATRIX;
     }
 
-    const glm::mat4& Node::getViewMatrix(const Camera* camera) const {
+    const glm::mat4& Node::viewMatrix(const Camera* camera) const {
         if (camera != nullptr) {
-            return camera->getViewMatrix();
+            return camera->viewMatrix();
         }
         return IDENTITY_MATRIX;
     }
 
-    const glm::mat4& Node::getProjectionMatrix() const {
+    const glm::mat4& Node::projectionMatrix() const {
         if (SceneRef scene = _scene.lock()) {
-            auto camera = scene->getActiveCamera();
+            auto camera = scene->activeCamera();
             if (camera) {
-                return camera->getProjectionMatrix();
+                return camera->projectionMatrix();
             }
         }
         return IDENTITY_MATRIX;
     }
 
-    const glm::mat4& Node::getProjectionMatrix(const Camera* camera) const {
+    const glm::mat4& Node::projectionMatrix(const Camera* camera) const {
         if (camera != nullptr) {
-            return camera->getProjectionMatrix();
+            return camera->projectionMatrix();
         }
         return IDENTITY_MATRIX;
     }
 
-    const Transform& Node::getWorldTransform() const {
+    const Transform& Node::worldTransform() const {
         if ((_dirtyBits & WORLD_DIRTY) == 0) {
             return _world;
         }
         _dirtyBits &= ~WORLD_DIRTY;
 
         if (auto parent = _parent.lock()) {
-            const Transform& parentWorldTransform = parent->getWorldTransform();
+            const Transform& parentWorldTransform = parent->worldTransform();
             _world = _local;
             _world.combineWithParent(parentWorldTransform);
 
@@ -359,101 +359,101 @@ namespace kepler {
         return _world;
     }
 
-    const glm::mat4& Node::getWorldMatrix() const {
+    const glm::mat4& Node::worldMatrix() const {
         // TODO don't use getWorldTransform()? Measure performance difference.
-        return getWorldTransform().getMatrix();
+        return worldTransform().matrix();
     }
 
     //const glm::mat4& Node::getModelMatrix() const {
     //    return getLocalTransform().getMatrix();
     //}
 
-    const glm::mat4 Node::getModelViewMatrix() const {
-        return getViewMatrix() * getWorldMatrix();
+    const glm::mat4 Node::modelViewMatrix() const {
+        return viewMatrix() * worldMatrix();
     }
 
-    const glm::mat4 Node::getModelViewMatrix(const Camera* camera) const {
+    const glm::mat4 Node::modelViewMatrix(const Camera* camera) const {
         if (camera != nullptr) {
-            return camera->getViewMatrix() * getWorldMatrix();
+            return camera->viewMatrix() * worldMatrix();
         }
-        return getWorldMatrix();
+        return worldMatrix();
     }
 
-    const glm::mat3 Node::getModelViewInverseTransposeMatrix() const {
-        return glm::transpose(glm::inverse(glm::mat3(getModelViewMatrix())));
+    const glm::mat3 Node::modelViewInverseTransposeMatrix() const {
+        return glm::transpose(glm::inverse(glm::mat3(modelViewMatrix())));
     }
 
-    const glm::mat3 Node::getModelViewInverseTransposeMatrix(const Camera* camera) const {
+    const glm::mat3 Node::modelViewInverseTransposeMatrix(const Camera* camera) const {
         if (camera != nullptr) {
-            return glm::transpose(glm::inverse(glm::mat3(getModelViewMatrix(camera))));
+            return glm::transpose(glm::inverse(glm::mat3(modelViewMatrix(camera))));
         }
-        return glm::transpose(glm::inverse(glm::mat3(getWorldMatrix())));
+        return glm::transpose(glm::inverse(glm::mat3(worldMatrix())));
     }
 
-    const glm::mat4 Node::getModelViewProjectionMatrix() const {
+    const glm::mat4 Node::modelViewProjectionMatrix() const {
         if (SceneRef scene = _scene.lock()) {
-            auto camera = scene->getActiveCamera();
+            auto camera = scene->activeCamera();
             if (camera) {
-                return camera->getViewProjectionMatrix() * getWorldMatrix();
+                return camera->viewProjectionMatrix() * worldMatrix();
             }
         }
-        return getWorldMatrix();
+        return worldMatrix();
     }
 
-    const glm::mat4 Node::getModelViewProjectionMatrix(const Camera* camera) const {
+    const glm::mat4 Node::modelViewProjectionMatrix(const Camera* camera) const {
         if (camera != nullptr) {
-            return camera->getViewProjectionMatrix() * getWorldMatrix();
+            return camera->viewProjectionMatrix() * worldMatrix();
         }
-        return getWorldMatrix();
+        return worldMatrix();
     }
 
-    const glm::mat4 Node::getModelInverseMatrix() const {
-        return glm::inverse(getWorldMatrix());
+    const glm::mat4 Node::modelInverseMatrix() const {
+        return glm::inverse(worldMatrix());
     }
 
-    const glm::mat4 Node::getViewInverseMatrix() const {
-        return glm::inverse(getViewMatrix());
+    const glm::mat4 Node::viewInverseMatrix() const {
+        return glm::inverse(viewMatrix());
     }
 
-    const glm::mat4 Node::getViewInverseMatrix(const Camera* camera) const {
-        return glm::inverse(getViewMatrix(camera));
+    const glm::mat4 Node::viewInverseMatrix(const Camera* camera) const {
+        return glm::inverse(viewMatrix(camera));
     }
 
-    const glm::mat4 Node::getProjectionInverseMatrix() const {
-        return glm::inverse(getProjectionMatrix());
+    const glm::mat4 Node::projectionInverseMatrix() const {
+        return glm::inverse(projectionMatrix());
     }
 
-    const glm::mat4 Node::getProjectionInverseMatrix(const Camera* camera) const {
-        return glm::inverse(getProjectionMatrix(camera));
+    const glm::mat4 Node::projectionInverseMatrix(const Camera* camera) const {
+        return glm::inverse(projectionMatrix(camera));
     }
 
-    const glm::mat4 Node::getModelViewInverseMatrix() const {
-        return glm::inverse(getModelViewMatrix());
+    const glm::mat4 Node::modelViewInverseMatrix() const {
+        return glm::inverse(modelViewMatrix());
     }
 
-    const glm::mat4 Node::getModelViewInverseMatrix(const Camera* camera) const {
-        return glm::inverse(getModelViewMatrix(camera));
+    const glm::mat4 Node::modelViewInverseMatrix(const Camera* camera) const {
+        return glm::inverse(modelViewMatrix(camera));
     }
 
-    const glm::mat4 Node::getModelViewProjectionInverseMatrix() const {
-        return glm::inverse(getModelViewProjectionMatrix());
+    const glm::mat4 Node::modelViewProjectionInverseMatrix() const {
+        return glm::inverse(modelViewProjectionMatrix());
     }
 
-    const glm::mat4 Node::getModelViewProjectionInverseMatrix(const Camera* camera) const {
-        return glm::inverse(getModelViewProjectionMatrix(camera));
+    const glm::mat4 Node::modelViewProjectionInverseMatrix(const Camera* camera) const {
+        return glm::inverse(modelViewProjectionMatrix(camera));
     }
 
-    const glm::mat4 Node::getModelInverseTransposeMatrix() const {
-        return glm::transpose(glm::inverse(getWorldMatrix()));
+    const glm::mat4 Node::modelInverseTransposeMatrix() const {
+        return glm::transpose(glm::inverse(worldMatrix()));
     }
 
-    const glm::mat4 Node::getViewportMatrix() const {
+    const glm::mat4 Node::viewportMatrix() const {
         // TODO
         return glm::mat4();
     }
 
-    glm::vec3 Node::getForwardVectorWorld() const {
-        return getWorldTransform().getRotation() * glm::vec3(0.0f, 0.0f, -1.0f);
+    glm::vec3 Node::forwardVectorWorld() const {
+        return worldTransform().rotation() * glm::vec3(0.0f, 0.0f, -1.0f);
     }
 
     void Node::setLocalTransform(const Transform& transform) {
