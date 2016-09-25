@@ -195,8 +195,8 @@ static NodeRef createLamp() {
 }
 
 static MaterialRef createCubeMaterial() {
-    static constexpr char* VERT_PATH = "res/shaders/lamp.v.glsl";
-    static constexpr char* FRAG_PATH = "res/shaders/lamp.f.glsl";
+    static constexpr char* VERT_PATH = "res/shaders/lamp.vert";
+    static constexpr char* FRAG_PATH = "res/shaders/lamp.frag";
     auto effect = Effect::createFromFile(VERT_PATH, FRAG_PATH);
     if (effect) {
         auto tech = Technique::create(effect);
@@ -215,8 +215,8 @@ static MaterialRef createCubeMaterial() {
 }
 
 static MaterialRef createPointLightMaterial(const char* texture_path, NodeRef lightNode) {
-    static constexpr char* VERT = "res/shaders/point_light.v.glsl";
-    static constexpr char* FRAG = "res/shaders/point_light.f.glsl";
+    static constexpr char* VERT = "res/shaders/point_light.vert";
+    static constexpr char* FRAG = "res/shaders/point_light.frag";
     auto effect = Effect::createFromFile(VERT, FRAG);
     auto image = Image::createFromFile(texture_path);
     auto texture = Texture::create2D(image.get(), GL_RGB, true);

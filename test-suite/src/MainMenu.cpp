@@ -59,11 +59,6 @@ void MainMenu::update() {
 
 void MainMenu::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    float height = app()->getHeightAsFloat();
-
-    float fontSize = static_cast<float>(_font->getSize());
-
     for (const auto& button : _buttons) {
         drawButton(*button);
     }

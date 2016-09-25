@@ -257,7 +257,6 @@ void TestApp::doMovement() {
 }
 
 void TestApp::drawText() {
-    float x = 100.0f;
     float y = 0.0f;
     auto lineHeight = _font->getLineHeight();
 

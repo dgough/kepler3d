@@ -31,10 +31,10 @@ void main() {
         quadraticAttenuation * lightDistance * lightDistance);
 
     vec3 viewDir = normalize(-v_fragPos);
-    vec3 half = normalize(lightDir + viewDir);
+    vec3 halfVec = normalize(lightDir + viewDir);
 
     float d = max(dot(normal, lightDir), 0.0);
-    float s = max(dot(normal, half), 0.0);
+    float s = max(dot(normal, halfVec), 0.0);
 
     if (d == 0.0)
         s = 0.0;

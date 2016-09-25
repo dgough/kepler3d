@@ -19,8 +19,8 @@ namespace kepler {
     static constexpr float X_POS = 0.9f;
     static constexpr float Y_POS = 0.85f;
 
-    static const char* VERT_PATH = "../kepler/res/shaders/axis.v.glsl";
-    static const char* FRAG_PATH = "../kepler/res/shaders/axis.f.glsl";
+    static const char* VERT_PATH = "../kepler/res/shaders/axis.vert";
+    static const char* FRAG_PATH = "../kepler/res/shaders/axis.frag";
 
     static MeshPrimitiveRef createPrimitive();
     static MeshRef createMesh();
