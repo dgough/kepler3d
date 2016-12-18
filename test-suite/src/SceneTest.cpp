@@ -16,8 +16,8 @@ using namespace kepler;
 using glm::vec3;
 
 static constexpr char* GLTF_PATH =
-//"C:/dev/github/glTF/sampleModels/Buggy/glTF/Buggy.gltf";
-//"C:/dev/github/glTF/sampleModels/GearboxAssy/glTF/GearboxAssy.gltf";
+//"C:/dev/github/glTF-Sample-Models/1.0/Buggy/glTF/Buggy.gltf";
+//"C:/dev/github/glTF-Sample-Models/1.0/GearboxAssy/glTF/GearboxAssy.gltf";
 //"res/glTF/duck/Duck.gltf";
 "res/glTF/CesiumMilkTruck/CesiumMilkTruck.gltf";
 //"res/glTF/BoxWithoutIndices/BoxWithoutIndices.gltf";
@@ -78,8 +78,6 @@ void SceneTest::keyEvent(int key, int scancode, int action, int mods) {
             break;
         }
     }
-
-    // TODO press f to focus
 }
 
 void SceneTest::mouseEvent(double xpos, double ypos) {

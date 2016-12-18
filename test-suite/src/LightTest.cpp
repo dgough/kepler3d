@@ -136,8 +136,6 @@ void LightTest::keyEvent(int key, int scancode, int action, int mods) {
             break;
         }
     }
-
-    // TODO press f to focus
 }
 
 void LightTest::mouseEvent(double xpos, double ypos) {

@@ -13,8 +13,8 @@
 
 using namespace kepler;
 
-static constexpr int WIDTH = 1024;
-static constexpr int HEIGHT = 768;
+static constexpr int WINDOW_WIDTH = 1024;
+static constexpr int WINDOW_HEIGHT = 768;
 static constexpr bool FULLSCREEN = false;
 
 static std::shared_ptr<MainMenu> __instance;
@@ -115,7 +115,7 @@ bool MainMenu::clickButtonAt(glm::vec2 pos) {
 }
 
 int main() {
-    App app(WIDTH, HEIGHT, FULLSCREEN);
+    App app(WINDOW_WIDTH, WINDOW_HEIGHT, FULLSCREEN);
     MainMenu::gotoMainMenu();
     app.mainLoop();
     return 0;

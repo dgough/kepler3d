@@ -10,16 +10,17 @@
 #include <GLTFLoader.hpp>
 #include <Material.hpp>
 
+#define BASE_DIR "C:/dev/github/glTF-Sample-Models/1.0/"
+
+static constexpr char* BOX_PATH = BASE_DIR "Box/glTF/Box.gltf";
+static constexpr char* ANIMATED_BOX_PATH = BASE_DIR "BoxAnimated/glTF/BoxAnimated.gltf";
+static constexpr char* DUCK_PATH = BASE_DIR "Duck/glTF/Duck.gltf";
+static constexpr char* TRUCK_PATH = BASE_DIR "CesiumMilkTruck/glTF/CesiumMilkTruck.gltf";
+
+static constexpr int WINDOW_WIDTH = 8;
+static constexpr int WINDOW_HEIGHT = 6;
+
 using namespace kepler;
-
-static constexpr char* BOX_PATH = "C:/dev/github/glTF/sampleModels/Box/glTF/Box.gltf";
-static constexpr char* ANIMATED_BOX_PATH = "C:/dev/github/glTF/sampleModels/BoxAnimated/glTF/BoxAnimated.gltf";
-static constexpr char* DUCK_PATH = "C:/dev/github/glTF/sampleModels/Duck/glTF/Duck.gltf";
-static constexpr char* TRUCK_PATH = "C:/dev/github/glTF/sampleModels/CesiumMilkTruck/glTF/CesiumMilkTruck.gltf";
-
-constexpr int WIDTH = 8;
-constexpr int HEIGHT = 6;
-
 
 static GLFWwindow* setup() {
     glfwInit();
@@ -28,14 +29,14 @@ static GLFWwindow* setup() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "kepler3d", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "kepler3d", nullptr, nullptr);
     glfwMakeContextCurrent(window);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cout << "Failed to initialize OpenGL context" << std::endl;
         return nullptr;
     }
-    glViewport(0, 0, WIDTH, HEIGHT);
+    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
     glGetError(); // clear error flag
     return window;
 }
@@ -52,7 +53,7 @@ TEST(gltf, load_gltf) {
     {
         GLTFLoader gltf;
         auto scene = gltf.loadSceneFromFile(BOX_PATH);
-        EXPECT_TRUE(scene != nullptr);
+        ASSERT_TRUE(scene != nullptr);
         EXPECT_EQ(scene->childCount(), 1);
 
         auto root = scene->childAt(0);
@@ -64,14 +65,14 @@ TEST(gltf, load_gltf) {
         EXPECT_EQ(child->childCount(), 0);
 
         auto mesh = gltf.findMeshById("Geometry-mesh002");
-        EXPECT_TRUE(mesh != nullptr);
+        ASSERT_TRUE(mesh != nullptr);
     }
 
     // animated_box
     {
         GLTFLoader gltf;
         auto scene = gltf.loadSceneFromFile(ANIMATED_BOX_PATH);
-        EXPECT_TRUE(scene != nullptr);
+        ASSERT_TRUE(scene != nullptr);
         EXPECT_EQ(scene->childCount(), 5);
     }
 
@@ -79,12 +80,12 @@ TEST(gltf, load_gltf) {
     {
         GLTFLoader gltf;
         auto scene = gltf.loadSceneFromFile(DUCK_PATH);
-        EXPECT_TRUE(scene != nullptr);
+        ASSERT_TRUE(scene != nullptr);
 
         auto cameraNode = scene->findFirstNodeByName("camera1");
-        EXPECT_TRUE(cameraNode != nullptr);
+        ASSERT_TRUE(cameraNode != nullptr);
         auto camera = cameraNode->component<Camera>();
-        EXPECT_TRUE(camera != nullptr);
+        ASSERT_TRUE(camera != nullptr);
         EXPECT_EQ(camera->cameraType(), Camera::Type::PERSPECTIVE);
     }
 
@@ -97,7 +98,7 @@ TEST(gltf, load_gltf) {
         // test getMaterialByName
         const std::string wheelsName("wheels");
         auto wheelsMaterial = gltf.findMaterialByName(wheelsName);
-        EXPECT_TRUE(wheelsMaterial != nullptr);
+        ASSERT_TRUE(wheelsMaterial != nullptr);
         EXPECT_EQ(wheelsName, wheelsMaterial->name());
     }
 

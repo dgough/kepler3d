@@ -8,8 +8,10 @@ namespace kepler {
 
     /// A Mesh is a collection of MeshPrimitives.
     class Mesh {
-        ALLOW_MAKE_SHARED(Mesh);
     public:
+        /// Use Mesh::create() instead.
+        Mesh();
+        explicit Mesh(MeshPrimitiveRef primitive);
         virtual ~Mesh() noexcept;
 
         /// Creates an empty Mesh.
@@ -36,11 +38,9 @@ namespace kepler {
     public:
         Mesh(const Mesh&) = delete;
         Mesh& operator=(const Mesh&) = delete;
-    private:
-        Mesh();
 
     private:
         std::vector<MeshPrimitiveRef> _primitives;
-        std::string _name;
+        std::unique_ptr<std::string> _name;
     };
 }

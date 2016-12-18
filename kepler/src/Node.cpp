@@ -38,6 +38,9 @@ namespace kepler {
     }
 
     NodeRef Node::createChild(const std::string& name) {
+        std::unique_ptr<Node> p = nullptr;
+        auto size = sizeof(std::string);
+        auto pp = sizeof(p);
         NodeRef node = create(name);
         _children.push_back(node);
         node->setParentInner(shared_from_this());
