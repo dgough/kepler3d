@@ -17,12 +17,12 @@ namespace kepler {
 
         /// Returns the Node that this component belongs to.
         /// Will return nullptr if the component is not attached to a node or the node was cleaned up.
-        NodeRef node() const;
+        ref<Node> node() const;
 
         // TODO remove from node
 
         // TODO add methods for when the component is added or removed from a node?
-        virtual void onNodeChanged(const NodeRef& oldNode, const NodeRef& newNode);
+        virtual void onNodeChanged(const ref<Node>& oldNode, const ref<Node>& newNode);
 
         /// Returns the name of the component.
         /// For example, Camera should return "Camera".
@@ -32,7 +32,7 @@ namespace kepler {
         Component& operator=(const Component&) = delete;
     protected:
         /// Sets the Node that this component belongs to but does not add it to that Node.
-        void setNode(const NodeRef& node);
+        void setNode(const ref<Node>& node);
 
     protected:
         std::weak_ptr<Node> _node;

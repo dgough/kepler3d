@@ -37,7 +37,7 @@ namespace kepler {
         virtual ~Sampler() noexcept;
 
         /// Creates a Texture Sampler and returns a shared pointer to it.
-        static SamplerRef create();
+        static ref<Sampler> create();
 
         void bind(GLenum textureUnit) const noexcept;
         

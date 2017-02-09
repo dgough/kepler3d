@@ -16,8 +16,8 @@ namespace kepler {
     public:
         virtual ~Effect() noexcept;
 
-        static EffectRef createFromFile(const char* vertexShaderPath, const char* fragmentShaderPath);
-        static EffectRef createFromSource(const std::string& vertSource, const std::string& fragSource);
+        static ref<Effect> createFromFile(const char* vertexShaderPath, const char* fragmentShaderPath);
+        static ref<Effect> createFromSource(const std::string& vertSource, const std::string& fragSource);
 
         void bind() const noexcept;
         void unbind() const noexcept;
@@ -46,7 +46,7 @@ namespace kepler {
         void setValue(const Uniform* uniform, const glm::vec3& value) const noexcept;
         void setValue(const Uniform* uniform, const glm::vec4& value) const noexcept;
 
-        void setTexture(const Uniform* uniform, TextureRef texture) const noexcept;
+        void setTexture(const Uniform* uniform, ref<Texture> texture) const noexcept;
 
     public:
         Effect(const Effect&) = delete;
@@ -70,7 +70,7 @@ namespace kepler {
     public:
         ~Uniform() noexcept;
 
-        EffectRef effect() const;
+        ref<Effect> effect() const;
 
         Uniform(const Uniform&) = delete;
         Uniform& operator=(const Uniform&) = delete;

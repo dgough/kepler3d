@@ -38,11 +38,11 @@ namespace kepler {
         return _height;
     }
 
-    SamplerRef Texture::sampler() const {
+    ref<Sampler> Texture::sampler() const {
         return _sampler;
     }
 
-    void Texture::setSampler(SamplerRef sampler) {
+    void Texture::setSampler(ref<Sampler> sampler) {
         _sampler = sampler;
     }
 
@@ -52,7 +52,7 @@ namespace kepler {
         }
     }
 
-    TextureRef Texture::create2D(Image* image, int internalFormat, bool generateMipmaps) {
+    ref<Texture> Texture::create2D(Image* image, int internalFormat, bool generateMipmaps) {
         if (image == nullptr) {
             return nullptr;
         }

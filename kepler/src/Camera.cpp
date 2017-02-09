@@ -28,19 +28,19 @@ namespace kepler {
     Camera::~Camera() noexcept {
     }
 
-    CameraRef Camera::createPerspective(float fov, float aspectRatio, float near, float far) {
+    ref<Camera> Camera::createPerspective(float fov, float aspectRatio, float near, float far) {
         return MAKE_SHARED(Camera, fov, aspectRatio, near, far);
     }
 
-    CameraRef Camera::createPerspectiveFov(float fov, float width, float height, float near, float far) {
+    ref<Camera> Camera::createPerspectiveFov(float fov, float width, float height, float near, float far) {
         return createPerspective(fov, width / height, near, far);
     }
 
-    CameraRef Camera::createOrthographic(float zoomX, float zoomY, float aspectRatio, float near, float far) {
+    ref<Camera> Camera::createOrthographic(float zoomX, float zoomY, float aspectRatio, float near, float far) {
         return MAKE_SHARED(Camera, zoomX, zoomY, aspectRatio, near, far);
     }
 
-    void Camera::onNodeChanged(const NodeRef& oldNode, const NodeRef& newNode) {
+    void Camera::onNodeChanged(const ref<Node>& oldNode, const ref<Node>& newNode) {
         if (oldNode) {
             oldNode->removeListener(this);
         }
@@ -63,7 +63,7 @@ namespace kepler {
 
     const glm::mat4& Camera::viewMatrix() const {
         if (_dirtyBits & VIEW_DIRTY) {
-            if (NodeRef node = _node.lock()) {
+            if (ref<Node> node = _node.lock()) {
                 glm::mat4 m = node->worldMatrix();
                 _view = glm::inverse(m);
             }

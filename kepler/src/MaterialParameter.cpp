@@ -10,7 +10,7 @@ namespace kepler {
     MaterialParameter::~MaterialParameter() noexcept {
     }
 
-    MaterialParameterRef MaterialParameter::create(const std::string& name) {
+    ref<MaterialParameter> MaterialParameter::create(const std::string& name) {
         return MAKE_SHARED(MaterialParameter, name);
     }
 
@@ -58,7 +58,7 @@ namespace kepler {
         _function = func;
     }
 
-    void MaterialParameter::setValue(TextureRef texture) {
+    void MaterialParameter::setValue(ref<Texture> texture) {
         _function = [texture](Effect& effect, const Uniform* uniform) {
             effect.setTexture(uniform, texture);
         };

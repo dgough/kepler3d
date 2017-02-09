@@ -10,12 +10,12 @@ namespace kepler {
         virtual ~Scene() noexcept;
 
         /// Creates a new scene object.
-        static SceneRef create();
+        static ref<Scene> create();
 
         /// Adds the node to the scene's top level list of nodes.
         /// The node will be removed from its previous parent.
-        void addNode(NodeRef& node);
-        NodeRef createChild(const std::string& name = "");
+        void addNode(ref<Node>& node);
+        ref<Node> createChild(const std::string& name = "");
 
         /// Creates nodes with the given names and adds them to this scene.
         void createChildren(std::initializer_list<std::string> names);
@@ -24,10 +24,10 @@ namespace kepler {
         size_t childCount() const;
 
         // Similar to std::vector::at()
-        NodeRef childAt(size_t index) const;
+        ref<Node> childAt(size_t index) const;
 
         /// Returns the last child or nullptr if there are no children.
-        NodeRef lastChild() const;
+        ref<Node> lastChild() const;
 
         const NodeList& children() const;
 
@@ -37,20 +37,20 @@ namespace kepler {
 
         /// Removes the node from the list of children.
         /// This does not include grandchildren.
-        void removeChild(const NodeRef& child);
+        void removeChild(const ref<Node>& child);
 
         /// Moves all of the nodes from src to this scene.
-        void moveNodesFrom(const SceneRef src);
+        void moveNodesFrom(const ref<Scene> src);
 
         /// Finds the first descendant node that matches the given name.
         /// Immediate children are checked first before recursing.
-        NodeRef findFirstNodeByName(const std::string& name, bool recursive = true) const;
+        ref<Node> findFirstNodeByName(const std::string& name, bool recursive = true) const;
 
         template <class NodeEval>
-        NodeRef findFirstNode(const NodeEval& eval, bool recursive = true) const;
+        ref<Node> findFirstNode(const NodeEval& eval, bool recursive = true) const;
 
-        CameraRef activeCamera() const;
-        void setActiveCamera(const CameraRef& camera);
+        ref<Camera> activeCamera() const;
+        void setActiveCamera(const ref<Camera>& camera);
 
         /// Visits each node and calls the given function pass a pointer to the current node.
         /// The expected signature is <code>void func(Node*);</code>
@@ -68,11 +68,11 @@ namespace kepler {
 
     private:
         NodeList _children;
-        CameraRef _activeCamera;
+        ref<Camera> _activeCamera;
     };
 
     template<class NodeEval>
-    NodeRef Scene::findFirstNode(const NodeEval& eval, bool recursive) const {
+    ref<Node> Scene::findFirstNode(const NodeEval& eval, bool recursive) const {
         for (const auto& child : _children) {
             if (eval(child.get())) {
                 return child;

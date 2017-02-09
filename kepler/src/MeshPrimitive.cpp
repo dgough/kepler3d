@@ -15,11 +15,11 @@ namespace kepler {
     MeshPrimitive::~MeshPrimitive() noexcept {
     }
 
-    MeshPrimitiveRef MeshPrimitive::create(Mode mode) {
+    ref<MeshPrimitive> MeshPrimitive::create(Mode mode) {
         return MAKE_SHARED(MeshPrimitive, mode);
     }
 
-    VertexAttributeAccessorRef MeshPrimitive::attribute(AttributeSemantic semantic) const {
+    ref<VertexAttributeAccessor> MeshPrimitive::attribute(AttributeSemantic semantic) const {
         auto it = _attributes.find(semantic);
         if (it != _attributes.end()) {
             return it->second;
@@ -27,23 +27,23 @@ namespace kepler {
         return nullptr;
     }
 
-    IndexAccessorRef MeshPrimitive::indices() const {
+    ref<IndexAccessor> MeshPrimitive::indices() const {
         return _indices;
     }
 
-    void MeshPrimitive::setAttribute(AttributeSemantic semantic, VertexAttributeAccessorRef accessor) {
+    void MeshPrimitive::setAttribute(AttributeSemantic semantic, ref<VertexAttributeAccessor> accessor) {
         _attributes[semantic] = accessor;
     }
 
-    void MeshPrimitive::setIndices(IndexAccessorRef indices) {
+    void MeshPrimitive::setIndices(ref<IndexAccessor> indices) {
         _indices = indices;
     }
 
-    MaterialRef MeshPrimitive::material() const {
+    ref<Material> MeshPrimitive::material() const {
         return _material;
     }
 
-    void MeshPrimitive::setMaterial(MaterialRef material) {
+    void MeshPrimitive::setMaterial(ref<Material> material) {
         if (material == nullptr) {
             // TODO clear other stuff?
             _materialBinding.release();
@@ -105,7 +105,7 @@ namespace kepler {
         _materialBinding->updateBindings(*_material);
     }
 
-    void MeshPrimitive::setNode(NodeRef node) {
+    void MeshPrimitive::setNode(ref<Node> node) {
         _node = node;
         updateBindings();
     }

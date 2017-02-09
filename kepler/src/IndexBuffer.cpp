@@ -11,7 +11,7 @@ namespace kepler {
         }
     }
 
-    IndexBufferRef IndexBuffer::create(GLsizeiptr size, const GLvoid* data, GLenum usage) {
+    ref<IndexBuffer> IndexBuffer::create(GLsizeiptr size, const GLvoid* data, GLenum usage) {
         auto buffer = MAKE_SHARED(IndexBuffer);
         glGenBuffers(1, &buffer->_handle);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer->_handle);

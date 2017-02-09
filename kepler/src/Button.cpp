@@ -15,7 +15,7 @@ namespace kepler {
     Button::~Button() noexcept {
     }
 
-    ButtonRef Button::create() {
+    ref<Button> Button::create() {
         return std::make_shared<Button>();
     }
 

@@ -10,17 +10,17 @@ namespace kepler {
     Material::~Material() noexcept {
     }
 
-    MaterialRef Material::create() {
+    ref<Material> Material::create() {
         return MAKE_SHARED(Material);
     }
 
-    MaterialRef Material::create(TechniqueRef technique) {
+    ref<Material> Material::create(ref<Technique> technique) {
         auto mat = create();
         mat->setTechnique(technique);
         return mat;
     }
 
-    TechniqueRef Material::technique() const {
+    ref<Technique> Material::technique() const {
         return _technique;
     }
 
@@ -32,7 +32,7 @@ namespace kepler {
         _name.assign(name);
     }
 
-    void Material::setTechnique(const TechniqueRef& technique) {
+    void Material::setTechnique(const ref<Technique>& technique) {
         if (_technique != technique) {
             if (_technique) {
                 _technique->setMaterial(nullptr);
@@ -44,11 +44,11 @@ namespace kepler {
         }
     }
 
-    void Material::addParam(const MaterialParameterRef& param) {
+    void Material::addParam(const ref<MaterialParameter>& param) {
         _parameters[param->name()] = param;
     }
 
-    MaterialParameterRef Material::param(const std::string& name) const {
+    ref<MaterialParameter> Material::param(const std::string& name) const {
         auto p = _parameters.find(name);
         if (p != _parameters.end()) {
             return p->second;

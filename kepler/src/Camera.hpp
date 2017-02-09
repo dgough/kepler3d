@@ -23,7 +23,7 @@ namespace kepler {
         /// @param[in] aspectRatio Aspect ratio
         /// @param[in] near        Near plane distance.
         /// @param[in] far         Far plane distance.
-        static CameraRef createPerspective(float fov, float aspectRatio, float near, float far);
+        static ref<Camera> createPerspective(float fov, float aspectRatio, float near, float far);
 
         /// Creates a perspective camera with a FOV based on the given width and height.
         /// @param[in] fov         Field of view in degrees.
@@ -31,12 +31,12 @@ namespace kepler {
         /// @param[in] height      Height of the client display area.
         /// @param[in] near        Near plane distance.
         /// @param[in] far         Far plane distance.
-        static CameraRef createPerspectiveFov(float fov, float width, float height, float near, float far);
+        static ref<Camera> createPerspectiveFov(float fov, float width, float height, float near, float far);
 
         // TODO ortho doesn't need aspect ratio
-        static CameraRef createOrthographic(float zoomX, float zoomY, float aspectRatio, float near, float far);
+        static ref<Camera> createOrthographic(float zoomX, float zoomY, float aspectRatio, float near, float far);
 
-        void onNodeChanged(const NodeRef& oldNode, const NodeRef& newNode) override;
+        void onNodeChanged(const ref<Node>& oldNode, const ref<Node>& newNode) override;
         const std::string& typeName() const override;
 
         Camera::Type cameraType() const;

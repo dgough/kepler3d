@@ -18,10 +18,10 @@ namespace kepler {
         FirstPersonController(float fov, float width, float height, float near, float far);
 
         /// Returns the root camera Node.
-        NodeRef rootNode() const;
+        ref<Node> rootNode() const;
 
         /// Returns the Camera.
-        CameraRef camera() const;
+        ref<Camera> camera() const;
 
         /// Sets the position of the camera.
         /// @param[in] position The position to move to.
@@ -69,8 +69,8 @@ namespace kepler {
         FirstPersonController(const FirstPersonController&) = delete;
         FirstPersonController& operator=(const FirstPersonController&) = delete;
 
-        NodeRef _root;
-        NodeRef _pitchNode;
+        ref<Node> _root;
+        ref<Node> _pitchNode;
         float _invertY;
         float _pitch;
     };

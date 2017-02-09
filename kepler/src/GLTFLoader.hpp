@@ -26,12 +26,12 @@ namespace kepler {
         /// Loads the default scene from the given GLTF file.
         /// @param[in] path The file path.
         /// @return A reference to the newly loaded scene. Will be empty if there was an error.
-        SceneRef loadSceneFromFile(const char* path);
+        ref<Scene> loadSceneFromFile(const char* path);
 
-        MaterialRef findMaterialById(const std::string& id);
-        MaterialRef findMaterialByName(const std::string& name);
+        ref<Material> findMaterialById(const std::string& id);
+        ref<Material> findMaterialByName(const std::string& name);
 
-        MeshRef findMeshById(const std::string& id);
+        ref<Mesh> findMeshById(const std::string& id);
 
         /// Clears all of the data held by this loader.
         void clear();

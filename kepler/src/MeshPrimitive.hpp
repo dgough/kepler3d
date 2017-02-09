@@ -26,23 +26,23 @@ namespace kepler {
 
         virtual ~MeshPrimitive() noexcept;
 
-        static MeshPrimitiveRef create(Mode mode);
+        static ref<MeshPrimitive> create(Mode mode);
 
         /// Returns the attribute with the given semantic. May be null.
-        VertexAttributeAccessorRef attribute(AttributeSemantic semantic) const;
+        ref<VertexAttributeAccessor> attribute(AttributeSemantic semantic) const;
 
         /// Returns the indices for this mesh primitive. May be null.
-        IndexAccessorRef indices() const;
+        ref<IndexAccessor> indices() const;
 
-        void setAttribute(AttributeSemantic semantic, VertexAttributeAccessorRef accessor);
+        void setAttribute(AttributeSemantic semantic, ref<VertexAttributeAccessor> accessor);
         /// Sets the IndexAccessor.
-        void setIndices(IndexAccessorRef indices);
+        void setIndices(ref<IndexAccessor> indices);
 
         /// Returns the material this primitive is bound to. May return null.
-        MaterialRef material() const;
+        ref<Material> material() const;
 
         /// Sets the Material that will be used to draw with.
-        void setMaterial(MaterialRef material);
+        void setMaterial(ref<Material> material);
 
         void draw();
 
@@ -53,17 +53,17 @@ namespace kepler {
         MeshPrimitive(Mode mode);
 
         void updateBindings();
-        void setNode(NodeRef node);
+        void setNode(ref<Node> node);
 
     private:
         // The type of primitives to render. Allowed values are 0 (POINTS), 1 (LINES), 2 (LINE_LOOP), 3 (LINE_STRIP), 4 (TRIANGLES), 5 (TRIANGLE_STRIP), and 6 (TRIANGLE_FAN).
         Mode _mode;
-        IndexAccessorRef _indices;
-        std::map<AttributeSemantic, VertexAttributeAccessorRef> _attributes;
-        MaterialRef _material;
+        ref<IndexAccessor> _indices;
+        std::map<AttributeSemantic, ref<VertexAttributeAccessor>> _attributes;
+        ref<Material> _material;
         std::unique_ptr<MaterialBinding> _materialBinding;
 
         std::unique_ptr<VertexAttributeBinding> _vertexBinding;
-        NodeWeakRef _node;
+        std::weak_ptr<Node> _node;
     };
 }

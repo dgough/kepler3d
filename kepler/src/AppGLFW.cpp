@@ -46,7 +46,7 @@ namespace kepler {
 
         std::string _title;
 
-        AppDelegateRef _delegate;
+        ref<AppDelegate> _delegate;
         size_t _frameCount;
     };
 
@@ -64,7 +64,7 @@ namespace kepler {
         g_app = nullptr;
     }
 
-    void App::setDelegate(AppDelegateRef appDelegate) {
+    void App::setDelegate(ref<AppDelegate> appDelegate) {
         auto prev = _impl->_delegate;
         _impl->_delegate = appDelegate;
         if (prev) {

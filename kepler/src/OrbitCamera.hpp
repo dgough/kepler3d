@@ -16,7 +16,7 @@ namespace kepler {
         OrbitCamera(); // TODO args. Allow passing in a camera?
 
         /// Attaches this OrbitCamera to the scene.
-        void attach(SceneRef scene);
+        void attach(ref<Scene> scene);
 
         /// Detaches this OrbitCamera from the scene it is attached to.
         void detach();
@@ -44,8 +44,8 @@ namespace kepler {
         float _radius;
         glm::vec2 _start;
 
-        NodeRef _cameraNode;
-        NodeRef _lookatNode;
-        NodeWeakRef _oldCameraNode;
+        ref<Node> _cameraNode;
+        ref<Node> _lookatNode;
+        std::weak_ptr<Node> _oldCameraNode;
     };
 }

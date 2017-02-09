@@ -11,13 +11,13 @@ namespace kepler {
     public:
         virtual ~MeshRenderer() noexcept;
 
-        static MeshRendererRef create(MeshRef mesh);
+        static ref<MeshRenderer> create(ref<Mesh> mesh);
 
         void draw();
 
-        void onNodeChanged(const NodeRef& oldNode, const NodeRef& newNode) override;
+        void onNodeChanged(const ref<Node>& oldNode, const ref<Node>& newNode) override;
 
-        MeshRef mesh() const;
+        ref<Mesh> mesh() const;
 
         const std::string& typeName() const override;
 
@@ -25,9 +25,9 @@ namespace kepler {
         MeshRenderer(const MeshRenderer&) = delete;
         MeshRenderer& operator=(const MeshRenderer&) = delete;
     private:
-        explicit MeshRenderer(MeshRef mesh);
+        explicit MeshRenderer(ref<Mesh> mesh);
     private:
         // for now, only have 1 mesh per renderer
-        MeshRef _mesh;
+        ref<Mesh> _mesh;
     };
 }

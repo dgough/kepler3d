@@ -10,28 +10,28 @@ namespace kepler {
     Scene::~Scene() noexcept {
     }
 
-    SceneRef Scene::create() {
+    ref<Scene> Scene::create() {
         return MAKE_SHARED(Scene);
     }
 
-    void Scene::addNode(NodeRef& node) {
+    void Scene::addNode(ref<Node>& node) {
         if (node == nullptr) return;
 
-        if (NodeRef parent = node->_parent.lock()) {
+        if (ref<Node> parent = node->_parent.lock()) {
             Node::removeFromList(parent->_children, node);
         }
         else if (auto oldScene = node->_scene.lock()) {
             oldScene->removeChild(node);
         }
         node->_parent.reset();
-        SceneRef scene = shared_from_this();
+        ref<Scene> scene = shared_from_this();
         node->_scene = scene;
         _children.push_back(node);
         node->setAllChildrenScene(scene);
         node->parentChanged();
     }
 
-    NodeRef Scene::createChild(const std::string& name) {
+    ref<Node> Scene::createChild(const std::string& name) {
         auto node = Node::create(name);
         node->_scene = shared_from_this();
         _children.push_back(node);
@@ -48,11 +48,11 @@ namespace kepler {
         return _children.size();
     }
 
-    NodeRef Scene::childAt(size_t index) const {
+    ref<Node> Scene::childAt(size_t index) const {
         return _children.at(index);
     }
 
-    NodeRef Scene::lastChild() const {
+    ref<Node> Scene::lastChild() const {
         auto count = _children.size();
         if (count == 0) return nullptr;
         return _children[count - 1];
@@ -66,14 +66,14 @@ namespace kepler {
         Node::removeChild(_children, index);
     }
 
-    void Scene::removeChild(const NodeRef& child) {
+    void Scene::removeChild(const ref<Node>& child) {
         if (child) {
             Node::removeFromList(_children, child);
             child->clearParent();
         }
     }
 
-    void Scene::moveNodesFrom(const SceneRef src) {
+    void Scene::moveNodesFrom(const ref<Scene> src) {
         if (src == nullptr) return;
         while (!src->_children.empty()) {
             auto child = src->childAt(0);
@@ -81,7 +81,7 @@ namespace kepler {
         }
     }
 
-    NodeRef Scene::findFirstNodeByName(const std::string& name, bool recursive) const {
+    ref<Node> Scene::findFirstNodeByName(const std::string& name, bool recursive) const {
         for (const auto& child : _children) {
             if (child->name() == name) {
                 return child;
@@ -98,11 +98,11 @@ namespace kepler {
         return nullptr;
     }
 
-    CameraRef Scene::activeCamera() const {
+    ref<Camera> Scene::activeCamera() const {
         return _activeCamera;
     }
 
-    void Scene::setActiveCamera(const CameraRef& camera) {
+    void Scene::setActiveCamera(const ref<Camera>& camera) {
         _activeCamera = camera;
     }
 }

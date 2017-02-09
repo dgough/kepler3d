@@ -21,7 +21,7 @@ namespace kepler {
         }
     }
 
-    ImageRef Image::createFromFile(const char* path, bool flipY) {
+    ref<Image> Image::createFromFile(const char* path, bool flipY) {
         int width, height, format;
         unsigned char* data = SOIL_load_image(path, &width, &height, &format, SOIL_LOAD_AUTO);
         if (data == nullptr) {
@@ -34,7 +34,7 @@ namespace kepler {
         return MAKE_SHARED(Image, width, height, toImageFormat(format), data);
     }
 
-    ImageRef Image::createFromFileMemory(const unsigned char* buffer, int bufferLength, bool flipY) {
+    ref<Image> Image::createFromFileMemory(const unsigned char* buffer, int bufferLength, bool flipY) {
         int width, height, format;
         unsigned char* data = SOIL_load_image_from_memory(buffer, bufferLength, &width, &height, &format, SOIL_LOAD_AUTO);
         if (data == nullptr) {
@@ -47,7 +47,7 @@ namespace kepler {
         return MAKE_SHARED(Image, width, height, toImageFormat(format), data);
     }
 
-    ImageRef Image::createFromMemory(int width, int height, Format format, const unsigned char* data) {
+    ref<Image> Image::createFromMemory(int width, int height, Format format, const unsigned char* data) {
         int soilFormat = toSoilFormat(format);
         size_t size = width * height * soilFormat;
         unsigned char* d = (unsigned char*)malloc(size);

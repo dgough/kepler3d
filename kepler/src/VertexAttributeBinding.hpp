@@ -11,7 +11,7 @@ namespace kepler {
         explicit VertexAttributeBinding(GLuint handle);
         ~VertexAttributeBinding() noexcept;
 
-        static std::unique_ptr<VertexAttributeBinding> createUnique(const MeshPrimitiveRef& meshPrim, const TechniqueRef& technique);
+        static std::unique_ptr<VertexAttributeBinding> createUnique(const ref<MeshPrimitive>& meshPrim, const ref<Technique>& technique);
 
         void bind();
         void unbind();

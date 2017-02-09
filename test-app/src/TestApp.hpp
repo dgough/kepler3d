@@ -28,12 +28,12 @@ private:
 
     void loadGLTF(const char* path);
     void loadScenes();
-    SceneRef loadDuckScene();
+    ref<Scene> loadDuckScene();
     void loadCityScene();
 
 private:
-    SceneRef _scene;
+    ref<Scene> _scene;
     std::unique_ptr<FirstPersonController> _firstPerson;
     std::unique_ptr<AxisCompass> _compass;
-    BmpFontRef _font;
+    ref<BmpFont> _font;
 };

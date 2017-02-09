@@ -4,6 +4,8 @@
 #include <OrbitCamera.hpp>
 #include <AxisCompass.hpp>
 
+using namespace kepler;
+
 class LightTest : public kepler::AppDelegate {
 public:
     LightTest();
@@ -22,9 +24,9 @@ private:
 
 private:
     bool _moveCamera;
-    kepler::SceneRef _scene;
-    kepler::NodeRef _lightParent;
-    kepler::BmpFontRef _font;
-    kepler::AxisCompass _compass;
-    kepler::OrbitCamera _orbitCamera;
+    ref<Scene> _scene;
+    ref<Node> _lightParent;
+    ref<BmpFont> _font;
+    AxisCompass _compass;
+    OrbitCamera _orbitCamera;
 };

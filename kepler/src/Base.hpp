@@ -41,36 +41,6 @@ namespace kepler {
     class FirstPersonController;
     class AxisCompass;
 
-    /// @addtogroup ref References
-    /// Reference counted types.
-    /// @{
-    ///
-    
-    using NodeRef = std::shared_ptr<Node>; ///< Shared pointer to Node.
-    using NodeWeakRef = std::weak_ptr<Node>; ///< Weak pointer to Node.
-    using SceneRef = std::shared_ptr<Scene>; ///< Shared pointer to Scene.
-    using CameraRef = std::shared_ptr<Camera>; ///< Shared pointer to Camera.
-    using MeshRef = std::shared_ptr<Mesh>; ///< Shared pointer to Mesh.
-    using MeshPrimitiveRef = std::shared_ptr<MeshPrimitive>; ///< Shared pointer to MeshPrimitive.
-    using MeshRendererRef = std::shared_ptr<MeshRenderer>; ///< Shared pointer to MeshRenderer.
-    using VertexBufferRef = std::shared_ptr<VertexBuffer>; ///< Shared pointer to VertexBuffer.
-    using IndexBufferRef = std::shared_ptr<IndexBuffer>; ///< Shared pointer to IndexBuffer.
-    using IndexAccessorRef = std::shared_ptr<IndexAccessor>; ///< Shared pointer to IndexAccessor.
-    using VertexAttributeAccessorRef = std::shared_ptr<VertexAttributeAccessor>; ///< Shared pointer to VertexAttributeAccessor.
-    using EffectRef = std::shared_ptr<Effect>; ///< Shared pointer to Effect.
-    using MaterialRef = std::shared_ptr<Material>; ///< Shared pointer to Material.
-    using MaterialParameterRef = std::shared_ptr<MaterialParameter>; ///< Shared pointer to MaterialParameter.
-    using TechniqueRef = std::shared_ptr<Technique>; ///< Shared pointer to Technique.
-    using RenderStateRef = std::shared_ptr<RenderState>; ///< Shared pointer to RenderState.
-    using ImageRef = std::shared_ptr<Image>; ///< Shared pointer to Image.
-    using TextureRef = std::shared_ptr<Texture>; ///< Shared pointer to Texture.
-    using SamplerRef = std::shared_ptr<Sampler>; ///< Shared pointer to Sampler.
-    using BmpFontRef = std::shared_ptr<BmpFont>; ///< Shared pointer to BmpFont.
-    using DrawableComponentRef = std::shared_ptr<DrawableComponent>; ///< Shared pointer to DrawableComponent.
-    using ButtonRef = std::shared_ptr<Button>; ///< Shared pointer to Button.
-
-    using AppDelegateRef = std::shared_ptr<AppDelegate>; ///< Shared pointer to AppDelegate.
-    ///
-    /// @}
-
+    template<class T>
+    using ref = std::shared_ptr<T>; /// ref is an alias for std::shared_ptr
 }

@@ -15,7 +15,7 @@ namespace kepler {
         }
     }
 
-    SamplerRef Sampler::create() {
+    ref<Sampler> Sampler::create() {
         return std::make_shared<Sampler>();
     }
 

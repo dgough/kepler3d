@@ -18,7 +18,7 @@ namespace kepler {
 
         // Most MaterialBindings will have at least one binding that uses the camera so get it here
         // instead of having the Node search for it.
-        CameraRef camera = nullptr;
+        ref<Camera> camera = nullptr;
         Camera* cameraPtr = nullptr;
         if (auto scene = node.scene()) {
             camera = scene->activeCamera();
@@ -40,7 +40,7 @@ namespace kepler {
         auto tech = material.technique();
         auto effect = tech->effect();
         for (const auto& semantic : tech->semantics()) {
-            const MaterialParameterRef& materialParam = semantic.second;
+            const ref<MaterialParameter>& materialParam = semantic.second;
             if (materialParam->uniform() == nullptr) {
                 // assert?
                 continue;

@@ -26,7 +26,7 @@ namespace kepler {
         }
     }
 
-    EffectRef Effect::createFromFile(const char* vertexShaderPath, const char* fragmentShaderPath) {
+    ref<Effect> Effect::createFromFile(const char* vertexShaderPath, const char* fragmentShaderPath) {
         if (vertexShaderPath == nullptr || fragmentShaderPath == nullptr) {
             return nullptr;
         }
@@ -125,14 +125,14 @@ namespace kepler {
         glUniform4f(uniform->_location, value.x, value.y, value.z, value.w);
     }
 
-    void Effect::setTexture(const Uniform* uniform, TextureRef texture) const noexcept {
+    void Effect::setTexture(const Uniform* uniform, ref<Texture> texture) const noexcept {
         GLenum textureUnit = GL_TEXTURE0 + uniform->_index;
         glActiveTexture(textureUnit);
         texture->bind(uniform->_index);
         glUniform1i(uniform->_location, (GLint)uniform->_index);
     }
 
-    EffectRef Effect::createFromSource(const std::string& vertSource, const std::string& fragSource) {
+    ref<Effect> Effect::createFromSource(const std::string& vertSource, const std::string& fragSource) {
         GLuint vertShader = loadShaderFromSource(vertSource, GL_VERTEX_SHADER);
         GLuint fragShader = loadShaderFromSource(fragSource, GL_FRAGMENT_SHADER);
         ProgramHandle program = createAndLinkProgram(vertShader, fragShader);
@@ -141,7 +141,7 @@ namespace kepler {
         if (program == 0) {
             return nullptr;
         }
-        EffectRef effect = MAKE_SHARED(Effect, program);
+        ref<Effect> effect = MAKE_SHARED(Effect, program);
         effect->queryAttributes();
         effect->queryUniforms();
         return effect;
@@ -230,7 +230,7 @@ namespace kepler {
 
     }
 
-    EffectRef Uniform::effect() const {
+    ref<Effect> Uniform::effect() const {
         return _effect.lock();
     }
 

@@ -17,7 +17,7 @@ namespace kepler {
         }
     }
 
-    std::unique_ptr<VertexAttributeBinding> VertexAttributeBinding::createUnique(const MeshPrimitiveRef& meshPrim, const TechniqueRef& technique) {
+    std::unique_ptr<VertexAttributeBinding> VertexAttributeBinding::createUnique(const ref<MeshPrimitive>& meshPrim, const ref<Technique>& technique) {
         if (meshPrim == nullptr || technique == nullptr) {
             return nullptr;
         }

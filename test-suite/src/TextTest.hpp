@@ -2,6 +2,8 @@
 
 #include <AppDelegate.hpp>
 
+using namespace kepler;
+
 /// Test loading fonts and drawing text.
 /// Dropping a font file into the window will load it.
 class TextTest : public kepler::AppDelegate {
@@ -20,5 +22,5 @@ public:
 
 private:
 
-    kepler::BmpFontRef _font;
+    ref<BmpFont> _font;
 };

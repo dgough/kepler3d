@@ -15,7 +15,7 @@ namespace kepler {
 
         virtual ~Button() noexcept;
 
-        static ButtonRef create();
+        static ref<Button> create();
 
 
         void setOnClick(const std::function<void()>& callback);

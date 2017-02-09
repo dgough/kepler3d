@@ -26,6 +26,6 @@ namespace kepler {
         void updateValues(const Material& material);
 
         std::vector<std::function<void(const Effect& effect, const Node&, const Camera*)>> _functions;
-        std::vector<MaterialParameterRef> _values;
+        std::vector<ref<MaterialParameter>> _values;
     };
 }

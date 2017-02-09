@@ -13,7 +13,7 @@ namespace kepler {
             UNSIGNED_INT = GL_UNSIGNED_INT
         };
         // Use IndexAccessor::create()
-        IndexAccessor(IndexBufferRef indexBuffer, GLsizei count, GLenum type, GLintptr offset);
+        IndexAccessor(ref<IndexBuffer> indexBuffer, GLsizei count, GLenum type, GLintptr offset);
 
         /// Creates a IndexAccessor.
         /// 
@@ -22,7 +22,7 @@ namespace kepler {
         /// @param[in] type        The type of the values. Must be UNSIGNED_BYTE, UNSIGNED_SHORT or UNSIGNED_INT.
         /// @param[in] offset      The offset into the buffer.
         /// @return Shared pointer to newly created IndexAccessor.
-        static IndexAccessorRef create(IndexBufferRef indexBuffer, GLsizei count, GLenum type, GLintptr offset);
+        static ref<IndexAccessor> create(ref<IndexBuffer> indexBuffer, GLsizei count, GLenum type, GLintptr offset);
 
         void bind();
 
@@ -31,7 +31,7 @@ namespace kepler {
         GLintptr offset() const;
 
     private:
-        IndexBufferRef _buffer;
+        ref<IndexBuffer> _buffer;
         GLsizei _count;
         GLenum _type;
         GLintptr _offset;

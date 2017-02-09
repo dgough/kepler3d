@@ -25,7 +25,7 @@ namespace kepler {
     OrbitCamera::OrbitCamera() : _yaw(DEFAULT_YAW), _pitch(DEFAULT_PITCH), _radius(DEFAULT_RADIUS) {
     }
 
-    void OrbitCamera::attach(SceneRef scene) {
+    void OrbitCamera::attach(ref<Scene> scene) {
         if (!scene) {
             return;
         }

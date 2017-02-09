@@ -13,21 +13,21 @@ namespace kepler {
         ALLOW_MAKE_SHARED(Material);
     public:
         virtual ~Material() noexcept;
-        static MaterialRef create();
-        static MaterialRef create(TechniqueRef technique);
+        static ref<Material> create();
+        static ref<Material> create(ref<Technique> technique);
 
         /// Returns the Technique in this Material.
-        TechniqueRef technique() const;
+        ref<Technique> technique() const;
 
         const std::string& name() const;
         void setName(const std::string& name);
-        void setTechnique(const TechniqueRef& technique);
+        void setTechnique(const ref<Technique>& technique);
 
         /// Adds a MaterialParameter to this Material.
-        void addParam(const MaterialParameterRef& param);
+        void addParam(const ref<MaterialParameter>& param);
 
         /// Returns the MaterialParameter matching the given name.
-        MaterialParameterRef param(const std::string& name) const;
+        ref<MaterialParameter> param(const std::string& name) const;
 
         void bind();
 
@@ -38,7 +38,7 @@ namespace kepler {
         Material();
     private:
         std::string _name;
-        TechniqueRef _technique; // TODO only 1 for now?
-        std::map<std::string, MaterialParameterRef> _parameters;
+        ref<Technique> _technique; // TODO only 1 for now?
+        std::map<std::string, ref<MaterialParameter>> _parameters;
     };
 }

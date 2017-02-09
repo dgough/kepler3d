@@ -15,7 +15,7 @@ namespace kepler {
         virtual ~App() noexcept;
 
         /// Sets the delegate that will receive callbacks.
-        void setDelegate(AppDelegateRef appDelegate);
+        void setDelegate(ref<AppDelegate> appDelegate);
 
         /// Starts the main loop.
         void mainLoop();

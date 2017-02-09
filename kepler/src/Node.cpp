@@ -25,23 +25,23 @@ namespace kepler {
     Node::~Node() noexcept {
     }
 
-    NodeRef Node::create() {
+    ref<Node> Node::create() {
         return MAKE_SHARED(Node);
     }
 
-    NodeRef Node::create(const char* name) {
+    ref<Node> Node::create(const char* name) {
         return MAKE_SHARED(Node, name);
     }
 
-    NodeRef Node::create(const std::string& name) {
+    ref<Node> Node::create(const std::string& name) {
         return MAKE_SHARED(Node, name);
     }
 
-    NodeRef Node::createChild(const std::string& name) {
+    ref<Node> Node::createChild(const std::string& name) {
         std::unique_ptr<Node> p = nullptr;
         auto size = sizeof(std::string);
         auto pp = sizeof(p);
-        NodeRef node = create(name);
+        ref<Node> node = create(name);
         _children.push_back(node);
         node->setParentInner(shared_from_this());
         node->_scene = _scene;
@@ -54,10 +54,10 @@ namespace kepler {
         }
     }
 
-    void Node::addNode(const NodeRef& child) {
+    void Node::addNode(const ref<Node>& child) {
         if (child == nullptr) return;
 
-        if (NodeRef parent = child->_parent.lock()) {
+        if (ref<Node> parent = child->_parent.lock()) {
             // Do nothing if the node is already a child.
             if (parent.get() == this) {
                 return;
@@ -78,14 +78,14 @@ namespace kepler {
         removeChild(_children, index);
     }
 
-    void Node::removeChild(const NodeRef& child) {
+    void Node::removeChild(const ref<Node>& child) {
         if (child) {
             removeFromList(_children, child);
             child->clearParent();
         }
     }
 
-    NodeRef Node::parent() const {
+    ref<Node> Node::parent() const {
         return _parent.lock();
     }
 
@@ -93,7 +93,7 @@ namespace kepler {
         return !_parent.expired();
     }
 
-    void Node::setParent(const NodeRef& newParent) {
+    void Node::setParent(const ref<Node>& newParent) {
         removeFromParent();
         if (newParent) {
             newParent->_children.push_back(shared_from_this());
@@ -104,13 +104,13 @@ namespace kepler {
     }
 
     void Node::removeFromParent() {
-        if (NodeRef parent = _parent.lock()) {
+        if (ref<Node> parent = _parent.lock()) {
             parent->removeChild(shared_from_this());
         }
     }
 
-    NodeRef Node::root() {
-        if (NodeRef parent = _parent.lock()) {
+    ref<Node> Node::root() {
+        if (ref<Node> parent = _parent.lock()) {
             while (!parent->_parent.expired()) {
                 parent = parent->_parent.lock();
             }
@@ -119,15 +119,15 @@ namespace kepler {
         return shared_from_this();
     }
 
-    SceneRef Node::scene() const {
+    ref<Scene> Node::scene() const {
         return _scene.lock();
     }
 
-    void Node::setScene(SceneRef scene) {
+    void Node::setScene(ref<Scene> scene) {
         _scene = scene;
     }
 
-    NodeRef Node::findFirstNodeByName(const std::string& name, bool recursive) const {
+    ref<Node> Node::findFirstNodeByName(const std::string& name, bool recursive) const {
         for (const auto& child : _children) {
             if (child->name() == name) {
                 return child;
@@ -156,15 +156,15 @@ namespace kepler {
         _name.assign(name);
     }
 
-    NodeRef Node::childAt(size_t index) const {
+    ref<Node> Node::childAt(size_t index) const {
         return _children.at(index);
     }
 
-    NodeRef Node::operator[](size_t index) {
+    ref<Node> Node::operator[](size_t index) {
         return _children[index];
     }
 
-    const NodeRef Node::operator[](size_t index) const {
+    const ref<Node> Node::operator[](size_t index) const {
         return _children[index];
     }
 
@@ -187,7 +187,7 @@ namespace kepler {
         _components.erase(it, _components.end());
     }
 
-    DrawableComponentRef Node::drawable() {
+    ref<DrawableComponent> Node::drawable() {
         // TODO make this faster
         return component<DrawableComponent>();
     }
@@ -311,7 +311,7 @@ namespace kepler {
     }
 
     const glm::mat4& Node::viewMatrix() const {
-        if (SceneRef scene = _scene.lock()) {
+        if (ref<Scene> scene = _scene.lock()) {
             auto camera = scene->activeCamera();
             if (camera) {
                 return camera->viewMatrix();
@@ -328,7 +328,7 @@ namespace kepler {
     }
 
     const glm::mat4& Node::projectionMatrix() const {
-        if (SceneRef scene = _scene.lock()) {
+        if (ref<Scene> scene = _scene.lock()) {
             auto camera = scene->activeCamera();
             if (camera) {
                 return camera->projectionMatrix();
@@ -394,7 +394,7 @@ namespace kepler {
     }
 
     const glm::mat4 Node::modelViewProjectionMatrix() const {
-        if (SceneRef scene = _scene.lock()) {
+        if (ref<Scene> scene = _scene.lock()) {
             auto camera = scene->activeCamera();
             if (camera) {
                 return camera->viewProjectionMatrix() * worldMatrix();
@@ -496,24 +496,24 @@ namespace kepler {
 
     void Node::removeChild(NodeList& children, size_t index) {
         if (index < children.size()) {
-            NodeRef child = children[index];
+            ref<Node> child = children[index];
             child->clearParent();
             children.erase(children.begin() + index);
         }
     }
 
-    void Node::removeFromList(NodeList& children, const NodeRef child) {
+    void Node::removeFromList(NodeList& children, const ref<Node> child) {
         children.erase(std::remove(children.begin(), children.end(), child), children.end());
     }
 
-    void Node::setAllChildrenScene(const SceneRef& scene) {
+    void Node::setAllChildrenScene(const ref<Scene>& scene) {
         for (auto child : _children) {
             child->_scene = scene;
             child->setAllChildrenScene(scene);
         }
     }
 
-    void Node::setParentInner(const NodeRef& parent) {
+    void Node::setParentInner(const ref<Node>& parent) {
         _parent = parent;
         parentChanged();
     }

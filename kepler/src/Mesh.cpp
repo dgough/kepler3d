@@ -8,21 +8,21 @@ namespace kepler {
     Mesh::Mesh() {
     }
 
-    Mesh::Mesh(MeshPrimitiveRef primitive) : _primitives{primitive} {
+    Mesh::Mesh(ref<MeshPrimitive> primitive) : _primitives{primitive} {
     }
 
     Mesh::~Mesh() noexcept {
     }
 
-    MeshRef Mesh::create() {
+    ref<Mesh> Mesh::create() {
         return std::make_shared<Mesh>();
     }
 
-    MeshRef Mesh::create(MeshPrimitiveRef primitive) {
+    ref<Mesh> Mesh::create(ref<MeshPrimitive> primitive) {
         return std::make_shared<Mesh>(primitive);
     }
 
-    void Mesh::addMeshPrimitive(MeshPrimitiveRef primitive) {
+    void Mesh::addMeshPrimitive(ref<MeshPrimitive> primitive) {
         _primitives.push_back(std::move(primitive));
     }
 
@@ -30,13 +30,13 @@ namespace kepler {
         _name = std::make_unique<std::string>(name);
     }
 
-    void Mesh::setNode(NodeRef node) {
+    void Mesh::setNode(ref<Node> node) {
         for (const auto& primitive : _primitives) {
             primitive->setNode(node);
         }
     }
 
-    MeshPrimitiveRef Mesh::primitiveAt(size_t index) const {
+    ref<MeshPrimitive> Mesh::primitiveAt(size_t index) const {
         return _primitives.at(index);
     }
 

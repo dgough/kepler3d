@@ -8,15 +8,15 @@ namespace kepler {
     Component::~Component() noexcept {
     }
 
-    NodeRef Component::node() const {
+    ref<Node> Component::node() const {
         return _node.lock();
     }
 
-    void Component::onNodeChanged(const NodeRef&, const NodeRef&) {
+    void Component::onNodeChanged(const ref<Node>&, const ref<Node>&) {
     }
 
-    void Component::setNode(const NodeRef& node) {
-        NodeRef oldNode = _node.lock();
+    void Component::setNode(const ref<Node>& node) {
+        ref<Node> oldNode = _node.lock();
         _node = node;
         onNodeChanged(oldNode, node);
     }

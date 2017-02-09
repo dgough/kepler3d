@@ -17,11 +17,11 @@ namespace kepler {
         _pitchNode->addComponent(camera);
     }
 
-    NodeRef FirstPersonController::rootNode() const {
+    ref<Node> FirstPersonController::rootNode() const {
         return _root;
     }
 
-    CameraRef FirstPersonController::camera() const {
+    ref<Camera> FirstPersonController::camera() const {
         return _pitchNode->component<Camera>();
     }
 

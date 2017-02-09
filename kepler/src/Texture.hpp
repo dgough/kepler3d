@@ -25,9 +25,9 @@ namespace kepler {
         int width() const;
         int height() const;
 
-        SamplerRef sampler() const;
+        ref<Sampler> sampler() const;
 
-        void setSampler(SamplerRef sampler);
+        void setSampler(ref<Sampler> sampler);
         
         virtual ~Texture() noexcept;
 
@@ -36,7 +36,7 @@ namespace kepler {
         /// @param[in] internalFormat  Internal format of the texture (see glTexImage2D docs). GL_RGB, GL_RGBA...
         /// @param[in] generateMipmaps True if mipmaps should be generated automatically; false otherwise.
         /// @return Shared ptr to the texture. May be null if there was an error.
-        static TextureRef create2D(Image* image, int internalFormat, bool generateMipmaps = false);
+        static ref<Texture> create2D(Image* image, int internalFormat, bool generateMipmaps = false);
 
         // TODO immutable 2D texture
     public:
@@ -49,6 +49,6 @@ namespace kepler {
         Type _type;
         int _width;
         int _height;
-        SamplerRef _sampler;
+        ref<Sampler> _sampler;
     };
 }

@@ -23,24 +23,24 @@ namespace kepler {
     public:
         virtual ~Node() noexcept;
 
-        /// Creates a node and returns a std::shard_ptr to it.
-        static NodeRef create();
+        /// Creates a node and returns a std::shared_ptr to it.
+        static ref<Node> create();
 
         /// Creates a node with the given name.
-        static NodeRef create(const char* name);
+        static ref<Node> create(const char* name);
 
         /// Creates a new node with the given name.
         /// Node names are not unique.
-        static NodeRef create(const std::string& name);
+        static ref<Node> create(const std::string& name);
 
         /// Creates a new node and adds it as a child of this node.
-        NodeRef createChild(const std::string& name = "");
+        ref<Node> createChild(const std::string& name = "");
 
         /// Creates child nodes with the given names ands them to this node.
         void createChildren(std::initializer_list<std::string> names);
 
         /// Adds the node as a child of this node.
-        void addNode(const NodeRef& child);
+        void addNode(const ref<Node>& child);
 
         /// Returns the number of direct child nodes.
         size_t childCount() const;
@@ -51,32 +51,32 @@ namespace kepler {
 
         /// Removes the node from the list of children.
         /// This does not include grandchildren.
-        void removeChild(const NodeRef& child);
+        void removeChild(const ref<Node>& child);
 
         /// Returns a reference to the parent node. May be null.
-        NodeRef parent() const;
+        ref<Node> parent() const;
 
         /// Returns true if this node has a parent; false otherwise.
         bool hasParent() const;
 
         /// Sets the parent of this node to be newParent.
-        void setParent(const NodeRef& newParent);
+        void setParent(const ref<Node>& newParent);
 
         /// Removes this node from its parent.
         void removeFromParent();
 
         /// Returns the root node.
         /// This node will be the root node if it doesn't have a parent.
-        NodeRef root();
+        ref<Node> root();
 
         /// Returns the scene that this node belongs to. May be null.
-        SceneRef scene() const;
+        ref<Scene> scene() const;
 
         /// Sets this node's scene. 
         /// Normally you shouldn't used this method but it is handy when a node doesn't 
         /// belong to a scene but it still needs access to the scene, like getting the camera.
         /// @param[in] scene The scene; may be null.
-        void setScene(SceneRef scene);
+        void setScene(ref<Scene> scene);
 
         /// Finds the first descendant node that matches the given name.
         /// Immediate children are checked first before recursing.
@@ -84,7 +84,7 @@ namespace kepler {
         /// @param[in] name The name of the node to search for.
         /// @param[in] recursive True if the search should be recursive.
         /// @return The node if found; otherwise returns nullptr.
-        NodeRef findFirstNodeByName(const std::string& name, bool recursive = true) const;
+        ref<Node> findFirstNodeByName(const std::string& name, bool recursive = true) const;
 
         // Node* findFirstNodeByName(const char* name, bool recursive = true);
         // unsigned int findAllNodes(const char* name, std::vector<Node*> nodes, bool recursive = true);
@@ -97,7 +97,7 @@ namespace kepler {
         /// ```
         /// @param[in] recursive True if the search should be recursive.
         template <class NodeEval>
-        NodeRef findFirstNode(const NodeEval& eval, bool recursive = true) const;
+        ref<Node> findFirstNode(const NodeEval& eval, bool recursive = true) const;
 
         // isStatic
         // isEnabled
@@ -122,13 +122,13 @@ namespace kepler {
         /// throwing an out_of_range exception if it is not.
         /// Similar to std::vector::at().
         /// @throws out_of_range exception.
-        NodeRef childAt(size_t index) const;
+        ref<Node> childAt(size_t index) const;
 
         /// Returns the Node at specified location pos. No bounds checking is performed.
-        NodeRef operator[](size_t index);
+        ref<Node> operator[](size_t index);
 
         /// Returns the Node at specified location pos. No bounds checking is performed.
-        const NodeRef operator[](size_t index) const;
+        const ref<Node> operator[](size_t index) const;
 
         /// Adds the component to this node.
         void addComponent(const std::shared_ptr<Component>& component);
@@ -141,7 +141,7 @@ namespace kepler {
 
         /// Returns the first drawable component of this node.
         /// @return Shared ref to a DrawableComponent; may be null.
-        DrawableComponentRef drawable();
+        ref<DrawableComponent> drawable();
 
         /// Returns true if this node contains the component.
         /// You cannot search for abstract components because this is a simple string comparison.
@@ -266,11 +266,11 @@ namespace kepler {
         static void removeChild(NodeList& children, size_t index);
 
         /// Removes the child from the list of children but doesn't update its parent or scene.
-        static void removeFromList(NodeList& children, const NodeRef child);
+        static void removeFromList(NodeList& children, const ref<Node> child);
 
-        void setAllChildrenScene(const SceneRef& scene);
+        void setAllChildrenScene(const ref<Scene>& scene);
 
-        void setParentInner(const NodeRef& parent);
+        void setParentInner(const ref<Node>& parent);
         void clearParent();
         void parentChanged();
 
@@ -282,7 +282,7 @@ namespace kepler {
 
     private:
         std::string _name;
-        NodeWeakRef _parent;
+        std::weak_ptr<Node> _parent;
         NodeList _children;
         ComponentList _components;
         std::weak_ptr<Scene> _scene;
@@ -298,7 +298,7 @@ namespace kepler {
     // Methods
 
     template<class NodeEval>
-    NodeRef Node::findFirstNode(const NodeEval& eval, bool recursive) const {
+    ref<Node> Node::findFirstNode(const NodeEval& eval, bool recursive) const {
         for (const auto& child : _children) {
             if (eval(child.get())) {
                 return child;

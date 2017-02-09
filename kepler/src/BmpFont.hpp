@@ -14,7 +14,7 @@ namespace kepler {
         virtual ~BmpFont() noexcept;
 
         /// Creates a BmpFont from an Angel Code font file.
-        static BmpFontRef createFromFile(const char* path);
+        static ref<BmpFont> createFromFile(const char* path);
 
         void drawText(const char* text, float x, float y, const glm::vec3& color = glm::vec3(1, 1, 1));
 

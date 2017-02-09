@@ -5,7 +5,7 @@
 
 using namespace kepler;
 
-static void expectAllChildrenInScene(NodeRef& node, SceneRef& scene) {
+static void expectAllChildrenInScene(ref<Node>& node, ref<Scene>& scene) {
     for (size_t i = 0; i < node->childCount(); ++i) {
         auto& child = node->childAt(i);
         EXPECT_EQ(child->scene(), scene);

@@ -11,25 +11,25 @@ namespace kepler {
     public:
         /// Use Mesh::create() instead.
         Mesh();
-        explicit Mesh(MeshPrimitiveRef primitive);
+        explicit Mesh(ref<MeshPrimitive> primitive);
         virtual ~Mesh() noexcept;
 
         /// Creates an empty Mesh.
-        static MeshRef create();
+        static ref<Mesh> create();
 
         /// Creates a Mesh and adds the given MeshPrimitive.
-        static MeshRef create(MeshPrimitiveRef primitive);
+        static ref<Mesh> create(ref<MeshPrimitive> primitive);
 
         /// Adds a MeshPrimitive to this mesh.
         /// @param[in] primitive The primitive to add.
-        void addMeshPrimitive(MeshPrimitiveRef primitive);
+        void addMeshPrimitive(ref<MeshPrimitive> primitive);
 
         void setName(const std::string& name);
-        void setNode(NodeRef node); // TODO make this private?
+        void setNode(ref<Node> node); // TODO make this private?
 
         /// Returns the MeshPrimitive at the given index.
         /// @param[in] index The index of the MeshPrimitive.
-        MeshPrimitiveRef primitiveAt(size_t index) const;
+        ref<MeshPrimitive> primitiveAt(size_t index) const;
         MeshPrimitive* primitivePtr(size_t index) const;
 
         /// Returns the number of MeshPrimitives held by this Mesh.
@@ -40,7 +40,7 @@ namespace kepler {
         Mesh& operator=(const Mesh&) = delete;
 
     private:
-        std::vector<MeshPrimitiveRef> _primitives;
+        std::vector<ref<MeshPrimitive>> _primitives;
         std::unique_ptr<std::string> _name;
     };
 }

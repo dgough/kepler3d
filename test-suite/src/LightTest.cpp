@@ -33,9 +33,9 @@ static std::string g_text;
 static glm::vec3 _lightColor(1);
 static bool _pause = false;
 
-static NodeRef createLamp();
-static MaterialRef createCubeMaterial();
-static MaterialRef createPointLightMaterial(const char* texture_path, NodeRef lightNode);
+static ref<Node> createLamp();
+static ref<Material> createCubeMaterial();
+static ref<Material> createPointLightMaterial(const char* texture_path, ref<Node> lightNode);
 
 LightTest::LightTest() : _moveCamera(false) {
 }
@@ -178,7 +178,7 @@ void LightTest::loadSceneFromFile(const char* path) {
     g_text.assign(path);
 }
 
-static NodeRef createLamp() {
+static ref<Node> createLamp() {
     auto prim = createLitCubePrimitive();
     auto material = createCubeMaterial();
     if (prim && material) {
@@ -192,7 +192,7 @@ static NodeRef createLamp() {
     return nullptr;
 }
 
-static MaterialRef createCubeMaterial() {
+static ref<Material> createCubeMaterial() {
     static constexpr char* VERT_PATH = "res/shaders/lamp.vert";
     static constexpr char* FRAG_PATH = "res/shaders/lamp.frag";
     auto effect = Effect::createFromFile(VERT_PATH, FRAG_PATH);
@@ -212,7 +212,7 @@ static MaterialRef createCubeMaterial() {
     return nullptr;
 }
 
-static MaterialRef createPointLightMaterial(const char* texture_path, NodeRef lightNode) {
+static ref<Material> createPointLightMaterial(const char* texture_path, ref<Node> lightNode) {
     static constexpr char* VERT = "res/shaders/point_light.vert";
     static constexpr char* FRAG = "res/shaders/point_light.frag";
     auto effect = Effect::createFromFile(VERT, FRAG);

@@ -13,14 +13,14 @@ namespace kepler {
         ALLOW_MAKE_SHARED(Technique);
     public:
         virtual ~Technique() noexcept;
-        static TechniqueRef create();
-        static TechniqueRef create(EffectRef effect);
+        static ref<Technique> create();
+        static ref<Technique> create(ref<Effect> effect);
 
-        EffectRef effect() const;
+        ref<Effect> effect() const;
         const AttributeMap& attributes() const;
         const std::map<std::string, std::string>& uniforms() const;
 
-        const std::map<std::string, MaterialParameterRef>& semantics() const;
+        const std::map<std::string, ref<MaterialParameter>>& semantics() const;
 
         /// Returns the RenderState for this technique.
         RenderState& renderState();
@@ -34,16 +34,16 @@ namespace kepler {
         /// @param[in] paramName The name of the material parameter.
         void setUniformName(const std::string& glslName, const std::string& paramName);
 
-        void setUniform(const std::string& glslName, MaterialParameterRef param);
+        void setUniform(const std::string& glslName, ref<MaterialParameter> param);
         void setSemanticUniform(const std::string& glslName, const std::string& paramName, MaterialParameter::Semantic semantic);
-        void setEffect(EffectRef effect);
-        void setMaterial(MaterialRef material);
+        void setEffect(ref<Effect> effect);
+        void setMaterial(ref<Material> material);
 
         void bind(); // TODO remove and use a pass?
-        void findValues(std::vector<MaterialParameterRef>& values);
+        void findValues(std::vector<ref<MaterialParameter>>& values);
 
         /// Finds the material parameter with the given name.
-        MaterialParameterRef findValueParameter(const std::string& paramName);
+        ref<MaterialParameter> findValueParameter(const std::string& paramName);
 
     private:
         Technique();
@@ -53,7 +53,7 @@ namespace kepler {
         bool updateUniform(MaterialParameter& materialParam, const std::string& uniformName);
     private:
         std::string _name;
-        EffectRef _effect;
+        ref<Effect> _effect;
 
         // attributes: <shaderAttribName, paramName>
         AttributeMap _attributes;
@@ -62,9 +62,9 @@ namespace kepler {
         std::map<std::string, std::string> _uniforms;
 
         // key = parameterName
-        std::map<std::string, MaterialParameterRef> _semantics;
+        std::map<std::string, ref<MaterialParameter>> _semantics;
         // key = parameterName
-        std::map<std::string, MaterialParameterRef> _values;
+        std::map<std::string, ref<MaterialParameter>> _values;
 
         std::weak_ptr<Material> _material;
 

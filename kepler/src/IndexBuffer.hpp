@@ -10,7 +10,7 @@ namespace kepler {
         ALLOW_MAKE_SHARED(IndexBuffer);
     public:
         virtual ~IndexBuffer() noexcept;
-        static IndexBufferRef create(GLsizeiptr size, const GLvoid* data, GLenum usage = GL_STATIC_DRAW);
+        static ref<IndexBuffer> create(GLsizeiptr size, const GLvoid* data, GLenum usage = GL_STATIC_DRAW);
 
         /// Binds this buffer.
         void bind();

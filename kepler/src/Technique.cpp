@@ -11,17 +11,17 @@ namespace kepler {
     Technique::~Technique() noexcept {
     }
 
-    TechniqueRef Technique::create() {
+    ref<Technique> Technique::create() {
         return MAKE_SHARED(Technique);
     }
 
-    TechniqueRef Technique::create(EffectRef effect) {
+    ref<Technique> Technique::create(ref<Effect> effect) {
         auto tech = create();
         tech->setEffect(effect);
         return tech;
     }
 
-    EffectRef Technique::effect() const {
+    ref<Effect> Technique::effect() const {
         return _effect;
     }
 
@@ -33,7 +33,7 @@ namespace kepler {
         return _uniforms;
     }
 
-    const std::map<std::string, MaterialParameterRef>& Technique::semantics() const {
+    const std::map<std::string, ref<MaterialParameter>>& Technique::semantics() const {
         return _semantics;
     }
 
@@ -49,7 +49,7 @@ namespace kepler {
         _uniforms[glslName] = paramName;
     }
 
-    void Technique::setUniform(const std::string& glslName, MaterialParameterRef param) {
+    void Technique::setUniform(const std::string& glslName, ref<MaterialParameter> param) {
         setUniformName(glslName, param->name());
         _values[param->name()] = param;
         updateUniform(*param, glslName);
@@ -62,11 +62,11 @@ namespace kepler {
         updateUniform(*p, glslName);
     }
 
-    void Technique::setEffect(EffectRef effect) {
+    void Technique::setEffect(ref<Effect> effect) {
         _effect = effect;
     }
 
-    void Technique::setMaterial(MaterialRef material) {
+    void Technique::setMaterial(ref<Material> material) {
         _material = material;
     }
 
@@ -77,7 +77,7 @@ namespace kepler {
         }
     }
 
-    void Technique::findValues(std::vector<MaterialParameterRef>& values) {
+    void Technique::findValues(std::vector<ref<MaterialParameter>>& values) {
         values.clear();
         if (_effect) {
             auto material = _material.lock();
@@ -89,7 +89,7 @@ namespace kepler {
 
                 // TODO This is a mess. Needs to be improved.
 
-                MaterialParameterRef materialParam = findValueParameter(paramName);
+                ref<MaterialParameter> materialParam = findValueParameter(paramName);
 
                 if (materialParam == nullptr && material) {
                     auto param = material->param(paramName);
@@ -107,7 +107,7 @@ namespace kepler {
         }
     }
 
-    MaterialParameterRef Technique::findValueParameter(const std::string& paramName) {
+    ref<MaterialParameter> Technique::findValueParameter(const std::string& paramName) {
         auto p = _values.find(paramName);
         if (p != _values.end()) {
             return p->second;

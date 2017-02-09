@@ -7,13 +7,13 @@ namespace kepler {
 
     static std::string _typeName("MeshRenderer");
 
-    MeshRenderer::MeshRenderer(MeshRef mesh) : _mesh(mesh) {
+    MeshRenderer::MeshRenderer(ref<Mesh> mesh) : _mesh(mesh) {
     }
 
     MeshRenderer::~MeshRenderer() noexcept {
     }
 
-    MeshRendererRef MeshRenderer::create(MeshRef mesh) {
+    ref<MeshRenderer> MeshRenderer::create(ref<Mesh> mesh) {
         return MAKE_SHARED(MeshRenderer, mesh);
     }
 
@@ -26,13 +26,13 @@ namespace kepler {
         }
     }
 
-    void MeshRenderer::onNodeChanged(const NodeRef&, const NodeRef&) {
+    void MeshRenderer::onNodeChanged(const ref<Node>&, const ref<Node>&) {
         if (_mesh) {
             _mesh->setNode(node());
         }
     }
 
-    MeshRef MeshRenderer::mesh() const {
+    ref<Mesh> MeshRenderer::mesh() const {
         return _mesh;
     }
 

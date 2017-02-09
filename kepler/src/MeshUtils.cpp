@@ -11,7 +11,7 @@
 namespace kepler {
 
     /// Creates a cube mesh primitive
-    MeshPrimitiveRef createLitCubePrimitive() {
+    ref<MeshPrimitive> createLitCubePrimitive() {
         static constexpr float p = 0.5f;
         static constexpr float n = -0.5f;
         static constexpr std::array<GLfloat, 144> vertices = {
@@ -71,7 +71,7 @@ namespace kepler {
         return prim;
     }
 
-    MeshPrimitiveRef createTexturedLitQuadPrimitive(glm::vec2 maxTexCoords) {
+    ref<MeshPrimitive> createTexturedLitQuadPrimitive(glm::vec2 maxTexCoords) {
         static constexpr float p = 0.5f;
         static constexpr float n = -0.5f;
         static constexpr float z = 0.0f;

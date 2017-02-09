@@ -22,15 +22,15 @@ namespace kepler {
     static const char* VERT_PATH = "../kepler/res/shaders/axis.vert";
     static const char* FRAG_PATH = "../kepler/res/shaders/axis.frag";
 
-    static MeshPrimitiveRef createPrimitive();
-    static MeshRef createMesh();
-    static NodeRef createNode();
+    static ref<MeshPrimitive> createPrimitive();
+    static ref<Mesh> createMesh();
+    static ref<Node> createNode();
 
     AxisCompass::AxisCompass() {
         _node = createNode();
     }
 
-    AxisCompass::AxisCompass(SceneRef scene) : AxisCompass() {
+    AxisCompass::AxisCompass(ref<Scene> scene) : AxisCompass() {
         if (_node) {
             _node->setScene(scene);
         }
@@ -44,17 +44,17 @@ namespace kepler {
         }
     }
 
-    NodeRef AxisCompass::node() const {
+    ref<Node> AxisCompass::node() const {
         return _node;
     }
 
-    void AxisCompass::setScene(SceneRef scene) {
+    void AxisCompass::setScene(ref<Scene> scene) {
         if (_node) {
             _node->setScene(scene);
         }
     }
 
-    MeshPrimitiveRef createPrimitive() {
+    ref<MeshPrimitive> createPrimitive() {
         // x, y, z, r, g, b
         static constexpr std::array<GLubyte, 36> vertices = {
             0, 0, 0, 0, 1, 0, // y-axis
@@ -73,7 +73,7 @@ namespace kepler {
         return prim;
     }
 
-    MeshRef createMesh() {
+    ref<Mesh> createMesh() {
         auto prim = createPrimitive();
         if (prim) {
             auto mesh = Mesh::create(prim);
@@ -103,7 +103,7 @@ namespace kepler {
         return nullptr;
     }
 
-    NodeRef createNode() {
+    ref<Node> createNode() {
         auto mesh = createMesh();
         if (mesh) {
             auto node = Node::create("compass");

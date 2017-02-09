@@ -159,7 +159,7 @@ namespace kepler {
         std::shared_ptr<BmpFontRenderer> _renderer;
 
         // Assume there is only one texture for now.
-        TextureRef _texture;
+        ref<Texture> _texture;
     };
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -180,8 +180,8 @@ namespace kepler {
         GLuint _vao;
         GLuint _vbo;
         RenderState _state;
-        EffectRef _effect;
-        SamplerRef _sampler;
+        ref<Effect> _effect;
+        ref<Sampler> _sampler;
     };
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -472,7 +472,7 @@ namespace kepler {
     BmpFont::~BmpFont() noexcept {
     }
 
-    BmpFontRef BmpFont::createFromFile(const char* path) {
+    ref<BmpFont> BmpFont::createFromFile(const char* path) {
         if (path == nullptr || *path == '\0') {
             return nullptr;
         }
