@@ -8,4 +8,7 @@ namespace kepler {
 
     DrawableComponent::~DrawableComponent() noexcept {
     }
+    bool DrawableComponent::isDrawable() const {
+        return true;
+    }
 }

@@ -19,6 +19,8 @@ namespace kepler {
         /// Will return nullptr if the component is not attached to a node or the node was cleaned up.
         ref<Node> node() const;
 
+        virtual bool isDrawable() const;
+
         // TODO remove from node
 
         // TODO add methods for when the component is added or removed from a node?

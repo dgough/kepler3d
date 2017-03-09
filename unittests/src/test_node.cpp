@@ -204,6 +204,15 @@ TEST(node, get_drawable) {
     EXPECT_FALSE(node->drawable() == nullptr);
 }
 
+TEST(node, is_drawable) {
+    // TODO move to component test?
+    auto camera = createCamera();
+    EXPECT_FALSE(camera->isDrawable());
+
+    auto meshRenderer = MeshRenderer::create(Mesh::create());
+    EXPECT_TRUE(meshRenderer);
+}
+
 class TestNodeListener : public Node::Listener {
 public:
     bool _called;

@@ -13,6 +13,8 @@ namespace kepler {
 
         virtual void draw() = 0;
 
+        bool isDrawable() const override;
+
         DrawableComponent(const DrawableComponent&) = delete;
         DrawableComponent& operator=(const DrawableComponent&) = delete;
     };

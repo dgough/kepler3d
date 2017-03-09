@@ -12,6 +12,10 @@ namespace kepler {
         return _node.lock();
     }
 
+    bool Component::isDrawable() const {
+        return false;
+    }
+
     void Component::onNodeChanged(const ref<Node>&, const ref<Node>&) {
     }
 
