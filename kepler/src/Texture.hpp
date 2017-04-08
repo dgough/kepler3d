@@ -43,7 +43,7 @@ namespace kepler {
         Texture(const Texture&) = delete;
         Texture& operator=(const Texture&) = delete;
     private:
-        Texture(Type type);
+        explicit Texture(Type type);
     private:
         TextureHandle _handle;
         Type _type;

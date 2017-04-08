@@ -50,7 +50,7 @@ namespace kepler {
         MeshPrimitive(const MeshPrimitive&) = delete;
         MeshPrimitive& operator=(const MeshPrimitive&) = delete;
     private:
-        MeshPrimitive(Mode mode);
+        explicit MeshPrimitive(Mode mode);
 
         void updateBindings();
         void setNode(ref<Node> node);
