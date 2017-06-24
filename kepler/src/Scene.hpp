@@ -18,7 +18,7 @@ namespace kepler {
         ref<Node> createChild(const std::string& name = "");
 
         /// Creates nodes with the given names and adds them to this scene.
-        void createChildren(std::initializer_list<std::string> names);
+        void createChildren(const std::initializer_list<std::string>& names);
 
         /// Returns the number of direct child nodes.
         size_t childCount() const;

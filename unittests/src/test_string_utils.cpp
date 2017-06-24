@@ -16,8 +16,10 @@ TEST(string_utils, startsWith) {
     EXPECT_TRUE(startsWith(str, "The"));
     EXPECT_FALSE(startsWith(str, "the"));
 
+    EXPECT_TRUE(startsWith("words", "word"));
+
     // prefix longer
-    EXPECT_FALSE(startsWith("word", "words"));
+    EXPECT_FALSE(startsWith("word", "words"));    
     EXPECT_FALSE(startsWith("", "a"));
 
     // ignore case

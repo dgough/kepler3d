@@ -236,6 +236,30 @@ TEST(node, node_listener) {
     EXPECT_FALSE(listener->_called);
 }
 
+TEST(node, node_iterator) {
+    auto root = Node::create();
+    std::initializer_list<std::string> nameList = { "C1", "C2", "C3", "C4", "C5" };
+    root->createChildren(nameList);
+
+    EXPECT_EQ(nameList.size(), root->childCount());
+
+    auto nameIt = nameList.begin();
+    auto it = root->begin();
+    for (; it != root->end() && nameIt != nameList.end(); ++it, ++nameIt) {
+        EXPECT_EQ(*nameIt, it->name());
+        it++;
+        it--;
+        ++it;
+        --it;
+    }
+
+    nameIt = nameList.begin();
+    for (const auto& node : *root) {
+        EXPECT_EQ(*nameIt, node.name());
+        ++nameIt;
+    }
+}
+
 /*
 std::unique_ptr<Node> root = Node::create("root");
 

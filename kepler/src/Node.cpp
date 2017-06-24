@@ -48,7 +48,7 @@ namespace kepler {
         return node;
     }
 
-    void Node::createChildren(std::initializer_list<std::string> names) {
+    void Node::createChildren(const std::initializer_list<std::string>& names) {
         for (const auto& name : names) {
             createChild(name);
         }
@@ -557,5 +557,46 @@ namespace kepler {
                 }
             }
         }
+    }
+
+    Node::Iterator Node::begin() const {
+        size_t pos = 0;
+        return Iterator(_children, pos);
+    }
+
+    Node::Iterator Node::end() const {
+        return Iterator(_children, _children.size());
+    }
+
+    bool Node::Iterator::operator != (const Iterator& other) const {
+        return _list != other._list || _pos != other._pos;
+    }
+
+    const Node::Iterator& Node::Iterator::operator++() {
+        ++_pos;
+        return *this;
+    }
+
+    const Node::Iterator& Node::Iterator::operator++(int) {
+        _pos++;
+        return *this;
+    }
+
+    const Node::Iterator& Node::Iterator::operator--() {
+        --_pos;
+        return *this;
+    }
+
+    const Node::Iterator& Node::Iterator::operator--(int) {
+        _pos--;
+        return *this;
+    }
+
+    Node& Node::Iterator::operator* () const {
+        return *(_list[_pos].get());
+    }
+
+    Node* Node::Iterator::operator->() const {
+        return _list[_pos].get();
     }
 }

@@ -38,7 +38,7 @@ namespace kepler {
         return node;
     }
 
-    void Scene::createChildren(std::initializer_list<std::string> names) {
+    void Scene::createChildren(const std::initializer_list<std::string>& names) {
         for (const auto& name : names) {
             createChild(name);
         }

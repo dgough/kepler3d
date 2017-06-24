@@ -22,6 +22,9 @@ static constexpr int WINDOW_HEIGHT = 6;
 
 using namespace kepler;
 
+//#define DISABLE_GLTF_LOADER_TEST
+#ifndef DISABLE_GLTF_LOADER_TEST
+
 static GLFWwindow* setup() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -104,3 +107,5 @@ TEST(gltf, load_gltf) {
 
     glfwTerminate();
 }
+
+#endif

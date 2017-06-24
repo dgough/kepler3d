@@ -37,7 +37,7 @@ namespace kepler {
         ref<Node> createChild(const std::string& name = "");
 
         /// Creates child nodes with the given names ands them to this node.
-        void createChildren(std::initializer_list<std::string> names);
+        void createChildren(const std::initializer_list<std::string>& names);
 
         /// Adds the node as a child of this node.
         void addNode(const ref<Node>& child);
@@ -251,6 +251,37 @@ namespace kepler {
 
         /// Removes the given listener.
         void removeListener(Listener* listener);
+
+        /// Node iterator
+        class Iterator {
+        public:
+            Iterator(const NodeList& list, size_t pos) : _list(list), _pos(pos) {}
+
+            bool operator != (const Iterator& other) const;
+
+            const Iterator& operator++();
+
+            const Iterator& operator++(int);
+
+            const Iterator& operator--();
+
+            const Iterator& operator--(int);
+
+            Node& operator* () const;
+
+            Node* operator->() const;
+
+        private:
+            const NodeList& _list;
+            size_t _pos;
+        };
+
+        /// Returns an iterator pointing to the first child node.
+        /// This iterator will only iterator the children, not the grand children.
+        Iterator begin() const;
+
+        /// Returns an iterator referring to the past-the-end child (not the last child).
+        Iterator end() const;
 
     public:
         Node(const Node&) = delete;

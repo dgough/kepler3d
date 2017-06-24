@@ -22,6 +22,22 @@ namespace kepler {
             ++s1;
             ++s2;
         }
+        return *s1 == *s2;
+    }
+
+    static inline bool equalsIgnoreLength(const char* subject, const char* prefix, bool ignoreCase) {
+        while (*subject != '\0' && *prefix != '\0') {
+            if (ignoreCase) {
+                if (lowercase(*subject) != lowercase(*prefix)) {
+                    return false;
+                }
+            }
+            else if (*subject != *prefix) {
+                return false;
+            }
+            ++subject;
+            ++prefix;
+        }
         return true;
     }
 
@@ -33,7 +49,7 @@ namespace kepler {
             return false;
         }
         const char* s = subject.c_str();
-        return stringEqual(s, prefix, ignoreCase);
+        return equalsIgnoreLength(s, prefix, ignoreCase);
     }
 
     bool startsWith(const std::string& subject, const std::string& prefix, bool ignoreCase) {
@@ -52,6 +68,6 @@ namespace kepler {
             return false;
         }
         const char* s = subject.c_str() + (subject.length() - suffixLength);
-        return stringEqual(s, suffix, ignoreCase);
+        return equalsIgnoreLength(s, suffix, ignoreCase);
     }
 }
