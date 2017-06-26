@@ -7,7 +7,7 @@
 #include <Node.hpp>
 #include <Scene.hpp>
 #include <Camera.hpp>
-#include <GLTFLoader.hpp>
+#include <GLTF1Loader.hpp>
 #include <Material.hpp>
 
 #define BASE_DIR "C:/dev/github/glTF-Sample-Models/1.0/"
@@ -22,7 +22,7 @@ static constexpr int WINDOW_HEIGHT = 6;
 
 using namespace kepler;
 
-//#define DISABLE_GLTF_LOADER_TEST
+#define DISABLE_GLTF_LOADER_TEST
 #ifndef DISABLE_GLTF_LOADER_TEST
 
 static GLFWwindow* setup() {
@@ -45,7 +45,7 @@ static GLFWwindow* setup() {
 }
 
 TEST(gltf, file_not_found) {
-    GLTFLoader gltf;
+    GLTF1Loader gltf;
     auto scene = gltf.loadSceneFromFile("asdf.gltf");
     EXPECT_EQ(scene, nullptr);
 }
@@ -54,7 +54,7 @@ TEST(gltf, load_gltf) {
     setup();
     // load_box    
     {
-        GLTFLoader gltf;
+        GLTF1Loader gltf;
         auto scene = gltf.loadSceneFromFile(BOX_PATH);
         ASSERT_TRUE(scene != nullptr);
         EXPECT_EQ(scene->childCount(), 1);
@@ -73,7 +73,7 @@ TEST(gltf, load_gltf) {
 
     // animated_box
     {
-        GLTFLoader gltf;
+        GLTF1Loader gltf;
         auto scene = gltf.loadSceneFromFile(ANIMATED_BOX_PATH);
         ASSERT_TRUE(scene != nullptr);
         EXPECT_EQ(scene->childCount(), 5);
@@ -81,7 +81,7 @@ TEST(gltf, load_gltf) {
 
     // load duck
     {
-        GLTFLoader gltf;
+        GLTF1Loader gltf;
         auto scene = gltf.loadSceneFromFile(DUCK_PATH);
         ASSERT_TRUE(scene != nullptr);
 
@@ -94,7 +94,7 @@ TEST(gltf, load_gltf) {
 
     // load truck
     {
-        GLTFLoader gltf;
+        GLTF1Loader gltf;
         auto loadResult = gltf.load(TRUCK_PATH);
         EXPECT_TRUE(loadResult);
 

@@ -154,7 +154,9 @@
     <ClCompile Include="src\FileSystem.cpp" />
     <ClCompile Include="src\FirstPersonController.cpp" />
     <ClCompile Include="src\glad.cpp" />
-    <ClCompile Include="src\GLTFLoader.cpp" />
+    <ClCompile Include="src\gltf2.cpp" />
+    <ClCompile Include="src\GLTF1Loader.cpp" />
+    <ClCompile Include="src\GLTF2Loader.cpp" />
     <ClCompile Include="src\Image.cpp" />
     <ClCompile Include="src\IndexAccessor.cpp" />
     <ClCompile Include="src\IndexBuffer.cpp" />
@@ -200,7 +202,9 @@
     <ClInclude Include="src\Effect.hpp" />
     <ClInclude Include="src\FileSystem.hpp" />
     <ClInclude Include="src\FirstPersonController.hpp" />
-    <ClInclude Include="src\GLTFLoader.hpp" />
+    <ClInclude Include="src\gltf2.hpp" />
+    <ClInclude Include="src\GLTF1Loader.hpp" />
+    <ClInclude Include="src\GLTF2Loader.hpp" />
     <ClInclude Include="src\Image.hpp" />
     <ClInclude Include="src\IndexAccessor.hpp" />
     <ClInclude Include="src\IndexBuffer.hpp" />

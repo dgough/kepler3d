@@ -48,9 +48,6 @@
     <ClCompile Include="src\AppGLFW.cpp">
       <Filter>src\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="src\GLTFLoader.cpp">
-      <Filter>src\glTF</Filter>
-    </ClCompile>
     <ClCompile Include="src\AxisCompass.cpp">
       <Filter>src\Utils</Filter>
     </ClCompile>
@@ -162,6 +159,15 @@
     <ClCompile Include="src\MeshUtils.cpp">
       <Filter>src\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="src\gltf2.cpp">
+      <Filter>src\glTF</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GLTF1Loader.cpp">
+      <Filter>src\glTF</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GLTF2Loader.cpp">
+      <Filter>src\glTF</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\App.hpp">
@@ -169,9 +175,6 @@
     </ClInclude>
     <ClInclude Include="src\AppDelegate.hpp">
       <Filter>src\Platform</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GLTFLoader.hpp">
-      <Filter>src\glTF</Filter>
     </ClInclude>
     <ClInclude Include="src\AxisCompass.hpp">
       <Filter>src\Utils</Filter>
@@ -292,6 +295,15 @@
     </ClInclude>
     <ClInclude Include="src\AttributeSemantic.hpp">
       <Filter>src\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gltf2.hpp">
+      <Filter>src\glTF</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GLTF1Loader.hpp">
+      <Filter>src\glTF</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GLTF2Loader.hpp">
+      <Filter>src\glTF</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

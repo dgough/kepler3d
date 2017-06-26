@@ -1,5 +1,7 @@
 #include "stdafx.h"
-#include "GLTFLoader.hpp"
+#include "GLTF2Loader.hpp"
+
+#include "gltf2.hpp"
 
 #include "Scene.hpp"
 #include "Camera.hpp"
@@ -139,8 +141,8 @@ namespace kepler {
 
     // Private implementation
     /// @Internal
-    class GLTFLoader::Impl final {
-        friend class GLTFLoader;
+    class GLTF2Loader::Impl final {
+        friend class GLTF2Loader;
     public:
         Impl();
         ~Impl() noexcept;
@@ -151,9 +153,14 @@ namespace kepler {
 
         ref<Scene> loadDefaultScene();
 
+        ref<Scene> loadScene(size_t index);
         ref<Scene> loadScene(const string& id);
+
+        ref<Node> loadNode(size_t index);
         ref<Node> loadNode(const string& id);
+        ref<Node> loadNode(const gltf2::Node& gNode);
         ref<Node> loadNode(const json& jNode);
+
         ref<Mesh> loadMesh(const string& id);
         ref<Camera> loadCamera(const string& id);
 
@@ -188,26 +195,31 @@ namespace kepler {
         void setAutoLoadMaterials(bool value);
 
     private:
+        void loadTransform(const gltf2::Node& gNode, const ref<Node>& node);
         void loadTransform(const json& jNode, ref<Node> node);
 
 
     private:
-        json _json;
+        gltf2::Gltf _gltf;
+        json _json; // TODO remove
 
-        std::map <string, std::shared_ptr<std::vector<ubyte>>> _buffers;
+        std::map<size_t, ref<Node>> _nodes;
 
-        std::map<string, ref<Node>> _nodes;
-        std::map<string, ref<VertexBuffer>> _vbos;
-        std::map<string, ref<IndexBuffer>> _indexBuffers;
-        std::map<string, ref<IndexAccessor>> _indexAccessors;
-        std::map<string, ref<VertexAttributeAccessor>> _vertexAttributeAccessors;
 
-        std::map<string, ref<Material>> _materials;
-        std::map<string, ref<Technique>> _techniques;
-        std::map<string, ref<Effect>> _effects;
-        std::map<string, ref<Texture>> _textures;
-        std::map<string, ref<Sampler>> _samplers;
-        std::map<string, ref<Image>> _images;
+        std::map <string, std::shared_ptr<std::vector<ubyte>>> _buffersOld;
+
+        std::map<string, ref<Node>> _nodesOld;
+        std::map<string, ref<VertexBuffer>> _vbosOld;
+        std::map<string, ref<IndexBuffer>> _indexBuffersOld;
+        std::map<string, ref<IndexAccessor>> _indexAccessorsOld;
+        std::map<string, ref<VertexAttributeAccessor>> _vertexAttributeAccessorsOld;
+
+        std::map<string, ref<Material>> _materialsOld;
+        std::map<string, ref<Technique>> _techniquesOld;
+        std::map<string, ref<Effect>> _effectsOld;
+        std::map<string, ref<Texture>> _texturesOld;
+        std::map<string, ref<Sampler>> _samplersOld;
+        std::map<string, ref<Image>> _imagesOld;
 
         ref<Material> _defaultMaterial;
         ref<Technique> _defaultTechnique;
@@ -224,97 +236,84 @@ namespace kepler {
 
     ////////////////////////////////////////////////////////////////
 
-    GLTFLoader::GLTFLoader() : _impl(std::make_unique<Impl>()) {
+    GLTF2Loader::GLTF2Loader() : _impl(std::make_unique<Impl>()) {
     }
 
-    GLTFLoader::GLTFLoader(const char * path) : _impl(std::make_unique<Impl>()) {
+    GLTF2Loader::GLTF2Loader(const char * path) : _impl(std::make_unique<Impl>()) {
         _impl->loadJson(path);
     }
 
-    GLTFLoader::~GLTFLoader() noexcept {
+    GLTF2Loader::~GLTF2Loader() noexcept {
     }
 
-    GLTFLoader::operator bool() const {
+    GLTF2Loader::operator bool() const {
         return _impl->_loaded;
     }
 
-    bool GLTFLoader::load(const char* path) {
+    bool GLTF2Loader::load(const char* path) {
         return _impl->loadJson(path);
     }
 
-    ref<Scene> GLTFLoader::loadSceneFromFile(const char* path) {
+    ref<Scene> GLTF2Loader::loadSceneFromFile(const char* path) {
         return _impl->loadSceneFromFile(path);
     }
 
-    ref<Material> GLTFLoader::findMaterialById(const std::string& id) {
+    ref<Material> GLTF2Loader::findMaterialById(const std::string& id) {
         return _impl->loadMaterial(id);
     }
 
-    ref<Material> GLTFLoader::findMaterialByName(const std::string& name) {
+    ref<Material> GLTF2Loader::findMaterialByName(const std::string& name) {
         return _impl->loadMaterialByName(name);
     }
 
-    ref<Mesh> GLTFLoader::findMeshById(const std::string& id) {
+    ref<Mesh> GLTF2Loader::findMeshById(const std::string& id) {
         return _impl->loadMesh(id);
     }
 
-    void GLTFLoader::clear() {
+    void GLTF2Loader::clear() {
         _impl.reset();
         _impl = std::make_unique<Impl>();
     }
 
-    void GLTFLoader::useDefaultMaterial(bool value) {
+    void GLTF2Loader::useDefaultMaterial(bool value) {
         _impl->useDefaultMaterial(value);
     }
 
-    void GLTFLoader::setAutoLoadMaterials(bool value) {
+    void GLTF2Loader::setAutoLoadMaterials(bool value) {
         _impl->setAutoLoadMaterials(value);
     }
 
-    void GLTFLoader::setCameraAspectRatio(float aspectRatio) {
+    void GLTF2Loader::setCameraAspectRatio(float aspectRatio) {
         _impl->_aspectRatio = aspectRatio;
     }
 
-    void GLTFLoader::printTotalTime() {
+    void GLTF2Loader::printTotalTime() {
         std::clog << "Total: " << std::chrono::duration_cast<std::chrono::milliseconds>(__totalTime).count() << " ms" << std::endl;
     }
 
     ////////////////////////////////////////////////////////////////
 
-    GLTFLoader::Impl::Impl()
+    GLTF2Loader::Impl::Impl()
         : _loaded(false), _useDefaultMaterial(false), _autoLoadMaterials(true), _aspectRatio(0.0f) {
     }
 
-    GLTFLoader::Impl::~Impl() noexcept {
+    GLTF2Loader::Impl::~Impl() noexcept {
     }
 
-    bool GLTFLoader::Impl::loadJson(const char* path) {
+    bool GLTF2Loader::Impl::loadJson(const char* path) {
         _baseDir = directoryName(path);
-        std::ifstream file;
-        //file.exceptions(std::ifstream::badbit);
-        file.open(path);
-        if (!file) {
-            loge("READ_FILE ", path);
-            _loaded = false;
-            return false;
-        }
-        //destination.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
-
-        //std::unique_ptr<json> p = std::make_unique<json>();
 
         auto start = std::chrono::system_clock::now();
 
-        file >> _json;
+        _loaded = _gltf.load(path);
 
         auto end = std::chrono::system_clock::now();
         _jsonLoadTime = std::chrono::duration_cast<time_type>(end - start);
 
-        file.close();
-        _loaded = true;
-        return true;
+        return _loaded;
     }
 
-    ref<Scene> GLTFLoader::Impl::loadSceneFromFile(const char* path) {
+    ref<Scene> GLTF2Loader::Impl::loadSceneFromFile(const char* path) {
         // TODO call clear() first?
         auto start = std::chrono::system_clock::now();
 
@@ -344,16 +343,27 @@ namespace kepler {
         return scene;
     }
 
-    ref<Scene> GLTFLoader::Impl::loadDefaultScene() {
-        auto scene = _json.find(SCENE);
-        if (scene != _json.end() && scene->is_string()) {
-            return loadScene(scene->get_ref<const string&>());
+    ref<Scene> GLTF2Loader::Impl::loadDefaultScene() {
+        size_t index;
+        if (_gltf.defaultSceneIndex(index)) {
+            return loadScene(index);
         }
         // TODO load the first scene in the "scenes" list?
         return nullptr;
     }
 
-    ref<Scene> GLTFLoader::Impl::loadScene(const string& id) {
+    ref<Scene> GLTF2Loader::Impl::loadScene(size_t index) {
+        if (auto gScene = _gltf.scene(index)) {
+            auto scene = Scene::create();
+            for (const auto& index : gScene.nodes()) {
+                scene->addNode(loadNode(index));
+            }
+            return scene;
+        }
+        return nullptr;
+    }
+
+    ref<Scene> GLTF2Loader::Impl::loadScene(const string& id) {
         auto jScenes = _json.find(SCENES);
         if (jScenes != _json.end()) {
             auto jScene = jScenes->find(id);
@@ -372,21 +382,48 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<Node> GLTFLoader::Impl::loadNode(const string& id) {
-        RETURN_IF_FOUND(_nodes, id);
+    ref<Node> GLTF2Loader::Impl::loadNode(size_t index) {
+        const auto it = _nodes.find(index); // TODO make macro for this
+        if (it != _nodes.end()) {
+            return it->second;
+        }
+        if (auto gNode = _gltf.node(index)) {
+            auto node = loadNode(gNode);
+            _nodes[index] = node;
+            return node;
+        }
+        return nullptr;
+    }
+
+    ref<Node> GLTF2Loader::Impl::loadNode(const string& id) {
+        RETURN_IF_FOUND(_nodesOld, id);
         auto jNodes = _json.find(NODES);
         if (jNodes != _json.end()) {
             auto jNode = jNodes->find(id);
             if (jNode != jNodes->end()) {
                 auto node = loadNode(*jNode);
-                _nodes[id] = node;
+                _nodesOld[id] = node;
                 return node;
             }
         }
         return nullptr;
     }
 
-    ref<Node> GLTFLoader::Impl::loadNode(const json& jNode) {
+    ref<Node> GLTF2Loader::Impl::loadNode(const gltf2::Node& gNode) {
+        auto node = Node::create(gNode.name());
+
+        loadTransform(gNode, node);
+
+        // load mesh
+        // load camera
+        // load children
+        for (const auto& index : gNode.children()) {
+            node->addNode(loadNode(index));
+        }
+        return node;
+    }
+
+    ref<Node> GLTF2Loader::Impl::loadNode(const json& jNode) {
         auto name = jNode.value(NAME, "");
         auto node = Node::create(name);
 
@@ -421,7 +458,7 @@ namespace kepler {
         return node;
     }
 
-    ref<Mesh> GLTFLoader::Impl::loadMesh(const string& id) {
+    ref<Mesh> GLTF2Loader::Impl::loadMesh(const string& id) {
         try {
             auto jMeshes = _json.find(MESHES);
             if (jMeshes != _json.end()) {
@@ -483,7 +520,7 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<Camera> GLTFLoader::Impl::loadCamera(const string& id) {
+    ref<Camera> GLTF2Loader::Impl::loadCamera(const string& id) {
         auto cameras = _json.find(CAMERAS);
         if (cameras != _json.end()) {
             auto camera = cameras->find(id);
@@ -515,8 +552,8 @@ namespace kepler {
         return nullptr;
     }
 
-    shared_ptr<std::vector<ubyte>> GLTFLoader::Impl::loadBuffer(const string& id) {
-        RETURN_IF_FOUND(_buffers, id);
+    shared_ptr<std::vector<ubyte>> GLTF2Loader::Impl::loadBuffer(const string& id) {
+        RETURN_IF_FOUND(_buffersOld, id);
 
         auto buffers = _json.find(BUFFERS);
         if (buffers != _json.end()) {
@@ -529,14 +566,14 @@ namespace kepler {
                         const auto& uri = jUri->get_ref<const string&>();
                         if (startsWith(uri, DATA_APP_BASE64)) {
                             auto buffer = createBufferFromBase64(uri, DATA_APP_BASE64.length());
-                            _buffers[id] = buffer;
+                            _buffersOld[id] = buffer;
                             return buffer;
                         }
                         else {
                             string path = uriToPath(uri);
                             auto buffer = std::make_shared<std::vector<ubyte>>();
                             if (readBinaryFile(path.c_str(), *buffer.get())) {
-                                _buffers[id] = buffer;
+                                _buffersOld[id] = buffer;
                                 return buffer;
                             }
                         }
@@ -551,8 +588,8 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<VertexBuffer> GLTFLoader::Impl::loadVertexBuffer(const string& id) {
-        RETURN_IF_FOUND(_vbos, id);
+    ref<VertexBuffer> GLTF2Loader::Impl::loadVertexBuffer(const string& id) {
+        RETURN_IF_FOUND(_vbosOld, id);
         if (id.empty()) {
             return nullptr;
         }
@@ -569,7 +606,7 @@ namespace kepler {
                             GLsizeiptr byteLength = jBufferView->value<GLsizeiptr>("byteLength", 0);
                             size_t byteOffset = jBufferView->value<size_t>("byteOffset", 0);
                             auto vbo = VertexBuffer::create(byteLength, &(*buffer)[0] + byteOffset, GL_STATIC_DRAW);
-                            _vbos[id] = vbo;
+                            _vbosOld[id] = vbo;
                             return vbo;
                         }
                     }
@@ -579,9 +616,9 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<IndexBuffer> GLTFLoader::Impl::loadIndexBuffer(const string& id) {
+    ref<IndexBuffer> GLTF2Loader::Impl::loadIndexBuffer(const string& id) {
         // TODO is it possible to have more than 1 of the same index buffer?
-        RETURN_IF_FOUND(_indexBuffers, id);
+        RETURN_IF_FOUND(_indexBuffersOld, id);
 
         // TODO this is very similar to loadVertexBuffer. Move to common function.
 
@@ -598,7 +635,7 @@ namespace kepler {
                             GLsizeiptr byteLength = jBufferView->value<GLsizeiptr>("byteLength", 0);
                             size_t byteOffset = jBufferView->value<size_t>("byteOffset", 0);
                             auto indexBuffer = IndexBuffer::create(byteLength, &(*buffer)[0] + byteOffset, GL_STATIC_DRAW);
-                            _indexBuffers[id] = indexBuffer;
+                            _indexBuffersOld[id] = indexBuffer;
                             return indexBuffer;
                         }
                     }
@@ -608,8 +645,8 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<IndexAccessor> GLTFLoader::Impl::loadIndexAccessor(const string& id) {
-        RETURN_IF_FOUND(_indexAccessors, id);
+    ref<IndexAccessor> GLTF2Loader::Impl::loadIndexAccessor(const string& id) {
+        RETURN_IF_FOUND(_indexAccessorsOld, id);
 
         auto jAccessor = _json[ACCESSORS][id];
         if (jAccessor.is_object()) {
@@ -626,14 +663,14 @@ namespace kepler {
 
             auto indexAccessor = IndexAccessor::create(indexBuffer, count, componentType, byteOffset);
             //indexAccessor->dump();
-            _indexAccessors[id] = indexAccessor;
+            _indexAccessorsOld[id] = indexAccessor;
             return indexAccessor;
         }
         return nullptr;
     }
 
-    ref<VertexAttributeAccessor> GLTFLoader::Impl::loadVertexAttributeAccessor(const string& id) {
-        RETURN_IF_FOUND(_vertexAttributeAccessors, id);
+    ref<VertexAttributeAccessor> GLTF2Loader::Impl::loadVertexAttributeAccessor(const string& id) {
+        RETURN_IF_FOUND(_vertexAttributeAccessorsOld, id);
 
         auto jAccessors = _json.find(ACCESSORS);
         if (jAccessors != _json.end()) {
@@ -651,15 +688,15 @@ namespace kepler {
                 GLsizei count = jAccessor->value<int>("count", 0);
 
                 auto vertexAttributeAccessor = VertexAttributeAccessor::create(vbo, componentSize, componentType, false, byteStride, byteOffset, count);
-                _vertexAttributeAccessors[id] = vertexAttributeAccessor;
+                _vertexAttributeAccessorsOld[id] = vertexAttributeAccessor;
                 return vertexAttributeAccessor;
             }
         }
         return nullptr;
     }
 
-    ref<Material> GLTFLoader::Impl::loadMaterial(const string& id) {
-        RETURN_IF_FOUND(_materials, id);
+    ref<Material> GLTF2Loader::Impl::loadMaterial(const string& id) {
+        RETURN_IF_FOUND(_materialsOld, id);
 
         if (_useDefaultMaterial) {
             return loadDefaultMaterial();
@@ -711,7 +748,7 @@ namespace kepler {
                 auto techniqueId = jMaterial->value(TECHNIQUE, "");
                 if (!techniqueId.empty()) {
                     material->setTechnique(loadTechnique(techniqueId));
-                    _materials[id] = material;
+                    _materialsOld[id] = material;
                     return material;
                 }
             }
@@ -719,8 +756,8 @@ namespace kepler {
         return loadDefaultMaterial();
     }
 
-    ref<Technique> GLTFLoader::Impl::loadTechnique(const string& id) {
-        RETURN_IF_FOUND(_techniques, id);
+    ref<Technique> GLTF2Loader::Impl::loadTechnique(const string& id) {
+        RETURN_IF_FOUND(_techniquesOld, id);
 
         if (_useDefaultMaterial) {
             return loadDefaultTechnique();
@@ -787,7 +824,7 @@ namespace kepler {
         return loadDefaultTechnique();
     }
 
-    void GLTFLoader::Impl::loadTechniqueAttribute(const string& glslName, const string& paramName, const json& parameters, ref<Technique> tech) {
+    void GLTF2Loader::Impl::loadTechniqueAttribute(const string& glslName, const string& paramName, const json& parameters, ref<Technique> tech) {
         auto jParam = parameters.find(paramName);
         if (jParam != parameters.end()) {
             string semantic(jParam->value(SEMANTIC, ""));
@@ -798,7 +835,7 @@ namespace kepler {
         }
     }
 
-    void GLTFLoader::Impl::loadTechniqueUniform(const string& glslName, const string& paramName, const json& parameters, ref<Technique> tech) {
+    void GLTF2Loader::Impl::loadTechniqueUniform(const string& glslName, const string& paramName, const json& parameters, ref<Technique> tech) {
         auto jParam = parameters.find(paramName);
         if (jParam != parameters.end()) {
             auto jSemantic = jParam->find(SEMANTIC);
@@ -865,8 +902,8 @@ namespace kepler {
         }
     }
 
-    ref<Effect> GLTFLoader::Impl::loadProgram(const string& id) {
-        RETURN_IF_FOUND(_effects, id);
+    ref<Effect> GLTF2Loader::Impl::loadProgram(const string& id) {
+        RETURN_IF_FOUND(_effectsOld, id);
 
         auto jPrograms = _json.find("programs");
         if (jPrograms != _json.end()) {
@@ -883,7 +920,7 @@ namespace kepler {
                     loadShaderSource(vertShaderId, vertSource);
                     auto effect = Effect::createFromSource(vertSource, fragSource);
                     if (effect) {
-                        _effects[id] = effect;
+                        _effectsOld[id] = effect;
                         return effect;
                     }
                     else {
@@ -895,8 +932,8 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<Texture> GLTFLoader::Impl::loadTexture(const string& id) {
-        RETURN_IF_FOUND(_textures, id);
+    ref<Texture> GLTF2Loader::Impl::loadTexture(const string& id) {
+        RETURN_IF_FOUND(_texturesOld, id);
 
         const auto jTextures = _json.find("textures");
         if (jTextures != _json.end()) {
@@ -924,7 +961,7 @@ namespace kepler {
                             else {
                                 loge("LOAD_GLTF_SAMPLER ", samplerId->get_ref<const string&>().c_str());
                             }
-                            _textures[id] = texture;
+                            _texturesOld[id] = texture;
                             return texture;
                         }
                     }
@@ -934,8 +971,8 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<Sampler> GLTFLoader::Impl::loadSampler(const string& id) {
-        RETURN_IF_FOUND(_samplers, id);
+    ref<Sampler> GLTF2Loader::Impl::loadSampler(const string& id) {
+        RETURN_IF_FOUND(_samplersOld, id);
 
         const auto jSamplers = _json.find("samplers");
         if (jSamplers != _json.end()) {
@@ -955,8 +992,8 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<Image> GLTFLoader::Impl::loadImage(const string& id) {
-        RETURN_IF_FOUND(_images, id);
+    ref<Image> GLTF2Loader::Impl::loadImage(const string& id) {
+        RETURN_IF_FOUND(_imagesOld, id);
         const auto jImages = _json.find("images");
         if (jImages != _json.end()) {
             const auto jImage = jImages->find(id);
@@ -989,7 +1026,7 @@ namespace kepler {
                         std::clog << " ms to load " << path.c_str() << std::endl;
                     }
                     if (image) {
-                        _images[id] = image;
+                        _imagesOld[id] = image;
                         return image;
                     }
                     // TODO load from base64 string
@@ -999,7 +1036,7 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<Material> GLTFLoader::Impl::loadDefaultMaterial() {
+    ref<Material> GLTF2Loader::Impl::loadDefaultMaterial() {
         if (_defaultMaterial) {
             return _defaultMaterial;
         }
@@ -1014,7 +1051,7 @@ namespace kepler {
         return material;
     }
 
-    ref<Technique> GLTFLoader::Impl::loadDefaultTechnique() {
+    ref<Technique> GLTF2Loader::Impl::loadDefaultTechnique() {
         if (_defaultTechnique) {
             return _defaultTechnique;
         }
@@ -1044,7 +1081,7 @@ namespace kepler {
         return _defaultTechnique;
     }
 
-    void GLTFLoader::Impl::loadShaderSource(const string& id, string& destination) {
+    void GLTF2Loader::Impl::loadShaderSource(const string& id, string& destination) {
         auto jShaders = _json.find("shaders");
         if (jShaders != _json.end()) {
             auto jShader = jShaders->find(id);
@@ -1064,7 +1101,7 @@ namespace kepler {
         }
     }
 
-    ref<Material> GLTFLoader::Impl::loadMaterialByName(const string& name) {
+    ref<Material> GLTF2Loader::Impl::loadMaterialByName(const string& name) {
         auto jMaterials = _json.find(MATERIALS);
         if (jMaterials != _json.end()) {
             for (auto it = jMaterials->begin(); it != jMaterials->end(); ++it) {
@@ -1079,20 +1116,36 @@ namespace kepler {
         return nullptr;
     }
 
-    string GLTFLoader::Impl::uriToPath(const string& uri) const {
+    string GLTF2Loader::Impl::uriToPath(const string& uri) const {
         // TODO handle absolute paths for uri
         return joinPath(_baseDir, uri);
     }
 
-    void GLTFLoader::Impl::useDefaultMaterial(bool value) {
+    void GLTF2Loader::Impl::useDefaultMaterial(bool value) {
         _useDefaultMaterial = value;
     }
 
-    void GLTFLoader::Impl::setAutoLoadMaterials(bool value) {
+    void GLTF2Loader::Impl::setAutoLoadMaterials(bool value) {
         _autoLoadMaterials = value;
     }
 
-    void GLTFLoader::Impl::loadTransform(const json& jNode, ref<Node> node) {
+    void GLTF2Loader::Impl::loadTransform(const gltf2::Node& gNode, const ref<Node>& node) {
+        std::array<float, 16> matrix;
+        if (gNode.matrix(matrix.data())) {
+            node->setLocalTransform(glm::make_mat4(matrix.data()));
+        }
+        else {
+            glm::vec3 trans;
+            glm::vec3 scale(1.0f);
+            glm::quat rot;
+            gNode.translation(glm::value_ptr(trans));
+            gNode.scale(glm::value_ptr(scale));
+            gNode.rotation(glm::value_ptr(rot));
+            node->setLocalTransform(trans, rot, scale);
+        }
+    }
+
+    void GLTF2Loader::Impl::loadTransform(const json& jNode, ref<Node> node) {
         auto matrix = jNode.find(MATRIX);
         if (matrix != jNode.end()) {
             if (matrix->size() == 16) {

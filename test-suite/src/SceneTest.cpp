@@ -3,7 +3,7 @@
 
 #include <BaseGL.hpp>
 #include <App.hpp>
-#include <GLTFLoader.hpp>
+#include <GLTF1Loader.hpp>
 #include <Scene.hpp>
 #include <Camera.hpp>
 #include <MeshRenderer.hpp>
@@ -119,7 +119,7 @@ void SceneTest::loadSceneFromFile(const char* path) {
     _orbitCamera.detach();
     _scene.reset();
 
-    GLTFLoader loader;
+    GLTF1Loader loader;
     loader.setCameraAspectRatio(app()->aspectRatio());
     _scene = loader.loadSceneFromFile(path);
 

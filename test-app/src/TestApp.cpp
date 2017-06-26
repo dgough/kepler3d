@@ -7,7 +7,7 @@
 
 #include <Platform.hpp>
 #include <App.hpp>
-#include <GLTFLoader.hpp>
+#include <GLTF1Loader.hpp>
 #include <Node.hpp>
 #include <Transform.hpp>
 #include <Camera.hpp>
@@ -84,7 +84,7 @@ void TestApp::start() {
 
     _compass = std::make_unique<AxisCompass>(_scene);
 
-    GLTFLoader::printTotalTime();
+    GLTF1Loader::printTotalTime();
 
     _font = BmpFont::createFromFile("res/fonts/arial-32.fnt");
     if (!_font) {
@@ -287,7 +287,7 @@ void TestApp::drawText() {
 }
 
 void TestApp::loadGLTF(const char* path) {
-    GLTFLoader gltf;
+    GLTF1Loader gltf;
     //gltf.useDefaultMaterial(true);
     auto scene = gltf.loadSceneFromFile(path);
     if (_scene) {
@@ -305,7 +305,7 @@ void TestApp::loadScenes() {
     //scene = gltf.loadSceneFromFile("res/glTF/2CylinderEngine.gltf");
     if (scene) {
         _scene = scene;
-        GLTFLoader cyLoader;
+        GLTF1Loader cyLoader;
         //cyLoader.useDefaultMaterial(true);
         ref<Scene> cylinder = nullptr;// cyLoader.loadSceneFromFile("res/glTF/2CylinderEngine.gltf");
         if (scene && cylinder) {
@@ -317,7 +317,7 @@ void TestApp::loadScenes() {
             scene->moveNodesFrom(cylinder);
         }
 
-        GLTFLoader truckLoader;
+        GLTF1Loader truckLoader;
         //truckLoader.useDefaultMaterial(true);
         scene->moveNodesFrom(truckLoader.loadSceneFromFile(TRUCK_PATH));
         auto truck = scene->findFirstNodeByName("Cesium_Milk_Truck");
@@ -327,11 +327,11 @@ void TestApp::loadScenes() {
             truck->scale(0.5f);
         }
 
-        scene->moveNodesFrom(GLTFLoader().loadSceneFromFile(BOX_PATH));
+        scene->moveNodesFrom(GLTF1Loader().loadSceneFromFile(BOX_PATH));
         scene->lastChild()->setTranslation(glm::vec3(0, -2, 0));
-        scene->moveNodesFrom(GLTFLoader().loadSceneFromFile(BOX_NO_INDICES_PATH));
+        scene->moveNodesFrom(GLTF1Loader().loadSceneFromFile(BOX_NO_INDICES_PATH));
         scene->lastChild()->setTranslation(glm::vec3(2, -2, 0));
-        scene->moveNodesFrom(GLTFLoader().loadSceneFromFile(BOX_TEXTURED_PATH));
+        scene->moveNodesFrom(GLTF1Loader().loadSceneFromFile(BOX_TEXTURED_PATH));
     }
 
     //loadCityScene();
@@ -345,7 +345,7 @@ void TestApp::loadScenes() {
 }
 
 ref<Scene> TestApp::loadDuckScene() {
-    GLTFLoader gltf;
+    GLTF1Loader gltf;
     auto scene = gltf.loadSceneFromFile(DUCK_PATH);
     if (scene && scene->childCount() > 0) {
         scene->childAt(0)->translateY(1);
@@ -357,7 +357,7 @@ ref<Scene> TestApp::loadDuckScene() {
 }
 
 void TestApp::loadCityScene() {
-    GLTFLoader loader;
+    GLTF1Loader loader;
     auto city = loader.loadSceneFromFile(CITY_PATH);
     if (_scene) {
         _scene->moveNodesFrom(city);
@@ -390,7 +390,7 @@ void changeBoxColor(const Scene& scene) {
 ref<Mesh> createCubeMesh() {
     auto prim = createLitCubePrimitive();
     if (prim) {
-        GLTFLoader gltf;
+        GLTF1Loader gltf;
         gltf.load(BOX_PATH);
         auto material = gltf.findMaterialById("Effect-Red");
         if (auto param = material->param("diffuse")) {

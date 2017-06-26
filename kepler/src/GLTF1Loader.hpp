@@ -6,14 +6,14 @@
 namespace kepler {
 
     /// Class for loading GLTF files.
-    class GLTFLoader final {
+    class GLTF1Loader final {
     public:
-        GLTFLoader();
+        GLTF1Loader();
 
         /// Loads the GLTF file at the given path.
         /// @param[in] path The file path.
-        explicit GLTFLoader(const char* path);
-        ~GLTFLoader() noexcept;
+        explicit GLTF1Loader(const char* path);
+        ~GLTF1Loader() noexcept;
 
         /// True if a GLTF file was loaded successfully; false otherwise.
         explicit operator bool() const;
@@ -52,8 +52,8 @@ namespace kepler {
         static void printTotalTime();
 
     public:
-        GLTFLoader(const GLTFLoader&) = delete;
-        GLTFLoader& operator=(const GLTFLoader&) = delete;
+        GLTF1Loader(const GLTF1Loader&) = delete;
+        GLTF1Loader& operator=(const GLTF1Loader&) = delete;
     private:
         class Impl;
         std::unique_ptr<Impl> _impl;
