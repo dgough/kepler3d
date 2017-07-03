@@ -24,6 +24,7 @@ namespace kepler {
         /// @param[in] primitive The primitive to add.
         void addMeshPrimitive(ref<MeshPrimitive> primitive);
 
+        void setName(const char* name);
         void setName(const std::string& name);
         void setNode(ref<Node> node); // TODO make this private?
 

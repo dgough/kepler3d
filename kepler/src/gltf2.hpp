@@ -56,6 +56,7 @@ namespace gltf2 {
         operator bool() const noexcept { return gltf != nullptr; }
     protected:
         const char* str(const char* key) const noexcept;
+        /// Returns the size of an array or the number of members in an object.
         size_t count(const char* key) const noexcept;
         bool copyFloats(const char* key, size_t count, float* m) const noexcept;
         float findFloat(const char* key, float defaultValue = 0.0f) const noexcept;
@@ -72,12 +73,16 @@ namespace gltf2 {
         const char* name() const noexcept;
     };
 
+    // The root glTF object. 
     class Gltf final {
     public:
         Gltf();
         explicit Gltf(const char* path);
         ~Gltf();
 
+        /// Loads a gltf file.
+        /// @param[in] path
+        /// @return True if the load was successful; false otherwise.
         bool load(const char* path) noexcept;
         operator bool() const noexcept { return _doc != nullptr; }
 
@@ -128,6 +133,7 @@ namespace gltf2 {
 
         Asset asset() const noexcept;
 
+        /// Returns a pointer to the json document. May be null.
         void* doc() const noexcept;
 
     private:
@@ -169,8 +175,13 @@ namespace gltf2 {
         size_t weightCount() const noexcept;
 
         Mesh mesh() const noexcept;
+        bool mesh(size_t& index) const noexcept;
+
         Camera camera() const noexcept;
+        bool camera(size_t& index) const noexcept;
+
         Skin skin() const noexcept;
+        bool skin(size_t& index) const noexcept;
     };
 
     class Camera : public Named {
@@ -218,7 +229,7 @@ namespace gltf2 {
         Primitive primitive(size_t index) const noexcept;
         size_t primitiveCount() const noexcept;
 
-        bool weight(float* p, size_t count) const noexcept;
+        bool weight(float* p, size_t count) const noexcept; // TODO rename to weights
         float weight(size_t index) const noexcept;
         size_t weightCount() const noexcept;
     };
@@ -242,6 +253,16 @@ namespace gltf2 {
         Mode mode() const noexcept;
 
         Accessor attribute(const char* attribute) const noexcept;
+        /// Returns the list of attributes as a vector of pairs.
+        /// Pair.first is the attribute name and pair.second is the Accessor index.
+        std::vector<std::pair<const char*, size_t>> attributes() const noexcept;
+
+        /// Returns the number of attributes in this primitive.
+        size_t attributeCount() const noexcept;
+        /// Returns a list of attribute names from this primitive.
+        /// The char pointers in this list will be invalid when the root gltf object is destroyed 
+        /// or loads a new file. 
+        std::vector<const char*> attributeStrings() const noexcept;
         Accessor position() const noexcept;
         Accessor normal() const noexcept;
         Accessor tangent() const noexcept;
@@ -250,7 +271,9 @@ namespace gltf2 {
         Accessor joints(size_t index = 0) const noexcept;
         Accessor weights(size_t index = 0) const noexcept;
         Accessor indices() const noexcept;
+        bool indices(size_t& index) const noexcept;
         Material material() const noexcept;
+        bool material(size_t& index) const noexcept;
         MorphTarget target(size_t index) const noexcept;
         size_t targetCount() const noexcept;
 
@@ -282,6 +305,7 @@ namespace gltf2 {
 
         Type type() const noexcept;
         BufferView bufferView() const noexcept;
+        bool bufferView(size_t& index) const noexcept;
         size_t byteOffset() const noexcept;
         ComponentType componentType() const noexcept;
         bool normalized() const noexcept;
@@ -328,6 +352,7 @@ namespace gltf2 {
         };
 
         Buffer buffer() const noexcept;
+        bool buffer(size_t& index) const noexcept;
         size_t byteOffset() const noexcept;
         size_t byteLength() const noexcept;
         size_t byteStride() const noexcept;
@@ -356,7 +381,7 @@ namespace gltf2 {
         Image source() const noexcept;
 
         /// Gets the index of the image used by this texture.
-        /// @param[out] The variable to copy the index to.
+        /// @param[out] index The variable to copy the index to.
         /// @return True if the source index of found.
         bool source(size_t& index) const noexcept;
         Sampler sampler() const noexcept;
@@ -413,9 +438,10 @@ namespace gltf2 {
 
         Accessor inverseBindMatrices() const noexcept;
         Node skeleton() const noexcept;
-        bool joint(size_t* p, size_t count) const noexcept;
+        bool joints(size_t* p, size_t count) const noexcept;
         size_t joint(size_t index) const noexcept;
         size_t jointCount() const noexcept;
+        std::vector<size_t> joints() const noexcept;
     };
 
     class Material : public Named {
@@ -571,6 +597,22 @@ namespace gltf2 {
         size_t normal() const noexcept;
         size_t tangent() const noexcept;
     };
+
+    // functions
+    template<typename T = size_t>
+    T numberOfComponents(Accessor::Type type) noexcept {
+        switch (type) {
+        case Accessor::Type::SCALAR: return 1;
+        case Accessor::Type::VEC2: return 2;
+        case Accessor::Type::VEC3: return 3;
+        case Accessor::Type::VEC4: return 4;
+        case Accessor::Type::MAT2: return 4;
+        case Accessor::Type::MAT3: return 9;
+        case Accessor::Type::MAT4: return 16;
+        default:
+            return 0;
+        }
+    }
 }
 
 #endif

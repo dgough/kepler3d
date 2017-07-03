@@ -1,4 +1,5 @@
 #include "gtest/gtest.h"
+#include "macros.hpp"
 
 #include <BaseGL.hpp>
 
@@ -14,6 +15,7 @@
 
 static constexpr char* BOX_PATH = BASE_DIR "Box/glTF/Box.gltf";
 static constexpr char* LANTERN_PATH = BASE_DIR "Lantern/glTF/Lantern.gltf";
+static constexpr char* CAMERA_PATH = BASE_DIR "Cameras/glTF/Cameras.gltf";
 static constexpr char* ANIMATED_BOX_PATH = BASE_DIR "BoxAnimated/glTF/BoxAnimated.gltf";
 static constexpr char* DUCK_PATH = BASE_DIR "Duck/glTF/Duck.gltf";
 static constexpr char* TRUCK_PATH = BASE_DIR "CesiumMilkTruck/glTF/CesiumMilkTruck.gltf";
@@ -72,8 +74,37 @@ TEST(gltf2, load_gltf2) {
         EXPECT_EQ(node->childCount(), 3);
         EXPECT_STREQ(node->namePtr(), "Lantern");
     }
+    // camera test
+    {
+        GLTF2Loader gltf;
+        auto scene = gltf.loadSceneFromFile(CAMERA_PATH);
+        ASSERT_TRUE(scene != nullptr);
+        EXPECT_EQ(scene->childCount(), 3);
+        // perspective camera
+        auto pers = scene->childAt(1)->component<Camera>();
+        EXPECT_TRUE(pers != nullptr);
+        EXPECT_EQ(pers->cameraType(), Camera::Type::PERSPECTIVE);
+        EXPECT_FLOAT_EQ(pers->aspectRatio(), 1.0f);
+        EXPECT_FLOAT_EQ(pers->fov(), glm::degrees(0.7f));
+        EXPECT_FLOAT_EQ(pers->far(), 100.0f);
+        EXPECT_FLOAT_EQ(pers->near(), 0.01f);
+        // ortho camera
+        auto ortho = scene->childAt(2)->component<Camera>();
+        EXPECT_TRUE(ortho);
+        EXPECT_EQ(ortho->cameraType(), Camera::Type::ORTHOGRAPHIC);
+        EXPECT_FLOAT_EQ(ortho->zoomX(), 1.0f);
+        EXPECT_FLOAT_EQ(ortho->zoomY(), 1.0f);
+        EXPECT_FLOAT_EQ(ortho->far(), 100.0f);
+        EXPECT_FLOAT_EQ(ortho->near(), 0.01f);
 
-    
+        // node rotation
+        auto rot = scene->childAt(0)->localTransform().rotation();
+        auto expectedRot = glm::quat(0.92375f, -0.383f, 0.0f, 0.0f); // w is first
+        EXPECT_QUAT_EQ(rot, expectedRot);
+        // node translation
+        EXPECT_VE3_EQ(scene->childAt(1)->localTransform().translation(), glm::vec3(0.5f, 0.5f, 3.0f));
+    }
+
     //// load_box    
     //{
     //    GLTF2Loader gltf;

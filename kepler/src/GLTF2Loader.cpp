@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "GLTF2Loader.hpp"
 
 #include "gltf2.hpp"
@@ -123,7 +123,8 @@ namespace kepler {
     static constexpr int DEFAULT_WRAP_T = GL_REPEAT;
 
     // functions
-    static MeshPrimitive::Mode toMode(int mode);
+    static MeshPrimitive::Mode toMode(int mode); // TODO remove
+    static MeshPrimitive::Mode toMode(gltf2::Primitive::Mode mode);
     static MaterialParameter::Semantic toSemantic(const string& semantic);
     static AttributeSemantic toAttributeSemantic(const string& semantic);
     static Sampler::Wrap toWrapMode(int wrap);
@@ -134,7 +135,7 @@ namespace kepler {
     static void setFunction(RenderState& renderState, const string& key, const json& value);
     static void base64Decode(const string& text, size_t offset, string& destination);
     static void base64Decode(std::istream& istream, std::vector<ubyte>& out);
-    static shared_ptr<std::vector<ubyte>> createBufferFromBase64(const string& text, size_t offset);
+    static shared_ptr<std::vector<ubyte>> createBufferFromBase64(const string& text, size_t offset, size_t byteLength);
 
     using time_type = std::chrono::nanoseconds;
     static time_type __totalTime;
@@ -154,21 +155,27 @@ namespace kepler {
         ref<Scene> loadDefaultScene();
 
         ref<Scene> loadScene(size_t index);
-        ref<Scene> loadScene(const string& id);
 
         ref<Node> loadNode(size_t index);
         ref<Node> loadNode(const string& id);
         ref<Node> loadNode(const gltf2::Node& gNode);
         ref<Node> loadNode(const json& jNode);
 
+        ref<Mesh> loadMesh(size_t index);
         ref<Mesh> loadMesh(const string& id);
+        ref<Camera> loadCamera(size_t index);
         ref<Camera> loadCamera(const string& id);
 
+        shared_ptr<std::vector<ubyte>> loadBuffer(size_t index);
         shared_ptr<std::vector<ubyte>> loadBuffer(const string& id);
 
+        ref<VertexBuffer> loadVertexBuffer(size_t index);
         ref<VertexBuffer> loadVertexBuffer(const string& id);
+        ref<IndexBuffer> loadIndexBuffer(size_t index);
         ref<IndexBuffer> loadIndexBuffer(const string& id);
+        ref<IndexAccessor> loadIndexAccessor(size_t index);
         ref<IndexAccessor> loadIndexAccessor(const string& id);
+        ref<VertexAttributeAccessor> loadVertexAttributeAccessor(size_t index);
         ref<VertexAttributeAccessor> loadVertexAttributeAccessor(const string& id);
 
         ref<Material> loadMaterial(const string& id);
@@ -203,9 +210,22 @@ namespace kepler {
         gltf2::Gltf _gltf;
         json _json; // TODO remove
 
+        std::map <size_t, std::shared_ptr<std::vector<ubyte>>> _buffers;
+
         std::map<size_t, ref<Node>> _nodes;
+        std::map<size_t, ref<VertexBuffer>> _vbos;
+        std::map<size_t, ref<IndexBuffer>> _indexBuffers;
+        std::map<size_t, ref<IndexAccessor>> _indexAccessors;
+        std::map<size_t, ref<VertexAttributeAccessor>> _vertexAttributeAccessors;
 
+        std::map<size_t, ref<Material>> _materials;
+        std::map<size_t, ref<Technique>> _techniques;
+        std::map<size_t, ref<Effect>> _effects;
+        std::map<size_t, ref<Texture>> _textures;
+        std::map<size_t, ref<Sampler>> _samplers;
+        std::map<size_t, ref<Image>> _images;
 
+        // old
         std::map <string, std::shared_ptr<std::vector<ubyte>>> _buffersOld;
 
         std::map<string, ref<Node>> _nodesOld;
@@ -348,7 +368,10 @@ namespace kepler {
         if (_gltf.defaultSceneIndex(index)) {
             return loadScene(index);
         }
-        // TODO load the first scene in the "scenes" list?
+        else if (_gltf.sceneCount() > 0) {
+            // load the first scene if there was no default scene
+            return loadScene(0);
+        }
         return nullptr;
     }
 
@@ -358,26 +381,8 @@ namespace kepler {
             for (const auto& index : gScene.nodes()) {
                 scene->addNode(loadNode(index));
             }
+            // TODO active camera?
             return scene;
-        }
-        return nullptr;
-    }
-
-    ref<Scene> GLTF2Loader::Impl::loadScene(const string& id) {
-        auto jScenes = _json.find(SCENES);
-        if (jScenes != _json.end()) {
-            auto jScene = jScenes->find(id);
-            if (jScene != jScenes->end()) {
-                auto jNodes = jScene->find(NODES);
-                if (jNodes->is_array()) {
-                    auto scene = Scene::create();
-                    for (auto& jNode : *jNodes) {
-                        scene->addNode(loadNode(jNode.get_ref<const string&>()));
-                    }
-                    // TODO active camera?
-                    return scene;
-                }
-            }
         }
         return nullptr;
     }
@@ -415,7 +420,17 @@ namespace kepler {
         loadTransform(gNode, node);
 
         // load mesh
+        size_t meshIndex;
+        if (gNode.mesh(meshIndex)) {
+
+        }
+
         // load camera
+        size_t cameraIndex;
+        if (gNode.camera(cameraIndex)) {
+            node->addComponent(loadCamera(cameraIndex));
+        }
+
         // load children
         for (const auto& index : gNode.children()) {
             node->addNode(loadNode(index));
@@ -458,6 +473,48 @@ namespace kepler {
         return node;
     }
 
+    ref<Mesh> GLTF2Loader::Impl::loadMesh(size_t index) {
+        if (auto gMesh = _gltf.mesh(index)) {
+            auto mesh = Mesh::create();
+            mesh->setName(gMesh.name());
+            const size_t primCount = gMesh.primitiveCount();
+            for (size_t i = 0; i < primCount; ++i) {
+                if (auto gPrim = gMesh.primitive(0)) {
+                    auto prim = MeshPrimitive::create(toMode(gPrim.mode()));
+                    for (const auto& attrib : gPrim.attributes()) {
+                        auto vertexAttributeAccessor = loadVertexAttributeAccessor(attrib.second);
+                        if (vertexAttributeAccessor) {
+                            prim->setAttribute(toAttributeSemantic(attrib.first), vertexAttributeAccessor);
+                        }
+                    }
+                    // load indices
+                    size_t indicesIndex;
+                    if (gPrim.indices(indicesIndex)) {
+                        if (auto indexAccessor = loadIndexAccessor(indicesIndex)) {
+                            prim->setIndices(indexAccessor);
+                        }
+                        if (_autoLoadMaterials) {
+                            // load material
+                            //size_t materialIndex;
+                            //if (gPrim.material(materialIndex)) {
+                            //    if (auto material = loadMaterial(materialIndex)) {
+
+                            //    }
+                            //}
+                        }
+                    }
+                }
+            }
+            if (mesh->primitiveCount() > 0) {
+                return mesh;
+            }
+            else {
+                loge("MESH::ZERO_PRIMITIVES_LOADED");
+            }
+        }
+        return nullptr;
+    }
+
     ref<Mesh> GLTF2Loader::Impl::loadMesh(const string& id) {
         try {
             auto jMeshes = _json.find(MESHES);
@@ -472,11 +529,11 @@ namespace kepler {
                         for (const auto& jPrimitive : *jPrimitives) {
                             int mode = jPrimitive[MODE].get<int>();
                             auto meshPrimitive = MeshPrimitive::create(toMode(mode));
-
                             auto jAttribs = jPrimitive.find(ATTRIBUTES);
                             if (jAttribs != jPrimitive.end() && jAttribs->is_object()) {
                                 for (auto jAttrib = jAttribs->begin(); jAttrib != jAttribs->end(); ++jAttrib) {
-                                    auto vertexAttributeAccessor = loadVertexAttributeAccessor(jAttrib.value());
+                                    const std::string& str = jAttrib.value();
+                                    auto vertexAttributeAccessor = loadVertexAttributeAccessor(str);
                                     if (vertexAttributeAccessor) {
                                         meshPrimitive->setAttribute(toAttributeSemantic(jAttrib.key()), vertexAttributeAccessor);
                                     }
@@ -520,6 +577,26 @@ namespace kepler {
         return nullptr;
     }
 
+    ref<Camera> GLTF2Loader::Impl::loadCamera(size_t index) {
+        if (auto gCamera = _gltf.camera(index)) {
+            switch (gCamera.type()) {
+            case gltf2::Camera::Type::PERSPECTIVE:
+                if (auto gPers = gCamera.perspective()) {
+                    // _aspectRatio can replace the aspect ratio found in the file.
+                    float aspectRatio = _aspectRatio > 0.0f ? _aspectRatio : gPers.aspectRatio();
+                    return Camera::createPerspective(glm::degrees(gPers.yfov()), aspectRatio, gPers.znear(), gPers.zfar());
+                }
+                break;
+            case gltf2::Camera::Type::ORTHOGRAPHIC:
+                if (auto gOrtho = gCamera.orthographic()) {
+                    return Camera::createOrthographic(gOrtho.xmag(), gOrtho.ymag(), 1.0f, gOrtho.znear(), gOrtho.zfar());
+                }
+                break;
+            }
+        }
+        return nullptr;
+    }
+
     ref<Camera> GLTF2Loader::Impl::loadCamera(const string& id) {
         auto cameras = _json.find(CAMERAS);
         if (cameras != _json.end()) {
@@ -552,64 +629,73 @@ namespace kepler {
         return nullptr;
     }
 
-    shared_ptr<std::vector<ubyte>> GLTF2Loader::Impl::loadBuffer(const string& id) {
-        RETURN_IF_FOUND(_buffersOld, id);
+    shared_ptr<std::vector<ubyte>> GLTF2Loader::Impl::loadBuffer(size_t index) {
+        RETURN_IF_FOUND(_buffers, index);
 
-        auto buffers = _json.find(BUFFERS);
-        if (buffers != _json.end()) {
-            auto jBuffer = buffers->find(id);
-            if (jBuffer != buffers->end()) {
-                auto type = jBuffer->value(TYPE, ARRAY_BUFFER);
-                if (type == ARRAY_BUFFER) {
-                    auto jUri = jBuffer->find(URI);
-                    if (jUri != jBuffer->end() && jUri->is_string()) {
-                        const auto& uri = jUri->get_ref<const string&>();
-                        if (startsWith(uri, DATA_APP_BASE64)) {
-                            auto buffer = createBufferFromBase64(uri, DATA_APP_BASE64.length());
-                            _buffersOld[id] = buffer;
-                            return buffer;
-                        }
-                        else {
-                            string path = uriToPath(uri);
-                            auto buffer = std::make_shared<std::vector<ubyte>>();
-                            if (readBinaryFile(path.c_str(), *buffer.get())) {
-                                _buffersOld[id] = buffer;
-                                return buffer;
-                            }
-                        }
-                    }
-                }
-                else if (type == TEXT) {
-                    // TODO type="text"?
+        if (auto gBuffer = _gltf.buffer(index)) {
+            auto byteLength = gBuffer.byteLength();
+            const char* uri = gBuffer.uri();
+            if (startsWith(uri, DATA_APP_BASE64)) {
+                // data uri
+                auto buffer = createBufferFromBase64(uri, DATA_APP_BASE64.length(), byteLength);
+                _buffers[index] = buffer;
+                return buffer;
+            }
+            else {
+                string path = uriToPath(uri);
+                auto buffer = std::make_shared<std::vector<ubyte>>();
+                buffer->reserve(byteLength);
+                if (readBinaryFile(path.c_str(), *buffer)) {
+                    _buffers[index] = buffer;
+                    return buffer;
                 }
             }
         }
-        // TODO handle error
+        return nullptr;
+    }
+
+    shared_ptr<std::vector<ubyte>> GLTF2Loader::Impl::loadBuffer(const string& id) {
+        return nullptr;
+    }
+
+    ref<VertexBuffer> GLTF2Loader::Impl::loadVertexBuffer(size_t index) {
+        RETURN_IF_FOUND(_vbos, index);
+        if (auto gBufferView = _gltf.bufferView(index)) {
+            size_t bufferIndex;
+            if (gBufferView.buffer(bufferIndex)) {
+                if (auto buffer = loadBuffer(bufferIndex)) {
+                    auto byteLength = gBufferView.byteLength();
+                    auto byteOffset = gBufferView.byteOffset();
+                    //auto byteStride = gBufferView.byteStride(); // TODO is this needed?
+                    auto vbo = VertexBuffer::create(byteLength, &(*buffer)[0] + byteOffset, GL_STATIC_DRAW);
+                    _vbos[index] = vbo;
+                    return vbo;
+                }
+            }
+        }
         return nullptr;
     }
 
     ref<VertexBuffer> GLTF2Loader::Impl::loadVertexBuffer(const string& id) {
-        RETURN_IF_FOUND(_vbosOld, id);
-        if (id.empty()) {
-            return nullptr;
-        }
-        auto jViews = _json.find(BUFFER_VIEWS);
-        if (jViews != _json.end()) {
-            auto jBufferView = jViews->find(id);
-            if (jBufferView != jViews->end()) {
-                auto jBuffer = jBufferView->find(BUFFER);
-                if (jBuffer != jBufferView->end() && jBuffer->is_string()) {
-                    const auto& bufferId = jBuffer->get_ref<const string&>();
-                    if (bufferId.length() > 0) {
-                        auto buffer = loadBuffer(bufferId);
-                        if (buffer) {
-                            GLsizeiptr byteLength = jBufferView->value<GLsizeiptr>("byteLength", 0);
-                            size_t byteOffset = jBufferView->value<size_t>("byteOffset", 0);
-                            auto vbo = VertexBuffer::create(byteLength, &(*buffer)[0] + byteOffset, GL_STATIC_DRAW);
-                            _vbosOld[id] = vbo;
-                            return vbo;
-                        }
-                    }
+        return nullptr;
+    }
+
+    ref<IndexBuffer> GLTF2Loader::Impl::loadIndexBuffer(size_t index) {
+        // TODO is it possible to have more than 1 of the same index buffer?
+        RETURN_IF_FOUND(_indexBuffers, index);
+
+        // TODO this is very similar to loadVertexBuffer. Move to common function.
+
+        if (auto gBufferView = _gltf.bufferView(index)) {
+            size_t bufferIndex;
+            if (gBufferView.buffer(bufferIndex)) {
+                if (auto buffer = loadBuffer(bufferIndex)) {
+                    auto byteLength = gBufferView.byteLength();
+                    auto byteOffset = gBufferView.byteOffset();
+                    //auto byteStride = gBufferView.byteStride(); // TODO is this needed?
+                    auto indexBuffer = IndexBuffer::create(byteLength, &(*buffer)[0] + byteOffset, GL_STATIC_DRAW);
+                    _indexBuffers[index] = indexBuffer;
+                    return indexBuffer;
                 }
             }
         }
@@ -617,28 +703,21 @@ namespace kepler {
     }
 
     ref<IndexBuffer> GLTF2Loader::Impl::loadIndexBuffer(const string& id) {
-        // TODO is it possible to have more than 1 of the same index buffer?
-        RETURN_IF_FOUND(_indexBuffersOld, id);
+        return nullptr;
+    }
 
-        // TODO this is very similar to loadVertexBuffer. Move to common function.
-
-        auto jViews = _json.find(BUFFER_VIEWS);
-        if (jViews != _json.end()) {
-            auto jBufferView = jViews->find(id);
-            if (jBufferView != jViews->end()) {
-                auto jBuffer = jBufferView->find(BUFFER);
-                if (jBuffer != jBufferView->end() && jBuffer->is_string()) {
-                    const auto& bufferId = jBuffer->get_ref<const string&>();
-                    if (bufferId.length() > 0) {
-                        auto buffer = loadBuffer(bufferId);
-                        if (buffer) {
-                            GLsizeiptr byteLength = jBufferView->value<GLsizeiptr>("byteLength", 0);
-                            size_t byteOffset = jBufferView->value<size_t>("byteOffset", 0);
-                            auto indexBuffer = IndexBuffer::create(byteLength, &(*buffer)[0] + byteOffset, GL_STATIC_DRAW);
-                            _indexBuffersOld[id] = indexBuffer;
-                            return indexBuffer;
-                        }
-                    }
+    ref<IndexAccessor> GLTF2Loader::Impl::loadIndexAccessor(size_t index) {
+        RETURN_IF_FOUND(_indexAccessors, index);
+        if (auto gAccessor = _gltf.accessor(index)) {
+            size_t bufferViewIndex;
+            if (gAccessor.bufferView(bufferViewIndex)) {
+                if (auto indexBuffer = loadIndexBuffer(bufferViewIndex)) {
+                    GLenum componentType = static_cast<GLenum>(gAccessor.componentType());
+                    GLsizei count = static_cast<GLsizei>(gAccessor.count());
+                    GLintptr byteOffset = gAccessor.byteOffset();
+                    auto indexAccessor = IndexAccessor::create(indexBuffer, count, componentType, byteOffset);
+                    _indexAccessors[index] = indexAccessor;
+                    return indexAccessor;
                 }
             }
         }
@@ -646,25 +725,27 @@ namespace kepler {
     }
 
     ref<IndexAccessor> GLTF2Loader::Impl::loadIndexAccessor(const string& id) {
-        RETURN_IF_FOUND(_indexAccessorsOld, id);
+        return nullptr;
+    }
 
-        auto jAccessor = _json[ACCESSORS][id];
-        if (jAccessor.is_object()) {
-
-            auto indexBuffer = loadIndexBuffer(jAccessor.value(BUFFER_VIEW, ""));
-            if (indexBuffer == nullptr) {
-                return nullptr;
+    ref<VertexAttributeAccessor> GLTF2Loader::Impl::loadVertexAttributeAccessor(size_t index) {
+        RETURN_IF_FOUND(_vertexAttributeAccessors, index);
+        if (auto gAccessor = _gltf.accessor(index)) {
+            size_t bufferViewIndex;
+            if (gAccessor.bufferView(bufferViewIndex)) {
+                auto vbo = loadVertexBuffer(bufferViewIndex);
+                if (vbo == nullptr) {
+                    return nullptr;
+                }
+                GLenum componentType = static_cast<GLenum>(gAccessor.componentType());
+                GLint componentSize = gltf2::numberOfComponents<GLint>(gAccessor.type());
+                auto byteStride = static_cast<GLsizei>(gAccessor.bufferView().byteStride());
+                GLintptr byteOffset = gAccessor.byteOffset();
+                auto count = static_cast<GLsizei>(gAccessor.count());
+                auto vertexAttributeAccessor = VertexAttributeAccessor::create(vbo, componentSize, componentType, false, byteStride, byteOffset, count);
+                _vertexAttributeAccessors[index] = vertexAttributeAccessor;
+                return vertexAttributeAccessor;
             }
-
-            //GLint componentSize = numComponentsOfType(jAccessor.value(TYPE, ""));
-            GLenum componentType = jAccessor.value<int>("componentType", 0);
-            GLintptr byteOffset = jAccessor.value<int>("byteOffset", 0);
-            GLsizei count = jAccessor.value<int>("count", 0);
-
-            auto indexAccessor = IndexAccessor::create(indexBuffer, count, componentType, byteOffset);
-            //indexAccessor->dump();
-            _indexAccessorsOld[id] = indexAccessor;
-            return indexAccessor;
         }
         return nullptr;
     }
@@ -1006,8 +1087,9 @@ namespace kepler {
                     if (startsWith(uri, DATA_IMAGE_BASE64)) {
                         auto index = uri.find_first_of(',');
                         if (index != string::npos) {
-                            auto buffer = createBufferFromBase64(uri, index + 1);
-                            image = Image::createFromFileMemory(&((*buffer)[0]), static_cast<int>(buffer->size()));
+                            return nullptr;
+                            //auto buffer = createBufferFromBase64(uri, index + 1);
+                            //image = Image::createFromFileMemory(&((*buffer)[0]), static_cast<int>(buffer->size()));
                         }
                     }
                     else {
@@ -1185,6 +1267,20 @@ namespace kepler {
         case 4: return MeshPrimitive::TRIANGLES;
         case 5: return MeshPrimitive::TRIANGLE_STRIP;
         case 6: return MeshPrimitive::TRIANGLE_FAN;
+        default:
+            return MeshPrimitive::TRIANGLES;
+        }
+    }
+
+    MeshPrimitive::Mode toMode(gltf2::Primitive::Mode mode) {
+        switch (mode) {
+        case gltf2::Primitive::Mode::POINTS: return MeshPrimitive::POINTS;
+        case gltf2::Primitive::Mode::LINES: return MeshPrimitive::LINES;
+        case gltf2::Primitive::Mode::LINE_LOOP: return MeshPrimitive::LINE_LOOP;
+        case gltf2::Primitive::Mode::LINE_STRIP: return MeshPrimitive::LINE_STRIP;
+        case gltf2::Primitive::Mode::TRIANGLES: return MeshPrimitive::TRIANGLES;
+        case gltf2::Primitive::Mode::TRIANGLE_STRIP: return MeshPrimitive::TRIANGLE_STRIP;
+        case gltf2::Primitive::Mode::TRIANGLE_FAN: return MeshPrimitive::TRIANGLE_FAN;
         default:
             return MeshPrimitive::TRIANGLES;
         }
@@ -1496,11 +1592,11 @@ namespace kepler {
         base64_init_decodestate(&decoder._state);
     }
 
-    shared_ptr<std::vector<ubyte>> createBufferFromBase64(const string& text, size_t offset) {
+    shared_ptr<std::vector<ubyte>> createBufferFromBase64(const string& text, size_t offset, size_t byteLength) {
         std::istringstream in(text);
         in.seekg(offset);
         auto buffer = std::make_shared<std::vector<ubyte>>();
-        buffer->reserve(text.length() * 3 >> 2); // the data will be roughly 75% the size of the base64 text
+        buffer->reserve(byteLength);
         base64Decode(in, *buffer);
         return buffer;
     }

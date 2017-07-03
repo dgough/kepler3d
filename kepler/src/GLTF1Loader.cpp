@@ -535,7 +535,7 @@ namespace kepler {
                         else {
                             string path = uriToPath(uri);
                             auto buffer = std::make_shared<std::vector<ubyte>>();
-                            if (readBinaryFile(path.c_str(), *buffer.get())) {
+                            if (readBinaryFile(path.c_str(), *buffer)) {
                                 _buffers[id] = buffer;
                                 return buffer;
                             }

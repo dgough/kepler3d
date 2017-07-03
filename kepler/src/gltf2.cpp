@@ -19,6 +19,8 @@ using namespace std;
 
 namespace gltf2 {
 
+    static constexpr float DEFAULT_ASPECT_RATIO = 16.0f / 9.0f;
+
     namespace GLValue {
         enum {
             // filters
@@ -197,6 +199,23 @@ namespace gltf2 {
         return vec;
     }
 
+    static std::vector<const char*> getKeys(const void* ptr, const char* key) {
+        std::vector<const char*> vec;
+        if (ptr != nullptr) {
+            auto p = genericValue(ptr);
+            auto it = p->FindMember(key);
+            if (it != p->MemberEnd() && it->value.IsObject()) {
+                auto& value = it->value;
+                const size_t size = value.MemberCount();
+                vec.reserve(size);
+                for (auto member = value.MemberBegin(); member != value.MemberEnd(); ++member) {
+                    vec.push_back(member->name.GetString());
+                }
+            }
+        }
+        return vec;
+    }
+
     /// Copys numbers from a json element
     /// @return True if the numbers were copied.
     template<typename T>
@@ -230,7 +249,12 @@ namespace gltf2 {
             auto p = genericValue(ptr);
             auto it = p->FindMember(key);
             if (it != p->MemberEnd()) {
-                return it->value.Size();
+                if (it->value.IsArray()) {
+                    return it->value.Size();
+                }
+                else if (it->value.MemberCount()) {
+                    return it->value.MemberCount();
+                }
             }
         }
         return 0;
@@ -521,26 +545,38 @@ namespace gltf2 {
 
     Mesh Node::mesh() const noexcept {
         size_t index;
-        if (findNumber(ptr, "mesh", index)) {
+        if (mesh(index)) {
             return gltf->mesh(index);
         }
         return Mesh();
     }
 
+    bool Node::mesh(size_t & index) const noexcept {
+        return findNumber(ptr, "mesh", index);
+    }
+
     Camera Node::camera() const noexcept {
         size_t index;
-        if (findNumber(ptr, "camera", index)) {
+        if (camera(index)) {
             return gltf->camera(index);
         }
         return Camera();
     }
 
+    bool Node::camera(size_t& index) const noexcept {
+        return findNumber(ptr, "camera", index);
+    }
+
     Skin Node::skin() const noexcept {
         size_t index;
-        if (findNumber(ptr, "skin", index)) {
+        if (skin(index)) {
             return gltf->skin(index);
         }
         return Skin();
+    }
+
+    bool Node::skin(size_t & index) const noexcept {
+        return findNumber(ptr, "skin", index);
     }
 
     Camera::Type Camera::type() const noexcept {
@@ -580,7 +616,7 @@ namespace gltf2 {
     }
 
     float Perspective::aspectRatio() const noexcept {
-        return findFloat("aspectRatio");
+        return findFloat("aspectRatio", DEFAULT_ASPECT_RATIO);
     }
 
     float Perspective::yfov() const noexcept {
@@ -658,6 +694,29 @@ namespace gltf2 {
         return Accessor();
     }
 
+    std::vector<std::pair<const char*, size_t>> Primitive::attributes() const noexcept {
+        std::vector<std::pair<const char*, size_t>> vec;
+        if (ptr != nullptr) {
+            auto p = genericValue(ptr);
+            auto it = p->FindMember("attributes");
+            if (it != p->MemberEnd() && it->value.IsObject()) {
+                vec.reserve(it->value.MemberCount());
+                for (auto member = it->value.MemberBegin(); member != it->value.MemberEnd(); ++member) {
+                    vec.emplace_back(member->name.GetString(), member->value.Get<size_t>());
+                }
+            }
+        }
+        return vec;
+    }
+
+    size_t Primitive::attributeCount() const noexcept {
+        return count("attributes");
+    }
+
+    std::vector<const char*> Primitive::attributeStrings() const noexcept {
+        return getKeys(ptr, "attributes");
+    }
+
     Accessor Primitive::position() const noexcept {
         return attribute("POSITION");
     }
@@ -708,12 +767,20 @@ namespace gltf2 {
         return Accessor();
     }
 
+    bool Primitive::indices(size_t& index) const noexcept {
+        return findNumber(ptr, "indices", index);
+    }
+
     Material Primitive::material() const noexcept {
         size_t num;
         if (findNumber<size_t>(ptr, "material", num)) {
             return gltf->material(num);
         }
         return Material();
+    }
+
+    bool Primitive::material(size_t& index) const noexcept {
+        return findNumber<size_t>(ptr, "material", index);
     }
 
     MorphTarget Primitive::target(size_t index) const noexcept {
@@ -754,6 +821,10 @@ namespace gltf2 {
             return gltf->bufferView(num);
         }
         return BufferView();
+    }
+
+    bool Accessor::bufferView(size_t& index) const noexcept {
+        return findNumber<size_t>(ptr, "bufferView", index);
     }
 
     size_t Accessor::byteOffset() const noexcept {
@@ -841,6 +912,10 @@ namespace gltf2 {
             return gltf->buffer(num);
         }
         return Buffer();
+    }
+
+    bool BufferView::buffer(size_t& index) const noexcept {
+        return findNumber(ptr, "buffer", index);
     }
 
     size_t BufferView::byteOffset() const noexcept {
@@ -995,7 +1070,7 @@ namespace gltf2 {
         return Node();
     }
 
-    bool Skin::joint(size_t* p, size_t count) const noexcept {
+    bool Skin::joints(size_t* p, size_t count) const noexcept {
         return copyNumbers<size_t>(ptr, "joints", count, p);
     }
 
@@ -1005,6 +1080,10 @@ namespace gltf2 {
 
     size_t Skin::jointCount() const noexcept {
         return Base::count("joints");
+    }
+
+    std::vector<size_t> Skin::joints() const noexcept {
+        return getVector<size_t>(ptr, "joints");
     }
 
     PbrMetallicRoughness Material::pbrMetallicRoughness() const noexcept {

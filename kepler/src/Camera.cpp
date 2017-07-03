@@ -98,4 +98,22 @@ namespace kepler {
         }
         return _viewProjection;
     }
+    float Camera::fov() const noexcept {
+        return _fov;
+    }
+    float Camera::aspectRatio() const noexcept {
+        return _aspectRatio;
+    }
+    float Camera::near() const noexcept {
+        return _near;
+    }
+    float Camera::far() const noexcept {
+        return _far;
+    }
+    float Camera::zoomX() const noexcept {
+        return _zoomX;
+    }
+    float Camera::zoomY() const noexcept {
+        return _zoomY;
+    }
 }

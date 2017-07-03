@@ -8,7 +8,7 @@ namespace kepler {
     Mesh::Mesh() {
     }
 
-    Mesh::Mesh(ref<MeshPrimitive> primitive) : _primitives{primitive} {
+    Mesh::Mesh(ref<MeshPrimitive> primitive) : _primitives{ primitive } {
     }
 
     Mesh::~Mesh() noexcept {
@@ -24,6 +24,12 @@ namespace kepler {
 
     void Mesh::addMeshPrimitive(ref<MeshPrimitive> primitive) {
         _primitives.push_back(std::move(primitive));
+    }
+
+    void Mesh::setName(const char* name) {
+        if (name != nullptr && *name != '\0') {
+            _name = std::make_unique<std::string>(name);
+        }
     }
 
     void Mesh::setName(const std::string& name) {
