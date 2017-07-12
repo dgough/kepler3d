@@ -159,9 +159,6 @@
     <ClCompile Include="src\MeshUtils.cpp">
       <Filter>src\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="src\gltf2.cpp">
-      <Filter>src\glTF</Filter>
-    </ClCompile>
     <ClCompile Include="src\GLTF1Loader.cpp">
       <Filter>src\glTF</Filter>
     </ClCompile>
@@ -296,13 +293,16 @@
     <ClInclude Include="src\AttributeSemantic.hpp">
       <Filter>src\Materials</Filter>
     </ClInclude>
-    <ClInclude Include="src\gltf2.hpp">
-      <Filter>src\glTF</Filter>
-    </ClInclude>
     <ClInclude Include="src\GLTF1Loader.hpp">
       <Filter>src\glTF</Filter>
     </ClInclude>
     <ClInclude Include="src\GLTF2Loader.hpp">
+      <Filter>src\glTF</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lazy_gltf2.hpp">
+      <Filter>src\glTF</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lib64.hpp">
       <Filter>src\glTF</Filter>
     </ClInclude>
   </ItemGroup>

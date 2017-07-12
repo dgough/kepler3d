@@ -8,6 +8,7 @@ namespace kepler {
     enum class AttributeSemantic {
         POSITION,
         NORMAL,
+        TANGENT,
         COLOR,
         JOINT,
         JOINTMATRIX,

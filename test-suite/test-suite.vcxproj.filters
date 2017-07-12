@@ -24,6 +24,9 @@
     <ClCompile Include="src\MainMenu.cpp">
       <Filter>src\main</Filter>
     </ClCompile>
+    <ClCompile Include="src\Gltf2Test.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\LightTest.hpp">
@@ -37,6 +40,9 @@
     </ClInclude>
     <ClInclude Include="src\MainMenu.hpp">
       <Filter>src\main</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gltf2Test.hpp">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

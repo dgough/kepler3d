@@ -31,7 +31,7 @@ namespace kepler {
         ref<Material> findMaterialById(const std::string& id);
         ref<Material> findMaterialByName(const std::string& name);
 
-        ref<Mesh> findMeshById(const std::string& id);
+        ref<Mesh> findMeshByIndex(size_t index);
 
         /// Clears all of the data held by this loader.
         void clear();

@@ -1,7 +1,7 @@
 ﻿#include "stdafx.h"
 #include "GLTF2Loader.hpp"
 
-#include "gltf2.hpp"
+#include "lazy_gltf2.hpp"
 
 #include "Scene.hpp"
 #include "Camera.hpp"
@@ -135,7 +135,6 @@ namespace kepler {
     static void setFunction(RenderState& renderState, const string& key, const json& value);
     static void base64Decode(const string& text, size_t offset, string& destination);
     static void base64Decode(std::istream& istream, std::vector<ubyte>& out);
-    static shared_ptr<std::vector<ubyte>> createBufferFromBase64(const string& text, size_t offset, size_t byteLength);
 
     using time_type = std::chrono::nanoseconds;
     static time_type __totalTime;
@@ -157,27 +156,21 @@ namespace kepler {
         ref<Scene> loadScene(size_t index);
 
         ref<Node> loadNode(size_t index);
-        ref<Node> loadNode(const string& id);
         ref<Node> loadNode(const gltf2::Node& gNode);
-        ref<Node> loadNode(const json& jNode);
 
         ref<Mesh> loadMesh(size_t index);
-        ref<Mesh> loadMesh(const string& id);
         ref<Camera> loadCamera(size_t index);
-        ref<Camera> loadCamera(const string& id);
 
         shared_ptr<std::vector<ubyte>> loadBuffer(size_t index);
-        shared_ptr<std::vector<ubyte>> loadBuffer(const string& id);
 
         ref<VertexBuffer> loadVertexBuffer(size_t index);
-        ref<VertexBuffer> loadVertexBuffer(const string& id);
         ref<IndexBuffer> loadIndexBuffer(size_t index);
         ref<IndexBuffer> loadIndexBuffer(const string& id);
         ref<IndexAccessor> loadIndexAccessor(size_t index);
-        ref<IndexAccessor> loadIndexAccessor(const string& id);
         ref<VertexAttributeAccessor> loadVertexAttributeAccessor(size_t index);
         ref<VertexAttributeAccessor> loadVertexAttributeAccessor(const string& id);
 
+        ref<Material> loadMaterial(size_t index);
         ref<Material> loadMaterial(const string& id);
         ref<Technique> loadTechnique(const string& id);
         void loadTechniqueAttribute(const string& glslName, const string& paramName, const json& parameters, ref<Technique> tech);
@@ -226,12 +219,7 @@ namespace kepler {
         std::map<size_t, ref<Image>> _images;
 
         // old
-        std::map <string, std::shared_ptr<std::vector<ubyte>>> _buffersOld;
-
         std::map<string, ref<Node>> _nodesOld;
-        std::map<string, ref<VertexBuffer>> _vbosOld;
-        std::map<string, ref<IndexBuffer>> _indexBuffersOld;
-        std::map<string, ref<IndexAccessor>> _indexAccessorsOld;
         std::map<string, ref<VertexAttributeAccessor>> _vertexAttributeAccessorsOld;
 
         std::map<string, ref<Material>> _materialsOld;
@@ -286,8 +274,8 @@ namespace kepler {
         return _impl->loadMaterialByName(name);
     }
 
-    ref<Mesh> GLTF2Loader::findMeshById(const std::string& id) {
-        return _impl->loadMesh(id);
+    ref<Mesh> GLTF2Loader::findMeshByIndex(size_t index) {
+        return _impl->loadMesh(index);
     }
 
     void GLTF2Loader::clear() {
@@ -314,7 +302,7 @@ namespace kepler {
     ////////////////////////////////////////////////////////////////
 
     GLTF2Loader::Impl::Impl()
-        : _loaded(false), _useDefaultMaterial(false), _autoLoadMaterials(true), _aspectRatio(0.0f) {
+        : _loaded(false), _useDefaultMaterial(true), _autoLoadMaterials(true), _aspectRatio(0.0f) {
     }
 
     GLTF2Loader::Impl::~Impl() noexcept {
@@ -365,7 +353,7 @@ namespace kepler {
 
     ref<Scene> GLTF2Loader::Impl::loadDefaultScene() {
         size_t index;
-        if (_gltf.defaultSceneIndex(index)) {
+        if (_gltf.defaultScene(index)) {
             return loadScene(index);
         }
         else if (_gltf.sceneCount() > 0) {
@@ -388,28 +376,11 @@ namespace kepler {
     }
 
     ref<Node> GLTF2Loader::Impl::loadNode(size_t index) {
-        const auto it = _nodes.find(index); // TODO make macro for this
-        if (it != _nodes.end()) {
-            return it->second;
-        }
+        RETURN_IF_FOUND(_nodes, index);
         if (auto gNode = _gltf.node(index)) {
             auto node = loadNode(gNode);
             _nodes[index] = node;
             return node;
-        }
-        return nullptr;
-    }
-
-    ref<Node> GLTF2Loader::Impl::loadNode(const string& id) {
-        RETURN_IF_FOUND(_nodesOld, id);
-        auto jNodes = _json.find(NODES);
-        if (jNodes != _json.end()) {
-            auto jNode = jNodes->find(id);
-            if (jNode != jNodes->end()) {
-                auto node = loadNode(*jNode);
-                _nodesOld[id] = node;
-                return node;
-            }
         }
         return nullptr;
     }
@@ -422,7 +393,9 @@ namespace kepler {
         // load mesh
         size_t meshIndex;
         if (gNode.mesh(meshIndex)) {
-
+            if (auto mesh = loadMesh(meshIndex)) {
+                node->addComponent(MeshRenderer::create(mesh));
+            }
         }
 
         // load camera
@@ -434,41 +407,6 @@ namespace kepler {
         // load children
         for (const auto& index : gNode.children()) {
             node->addNode(loadNode(index));
-        }
-        return node;
-    }
-
-    ref<Node> GLTF2Loader::Impl::loadNode(const json& jNode) {
-        auto name = jNode.value(NAME, "");
-        auto node = Node::create(name);
-
-        loadTransform(jNode, node);
-
-        // load mesh
-        auto meshes = jNode.find(MESHES);
-        if (meshes != jNode.end() && meshes->is_array() && meshes->size() > 0) {
-            // TODO for now, only load one mesh
-            const auto& meshId = meshes->at(0);
-            auto mesh = loadMesh(meshId.get_ref<const string&>());
-            if (mesh) {
-                node->addComponent(MeshRenderer::create(mesh));
-            }
-        }
-
-        // load camera
-        auto cameraId = jNode.find(CAMERA);
-        if (cameraId != jNode.end()) {
-            node->addComponent(loadCamera(cameraId->get_ref<const string&>()));
-        }
-
-        // load children
-        auto children = jNode.find(CHILDREN);
-        if (children->is_array() && children->size() > 0) {
-            for (const auto& child : *children) {
-                if (child.is_string()) {
-                    node->addNode(loadNode(child.get_ref<const string&>()));
-                }
-            }
         }
         return node;
     }
@@ -493,16 +431,20 @@ namespace kepler {
                         if (auto indexAccessor = loadIndexAccessor(indicesIndex)) {
                             prim->setIndices(indexAccessor);
                         }
-                        if (_autoLoadMaterials) {
-                            // load material
-                            //size_t materialIndex;
-                            //if (gPrim.material(materialIndex)) {
-                            //    if (auto material = loadMaterial(materialIndex)) {
-
-                            //    }
-                            //}
+                    }
+                    if (_autoLoadMaterials) {
+                        // load material
+                        size_t materialIndex;
+                        if (gPrim.material(materialIndex)) {
+                            if (auto material = loadMaterial(materialIndex)) {
+                                prim->setMaterial(material);
+                            }
+                            else {
+                                prim->setMaterial(loadDefaultMaterial());
+                            }
                         }
                     }
+                    mesh->addMeshPrimitive(prim);
                 }
             }
             if (mesh->primitiveCount() > 0) {
@@ -511,68 +453,6 @@ namespace kepler {
             else {
                 loge("MESH::ZERO_PRIMITIVES_LOADED");
             }
-        }
-        return nullptr;
-    }
-
-    ref<Mesh> GLTF2Loader::Impl::loadMesh(const string& id) {
-        try {
-            auto jMeshes = _json.find(MESHES);
-            if (jMeshes != _json.end()) {
-                auto jMesh = jMeshes->find(id);
-                if (jMesh != jMeshes->end()) {
-                    auto jPrimitives = jMesh->find(PRIMITIVES);
-                    if (jPrimitives != jMesh->end()) {
-                        auto mesh = Mesh::create();
-                        mesh->setName(jMesh->value(NAME, ""));
-                        // load primitives
-                        for (const auto& jPrimitive : *jPrimitives) {
-                            int mode = jPrimitive[MODE].get<int>();
-                            auto meshPrimitive = MeshPrimitive::create(toMode(mode));
-                            auto jAttribs = jPrimitive.find(ATTRIBUTES);
-                            if (jAttribs != jPrimitive.end() && jAttribs->is_object()) {
-                                for (auto jAttrib = jAttribs->begin(); jAttrib != jAttribs->end(); ++jAttrib) {
-                                    const std::string& str = jAttrib.value();
-                                    auto vertexAttributeAccessor = loadVertexAttributeAccessor(str);
-                                    if (vertexAttributeAccessor) {
-                                        meshPrimitive->setAttribute(toAttributeSemantic(jAttrib.key()), vertexAttributeAccessor);
-                                    }
-                                }
-                            }
-                            // load indices
-                            auto jIndices = jPrimitive.find(INDICES);
-                            if (jIndices != jPrimitive.end()) {
-                                auto indexAccessor = loadIndexAccessor(jIndices->get_ref<const string&>());
-                                if (indexAccessor) {
-                                    meshPrimitive->setIndices(indexAccessor);
-                                }
-                            }
-                            if (_autoLoadMaterials) {
-                                // load material
-                                auto jMaterialId = jPrimitive.find(MATERIAL);
-                                if (jMaterialId != jPrimitive.end()) {
-                                    auto material = loadMaterial(jMaterialId->get_ref<const string&>());
-                                    if (material) {
-                                        meshPrimitive->setMaterial(material);
-                                    }
-                                }
-                                else {
-                                    meshPrimitive->setMaterial(loadDefaultMaterial());
-                                }
-                            }
-                            mesh->addMeshPrimitive(meshPrimitive);
-                        }
-                        if (mesh->primitiveCount() > 0) {
-                            return mesh;
-                        }
-                        else {
-                            loge("MESH::ZERO_PRIMITIVES_LOADED");
-                        }
-                    }
-                }
-            }
-        }
-        catch (const std::domain_error&) {
         }
         return nullptr;
     }
@@ -597,64 +477,16 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<Camera> GLTF2Loader::Impl::loadCamera(const string& id) {
-        auto cameras = _json.find(CAMERAS);
-        if (cameras != _json.end()) {
-            auto camera = cameras->find(id);
-            if (camera != cameras->end()) {
-                auto type = camera->value(TYPE, "");
-                if (type == PERSPECTIVE) {
-                    auto p = camera->find(PERSPECTIVE);
-                    if (p != camera->end()) {
-                        // _aspectRatio can replace the aspect ratio found in the file.
-                        float aspectRatio = _aspectRatio != 0.0f ? _aspectRatio : p->value("aspectRatio", DEFAULT_ASPECT_RATIO);
-                        float yfov = p->value("yfov", DEFAULT_FOVY);
-                        float near = p->value("znear", DEFAULT_NEAR);
-                        float far = p->value("zfar", DEFAULT_FAR);
-                        return Camera::createPerspective(glm::degrees(yfov), aspectRatio, near, far);
-                    }
-                }
-                else if (type == ORTHOGRAPHIC) {
-                    auto p = camera->find(ORTHOGRAPHIC);
-                    if (p != camera->end()) {
-                        float xmag = p->value("xmag", 0.0f);
-                        float ymag = p->value("ymag", 1.0f);
-                        float znear = p->value("znear", DEFAULT_NEAR);
-                        float zfar = p->value("zfar", DEFAULT_FAR);
-                        return Camera::createOrthographic(xmag, ymag, 1.0f, znear, zfar);
-                    }
-                }
-            }
-        }
-        return nullptr;
-    }
-
     shared_ptr<std::vector<ubyte>> GLTF2Loader::Impl::loadBuffer(size_t index) {
         RETURN_IF_FOUND(_buffers, index);
-
         if (auto gBuffer = _gltf.buffer(index)) {
             auto byteLength = gBuffer.byteLength();
-            const char* uri = gBuffer.uri();
-            if (startsWith(uri, DATA_APP_BASE64)) {
-                // data uri
-                auto buffer = createBufferFromBase64(uri, DATA_APP_BASE64.length(), byteLength);
+            auto buffer = std::make_shared<std::vector<ubyte>>();
+            if (gBuffer.load(*buffer)) {
                 _buffers[index] = buffer;
                 return buffer;
             }
-            else {
-                string path = uriToPath(uri);
-                auto buffer = std::make_shared<std::vector<ubyte>>();
-                buffer->reserve(byteLength);
-                if (readBinaryFile(path.c_str(), *buffer)) {
-                    _buffers[index] = buffer;
-                    return buffer;
-                }
-            }
         }
-        return nullptr;
-    }
-
-    shared_ptr<std::vector<ubyte>> GLTF2Loader::Impl::loadBuffer(const string& id) {
         return nullptr;
     }
 
@@ -673,10 +505,6 @@ namespace kepler {
                 }
             }
         }
-        return nullptr;
-    }
-
-    ref<VertexBuffer> GLTF2Loader::Impl::loadVertexBuffer(const string& id) {
         return nullptr;
     }
 
@@ -724,10 +552,6 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<IndexAccessor> GLTF2Loader::Impl::loadIndexAccessor(const string& id) {
-        return nullptr;
-    }
-
     ref<VertexAttributeAccessor> GLTF2Loader::Impl::loadVertexAttributeAccessor(size_t index) {
         RETURN_IF_FOUND(_vertexAttributeAccessors, index);
         if (auto gAccessor = _gltf.accessor(index)) {
@@ -757,7 +581,7 @@ namespace kepler {
         if (jAccessors != _json.end()) {
             auto jAccessor = jAccessors->find(id);
             if (jAccessor != jAccessors->end() && jAccessor->is_object()) {
-                auto vbo = loadVertexBuffer(jAccessor->value(BUFFER_VIEW, ""));
+                auto vbo = nullptr;// = loadVertexBuffer(jAccessor->value(BUFFER_VIEW, ""));
                 if (vbo == nullptr) {
                     return nullptr;
                 }
@@ -772,6 +596,22 @@ namespace kepler {
                 _vertexAttributeAccessorsOld[id] = vertexAttributeAccessor;
                 return vertexAttributeAccessor;
             }
+        }
+        return nullptr;
+    }
+
+    ref<Material> GLTF2Loader::Impl::loadMaterial(size_t index) {
+        RETURN_IF_FOUND(_materials, index);
+        // TODO
+        if (_useDefaultMaterial) {
+            return loadDefaultMaterial();
+        }
+        if (auto gMaterial = _gltf.material(index)) {
+            auto material = Material::create();
+            if (const char* name = gMaterial.name()) {
+                material->setName(name);
+            }
+
         }
         return nullptr;
     }
@@ -928,7 +768,7 @@ namespace kepler {
                 bool useSemantic = true;
                 auto jNodeId = jParam->find("node");
                 if (jNodeId != jParam->end() && jNodeId->is_string()) {
-                    auto node = loadNode(jNodeId->get_ref<const string&>());
+                    ref<Node> node = nullptr;// loadNode(jNodeId->get_ref<const string&>());
                     if (node) {
                         // TODO this is cheating
                         if (semanticValue == MaterialParameter::Semantic::MODELVIEW) {
@@ -1327,7 +1167,7 @@ namespace kepler {
             break;
         case 'J':
             if (semantic == "JOINT") return AttributeSemantic::JOINT;
-            if (semantic == "JOINTMATRIX") return AttributeSemantic::JOINTMATRIX;
+            if (semantic == "JOINTMATRIX") return AttributeSemantic::JOINTMATRIX; // TODO remove?
             break;
         case 'N': if (semantic == "NORMAL") return AttributeSemantic::NORMAL;
             break;
@@ -1336,6 +1176,9 @@ namespace kepler {
         case 'W': if (semantic == "WEIGHT") return AttributeSemantic::WEIGHT;
             break;
         case 'T':
+            if (semantic == "TANGENT") {
+                return AttributeSemantic::TANGENT;
+            }
             if (semantic.length() >= 10 && semantic[1] == 'E') {
                 int n = semantic[9] - '0';
                 if (semantic.length() == 11) {
@@ -1590,14 +1433,5 @@ namespace kepler {
             out.insert(out.end(), plaintext.begin(), plaintext.begin() + plainlength);
         } while (in.good() && codelength > 0);
         base64_init_decodestate(&decoder._state);
-    }
-
-    shared_ptr<std::vector<ubyte>> createBufferFromBase64(const string& text, size_t offset, size_t byteLength) {
-        std::istringstream in(text);
-        in.seekg(offset);
-        auto buffer = std::make_shared<std::vector<ubyte>>();
-        buffer->reserve(byteLength);
-        base64Decode(in, *buffer);
-        return buffer;
     }
 }

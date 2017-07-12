@@ -2,6 +2,7 @@
 #include "SceneTest.hpp"
 #include "TextTest.hpp"
 #include "LightTest.hpp"
+#include "Gltf2Test.hpp"
 
 #include <BaseGL.hpp>
 #include <GLFW/glfw3.h>
@@ -50,6 +51,11 @@ void MainMenu::start() {
         rect.pos.y += height;
         addButton("Light Test", rect, []() {
             app()->setDelegate(std::make_shared<LightTest>());
+        });
+
+        rect.pos.y += height;
+        addButton("glTF 2.0 Test", rect, []() {
+            app()->setDelegate(std::make_shared<Gltf2Test>());
         });
     }
 }

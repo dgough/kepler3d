@@ -11,7 +11,7 @@
 #include <GLTF2Loader.hpp>
 #include <Material.hpp>
 
-#define BASE_DIR "C:/dev/github/glTF-Sample-Models/2.0/"
+#define BASE_DIR "../../glTF-Sample-Models/2.0/"
 
 static constexpr char* BOX_PATH = BASE_DIR "Box/glTF/Box.gltf";
 static constexpr char* LANTERN_PATH = BASE_DIR "Lantern/glTF/Lantern.gltf";
@@ -19,7 +19,6 @@ static constexpr char* CAMERA_PATH = BASE_DIR "Cameras/glTF/Cameras.gltf";
 static constexpr char* ANIMATED_BOX_PATH = BASE_DIR "BoxAnimated/glTF/BoxAnimated.gltf";
 static constexpr char* DUCK_PATH = BASE_DIR "Duck/glTF/Duck.gltf";
 static constexpr char* TRUCK_PATH = BASE_DIR "CesiumMilkTruck/glTF/CesiumMilkTruck.gltf";
-
 
 static constexpr int WINDOW_WIDTH = 8;
 static constexpr int WINDOW_HEIGHT = 6;
@@ -55,7 +54,8 @@ static GLFWwindow* setup() {
 //}
 
 TEST(gltf2, load_gltf2) {
-    //setup();
+    setup();
+
     // load box
     {
         //GLTF2Loader gltf;
