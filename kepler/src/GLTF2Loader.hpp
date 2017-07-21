@@ -28,7 +28,6 @@ namespace kepler {
         /// @return A reference to the newly loaded scene. Will be empty if there was an error.
         ref<Scene> loadSceneFromFile(const char* path);
 
-        ref<Material> findMaterialById(const std::string& id);
         ref<Material> findMaterialByName(const std::string& name);
 
         ref<Mesh> findMeshByIndex(size_t index);
@@ -41,7 +40,7 @@ namespace kepler {
 
         /// Sets if materials will be automatically loaded when loading scenes, nodes or meshes.
         /// Enabled by default.
-        /// This will not affect explicitly loading materials using methods like findMaterialById().
+        /// This will not affect explicitly loading materials using methods like findMaterialByName().
         void setAutoLoadMaterials(bool value);
 
         /// Sets the aspect ratio to use when loading cameras.

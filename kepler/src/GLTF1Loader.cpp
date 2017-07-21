@@ -302,11 +302,11 @@ namespace kepler {
 
         //std::unique_ptr<json> p = std::make_unique<json>();
 
-        auto start = std::chrono::system_clock::now();
+        auto start = std::chrono::high_resolution_clock::now();
 
         file >> _json;
 
-        auto end = std::chrono::system_clock::now();
+        auto end = std::chrono::high_resolution_clock::now();
         _jsonLoadTime = std::chrono::duration_cast<time_type>(end - start);
 
         file.close();
@@ -316,7 +316,7 @@ namespace kepler {
 
     ref<Scene> GLTF1Loader::Impl::loadSceneFromFile(const char* path) {
         // TODO call clear() first?
-        auto start = std::chrono::system_clock::now();
+        auto start = std::chrono::high_resolution_clock::now();
 
         if (!loadJson(path)) {
             loge("LOAD_SCENE_FROM_FILE ", path);
@@ -325,7 +325,7 @@ namespace kepler {
 
         auto scene = loadDefaultScene();
 
-        auto end = std::chrono::system_clock::now();
+        auto end = std::chrono::high_resolution_clock::now();
         auto t = std::chrono::duration_cast<time_type>(end - start);
         __totalTime += t;
         auto clogWidth = std::clog.width();
@@ -976,11 +976,11 @@ namespace kepler {
                     else {
                         auto path = uriToPath(uri);
 
-                        auto start = std::chrono::system_clock::now();
+                        auto start = std::chrono::high_resolution_clock::now();
 
                         image = Image::createFromFile(path.c_str(), false);
 
-                        auto end = std::chrono::system_clock::now();
+                        auto end = std::chrono::high_resolution_clock::now();
                         auto time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
                         auto clogWidth = std::clog.width();
                         std::clog.width(8);

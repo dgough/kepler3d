@@ -23,16 +23,13 @@
 #include "StringUtils.hpp"
 #include "Logging.hpp"
 
-#include <json.hpp>
+#include <iostream>
+#include <iomanip> // setprecision
 #include <chrono>
 #include <array>
 
-#define BUFFERSIZE 1024
-#include <b64/decode.h>
-
 using std::string;
 using std::shared_ptr;
-using json = nlohmann::basic_json<std::map, std::vector, std::string, bool, std::int64_t, std::uint64_t, float>;
 
 #define RETURN_IF_FOUND(map, key) \
     { \
@@ -64,6 +61,9 @@ static constexpr GLchar* DEFAULT_FRAG_SHADER = "precision highp float;\n"
 "{\n"
 "    gl_FragColor = u_emission;\n"
 "}\n";
+
+static constexpr const GLchar* BASIC_VERT_PATH = "../kepler/res/shaders/basic.vert";
+static constexpr const GLchar* BASIC_FRAG_PATH = "../kepler/res/shaders/basic.frag";
 
 namespace kepler {
 
@@ -104,9 +104,6 @@ namespace kepler {
     static const string URI = "uri";
 
     static const string SEMANTIC = "semantic";
-    static const string DATA_APP_BASE64 = "data:application/octet-stream;base64,";
-    static const string DATA_IMAGE_BASE64 = "data:image/";
-    static const string DATA_TEXT_BASE64 = "data:text/plain;base64,";
 
     static constexpr float DEFAULT_ASPECT_RATIO = 1.5f;
     static constexpr float DEFAULT_NEAR = 0.1f;
@@ -123,18 +120,14 @@ namespace kepler {
     static constexpr int DEFAULT_WRAP_T = GL_REPEAT;
 
     // functions
-    static MeshPrimitive::Mode toMode(int mode); // TODO remove
     static MeshPrimitive::Mode toMode(gltf2::Primitive::Mode mode);
     static MaterialParameter::Semantic toSemantic(const string& semantic);
     static AttributeSemantic toAttributeSemantic(const string& semantic);
-    static Sampler::Wrap toWrapMode(int wrap);
-    static Sampler::MinFilter toMinFilterMode(int filter);
-    static Sampler::MagFilter toMagFilterMode(int filter);
+    static Sampler::Wrap toWrapMode(gltf2::Sampler::Wrap wrap);
+    static Sampler::MinFilter toMinFilterMode(gltf2::Sampler::MinFilter filter);
+    static Sampler::MagFilter toMagFilterMode(gltf2::Sampler::MagFilter filter);
     static GLint numComponentsOfType(const string& type);
     static void setState(int state, RenderState& block);
-    static void setFunction(RenderState& renderState, const string& key, const json& value);
-    static void base64Decode(const string& text, size_t offset, string& destination);
-    static void base64Decode(std::istream& istream, std::vector<ubyte>& out);
 
     using time_type = std::chrono::nanoseconds;
     static time_type __totalTime;
@@ -165,26 +158,17 @@ namespace kepler {
 
         ref<VertexBuffer> loadVertexBuffer(size_t index);
         ref<IndexBuffer> loadIndexBuffer(size_t index);
-        ref<IndexBuffer> loadIndexBuffer(const string& id);
         ref<IndexAccessor> loadIndexAccessor(size_t index);
         ref<VertexAttributeAccessor> loadVertexAttributeAccessor(size_t index);
-        ref<VertexAttributeAccessor> loadVertexAttributeAccessor(const string& id);
 
         ref<Material> loadMaterial(size_t index);
-        ref<Material> loadMaterial(const string& id);
-        ref<Technique> loadTechnique(const string& id);
-        void loadTechniqueAttribute(const string& glslName, const string& paramName, const json& parameters, ref<Technique> tech);
-        void loadTechniqueUniform(const string& glslName, const string& paramName, const json& parameters, ref<Technique> tech);
-        ref<Effect> loadProgram(const string& id);
 
-        ref<Texture> loadTexture(const string& id);
-        ref<Sampler> loadSampler(const string& id);
-        ref<Image> loadImage(const string& id);
+        ref<Texture> loadTexture(size_t index);
+        ref<Sampler> loadSampler(size_t index);
+        ref<Image> loadImage(size_t index);
 
         ref<Material> loadDefaultMaterial();
         ref<Technique> loadDefaultTechnique();
-
-        void loadShaderSource(const string& id, string& destination);
 
         // load by name
         ref<Material> loadMaterialByName(const string& name);
@@ -196,12 +180,9 @@ namespace kepler {
 
     private:
         void loadTransform(const gltf2::Node& gNode, const ref<Node>& node);
-        void loadTransform(const json& jNode, ref<Node> node);
-
 
     private:
         gltf2::Gltf _gltf;
-        json _json; // TODO remove
 
         std::map <size_t, std::shared_ptr<std::vector<ubyte>>> _buffers;
 
@@ -217,17 +198,6 @@ namespace kepler {
         std::map<size_t, ref<Texture>> _textures;
         std::map<size_t, ref<Sampler>> _samplers;
         std::map<size_t, ref<Image>> _images;
-
-        // old
-        std::map<string, ref<Node>> _nodesOld;
-        std::map<string, ref<VertexAttributeAccessor>> _vertexAttributeAccessorsOld;
-
-        std::map<string, ref<Material>> _materialsOld;
-        std::map<string, ref<Technique>> _techniquesOld;
-        std::map<string, ref<Effect>> _effectsOld;
-        std::map<string, ref<Texture>> _texturesOld;
-        std::map<string, ref<Sampler>> _samplersOld;
-        std::map<string, ref<Image>> _imagesOld;
 
         ref<Material> _defaultMaterial;
         ref<Technique> _defaultTechnique;
@@ -266,10 +236,6 @@ namespace kepler {
         return _impl->loadSceneFromFile(path);
     }
 
-    ref<Material> GLTF2Loader::findMaterialById(const std::string& id) {
-        return _impl->loadMaterial(id);
-    }
-
     ref<Material> GLTF2Loader::findMaterialByName(const std::string& name) {
         return _impl->loadMaterialByName(name);
     }
@@ -302,7 +268,7 @@ namespace kepler {
     ////////////////////////////////////////////////////////////////
 
     GLTF2Loader::Impl::Impl()
-        : _loaded(false), _useDefaultMaterial(true), _autoLoadMaterials(true), _aspectRatio(0.0f) {
+        : _loaded(false), _useDefaultMaterial(false), _autoLoadMaterials(true), _aspectRatio(0.0f) {
     }
 
     GLTF2Loader::Impl::~Impl() noexcept {
@@ -311,11 +277,11 @@ namespace kepler {
     bool GLTF2Loader::Impl::loadJson(const char* path) {
         _baseDir = directoryName(path);
 
-        auto start = std::chrono::system_clock::now();
+        auto start = std::chrono::high_resolution_clock::now();
 
         _loaded = _gltf.load(path);
 
-        auto end = std::chrono::system_clock::now();
+        auto end = std::chrono::high_resolution_clock::now();
         _jsonLoadTime = std::chrono::duration_cast<time_type>(end - start);
 
         return _loaded;
@@ -323,7 +289,7 @@ namespace kepler {
 
     ref<Scene> GLTF2Loader::Impl::loadSceneFromFile(const char* path) {
         // TODO call clear() first?
-        auto start = std::chrono::system_clock::now();
+        auto start = std::chrono::high_resolution_clock::now();
 
         if (!loadJson(path)) {
             loge("LOAD_SCENE_FROM_FILE ", path);
@@ -332,7 +298,7 @@ namespace kepler {
 
         auto scene = loadDefaultScene();
 
-        auto end = std::chrono::system_clock::now();
+        auto end = std::chrono::high_resolution_clock::now();
         auto t = std::chrono::duration_cast<time_type>(end - start);
         __totalTime += t;
         auto clogWidth = std::clog.width();
@@ -530,10 +496,6 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<IndexBuffer> GLTF2Loader::Impl::loadIndexBuffer(const string& id) {
-        return nullptr;
-    }
-
     ref<IndexAccessor> GLTF2Loader::Impl::loadIndexAccessor(size_t index) {
         RETURN_IF_FOUND(_indexAccessors, index);
         if (auto gAccessor = _gltf.accessor(index)) {
@@ -574,32 +536,6 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<VertexAttributeAccessor> GLTF2Loader::Impl::loadVertexAttributeAccessor(const string& id) {
-        RETURN_IF_FOUND(_vertexAttributeAccessorsOld, id);
-
-        auto jAccessors = _json.find(ACCESSORS);
-        if (jAccessors != _json.end()) {
-            auto jAccessor = jAccessors->find(id);
-            if (jAccessor != jAccessors->end() && jAccessor->is_object()) {
-                auto vbo = nullptr;// = loadVertexBuffer(jAccessor->value(BUFFER_VIEW, ""));
-                if (vbo == nullptr) {
-                    return nullptr;
-                }
-
-                GLint componentSize = numComponentsOfType(jAccessor->value(TYPE, ""));
-                GLenum componentType = jAccessor->value<int>("componentType", 0);
-                GLsizei byteStride = jAccessor->value<int>("byteStride", 0);
-                GLintptr byteOffset = jAccessor->value<int>("byteOffset", 0);
-                GLsizei count = jAccessor->value<int>("count", 0);
-
-                auto vertexAttributeAccessor = VertexAttributeAccessor::create(vbo, componentSize, componentType, false, byteStride, byteOffset, count);
-                _vertexAttributeAccessorsOld[id] = vertexAttributeAccessor;
-                return vertexAttributeAccessor;
-            }
-        }
-        return nullptr;
-    }
-
     ref<Material> GLTF2Loader::Impl::loadMaterial(size_t index) {
         RETURN_IF_FOUND(_materials, index);
         // TODO
@@ -611,351 +547,113 @@ namespace kepler {
             if (const char* name = gMaterial.name()) {
                 material->setName(name);
             }
+            // load basic shader
+            auto effect = Effect::createFromFile(BASIC_VERT_PATH, BASIC_FRAG_PATH);
+            if (!effect) {
+                return nullptr;
+            }
+            auto tech = Technique::create(effect);
+            if (auto gPbr = gMaterial.pbrMetallicRoughness()) {
+                size_t textureIndex;
+                if (gPbr.baseColorTexture().index(textureIndex)) {
+                    if (auto texture = loadTexture(textureIndex)) {
+                        tech->setUniform("s_baseMap", MaterialParameter::create("s_baseMap", texture));
+                    }
+                }
+            }
+            tech->setAttribute("a_position", AttributeSemantic::POSITION);
+            tech->setAttribute("a_normal", AttributeSemantic::NORMAL);
+            tech->setAttribute("a_texcoord0", AttributeSemantic::TEXCOORD_0);
 
+            tech->setSemanticUniform("mvp", "mvp", MaterialParameter::Semantic::MODELVIEWPROJECTION);
+            tech->setSemanticUniform("modelView", "modelView", MaterialParameter::Semantic::MODELVIEW);
+            tech->setSemanticUniform("normalMatrix", "normalMatrix", MaterialParameter::Semantic::MODELVIEWINVERSETRANSPOSE);
+
+            tech->setUniform("lightPos", MaterialParameter::create("lightPos", glm::vec3(1, 1, 1)));
+            tech->setUniform("lightColor", MaterialParameter::create("lightColor", glm::vec3(1, 1, 1)));
+            tech->setUniform("shininess", MaterialParameter::create("shininess", 64.0f));
+            tech->setUniform("specularStrength", MaterialParameter::create("specularStrength", 0.2f));
+            tech->setUniform("ambient", MaterialParameter::create("ambient", glm::vec3(0.2f)));
+
+            tech->setUniform("constantAttenuation", MaterialParameter::create("constantAttenuation", 1.f));
+            tech->setUniform("linearAttenuation", MaterialParameter::create("linearAttenuation", 0.f));
+            tech->setUniform("quadraticAttenuation", MaterialParameter::create("quadraticAttenuation", 0.0025f));
+
+            auto& state = tech->renderState();
+            state.setDepthTest(true);
+
+            return Material::create(tech);
         }
         return nullptr;
     }
 
-    ref<Material> GLTF2Loader::Impl::loadMaterial(const string& id) {
-        RETURN_IF_FOUND(_materialsOld, id);
-
-        if (_useDefaultMaterial) {
-            return loadDefaultMaterial();
-        }
-        auto jMaterials = _json.find(MATERIALS);
-        if (jMaterials != _json.end()) {
-            auto jMaterial = jMaterials->find(id);
-            if (jMaterial != jMaterials->end()) {
-                auto material = Material::create();
-                material->setName(jMaterial->value(NAME, ""));
-
-                auto jValues = jMaterial->find("values");
-                if (jValues != jMaterial->end()) {
-                    for (auto v = jValues->begin(); v != jValues->end(); ++v) {
-
-                        auto param = MaterialParameter::create(v.key());
-
-                        auto& value = v.value();
-                        if (value.is_number()) {
-                            param->setValue(value.get<float>());
-                            material->addParam(param);
-                        }
-                        else if (value.is_array()) {
-                            auto size = value.size();
-                            if (size == 2) {
-                                logw("value size 2 not implemented");
-                            }
-                            else if (size == 3) {
-                                logw("value size 3 not implemented");
-                            }
-                            else if (size == 4) {
-                                glm::vec4 vec(value[0].get<float>(), value[1].get<float>(), value[2].get<float>(), value[3].get<float>());
-                                param->setValue(vec);
-                                material->addParam(param);
-                            }
-                        }
-                        else if (value.is_string()) {
-                            // texture?
-                            auto texture = loadTexture(value.get_ref<const string&>());
-                            if (texture) {
-                                param->setValue(texture);
-                                material->addParam(param);
-                            }
-                        }
-
-                        // TODO need 2, 3 and maybe other sizes
-                    }
-                }
-                auto techniqueId = jMaterial->value(TECHNIQUE, "");
-                if (!techniqueId.empty()) {
-                    material->setTechnique(loadTechnique(techniqueId));
-                    _materialsOld[id] = material;
-                    return material;
-                }
-            }
-        }
-        return loadDefaultMaterial();
-    }
-
-    ref<Technique> GLTF2Loader::Impl::loadTechnique(const string& id) {
-        RETURN_IF_FOUND(_techniquesOld, id);
-
-        if (_useDefaultMaterial) {
-            return loadDefaultTechnique();
-        }
-
-        auto jTechniques = _json.find(TECHNIQUES);
-        if (jTechniques != _json.end()) {
-            auto jTechnique = jTechniques->find(id);
-            if (jTechnique != jTechniques->end()) {
-
-                auto tech = Technique::create();
-                // TODO technique name?
-
-                // program
-                auto programId = jTechnique->value("program", "");
-                if (!programId.empty()) {
-                    tech->setEffect(loadProgram(programId));
-                }
-
-                // parameters
-                auto jParams = jTechnique->find("parameters");
-                if (jParams != jTechnique->end()) {
-                    // attributes
-                    auto jAttribs = jTechnique->find(ATTRIBUTES);
-                    if (jAttribs != jTechnique->end()) {
-                        for (auto attrib = jAttribs->begin(); attrib != jAttribs->end(); ++attrib) {
-                            loadTechniqueAttribute(attrib.key(), attrib.value(), *jParams, tech);
+    ref<Texture> GLTF2Loader::Impl::loadTexture(size_t index) {
+        RETURN_IF_FOUND(_textures, index);
+        if (auto gTexture = _gltf.texture(index)) {
+            size_t imageIndex;
+            if (gTexture.source(imageIndex)) {
+                if (auto image = loadImage(imageIndex)) {
+                    auto texture = Texture::create2D(image.get(), DEFAULT_FORMAT, true);
+                    size_t samplerIndex;
+                    if (gTexture.sampler(samplerIndex)) {
+                        if (auto sampler = loadSampler(samplerIndex)) {
+                            texture->setSampler(sampler);
                         }
                     }
-
-                    // uniforms
-                    auto jUniforms = jTechnique->find("uniforms");
-                    if (jUniforms != jTechnique->end()) {
-                        for (auto uniform = jUniforms->begin(); uniform != jUniforms->end(); ++uniform) {
-                            loadTechniqueUniform(uniform.key(), uniform.value(), *jParams, tech);
-                        }
-                    }
-                }
-                // render states
-                auto jStates = jTechnique->find("states");
-                if (jStates != jTechnique->end()) {
-                    auto jEnable = jStates->find("enable");
-                    if (jEnable != jStates->end() && jEnable->is_array()) {
-                        for (auto e : *jEnable) {
-                            int state = e.get<int>();
-                            if (state > 0) {
-                                setState(state, tech->renderState());
-                            }
-                        }
-                    }
-
-                    auto jFunctions = jStates->find("functions");
-                    if (jFunctions != jStates->end()) {
-                        for (auto f = jFunctions->begin(); f != jFunctions->end(); ++f) {
-                            setFunction(tech->renderState(), f.key(), f.value());
-                        }
-                    }
-                }
-
-                //_techniques[id] = tech; // TODO needs to be fixed
-                return tech;
-            }
-        }
-        return loadDefaultTechnique();
-    }
-
-    void GLTF2Loader::Impl::loadTechniqueAttribute(const string& glslName, const string& paramName, const json& parameters, ref<Technique> tech) {
-        auto jParam = parameters.find(paramName);
-        if (jParam != parameters.end()) {
-            string semantic(jParam->value(SEMANTIC, ""));
-            int type = jParam->value<int>(TYPE, 0);
-            if (type != 0 && !semantic.empty()) {
-                tech->setAttribute(glslName, toAttributeSemantic(semantic));
-            }
-        }
-    }
-
-    void GLTF2Loader::Impl::loadTechniqueUniform(const string& glslName, const string& paramName, const json& parameters, ref<Technique> tech) {
-        auto jParam = parameters.find(paramName);
-        if (jParam != parameters.end()) {
-            auto jSemantic = jParam->find(SEMANTIC);
-            //int type = jParam->value<int>(TYPE, 0);
-            // TODO check type?
-            if (jSemantic != jParam->end() && jSemantic->is_string()) {
-                auto semanticValue = toSemantic(jSemantic->get_ref<const string&>());
-
-                bool useSemantic = true;
-                auto jNodeId = jParam->find("node");
-                if (jNodeId != jParam->end() && jNodeId->is_string()) {
-                    ref<Node> node = nullptr;// loadNode(jNodeId->get_ref<const string&>());
-                    if (node) {
-                        // TODO this is cheating
-                        if (semanticValue == MaterialParameter::Semantic::MODELVIEW) {
-                            auto f = [node](Effect& effect, const Uniform* uniform) {
-                                effect.setValue(uniform, node->modelViewMatrix());
-                            };
-                            auto param = MaterialParameter::create(paramName);
-                            param->setValue(f);
-                            tech->setUniform(glslName, param);
-                            useSemantic = false;
-                        }
-                    }
-                }
-                if (useSemantic) {
-                    tech->setSemanticUniform(glslName, paramName, semanticValue);
-                }
-            }
-            else {
-                auto jValue = jParam->find("value");
-                if (jValue != jParam->end()) {
-                    const auto& value = *jValue;
-                    if (value.is_number()) {
-                        // TODO check the type. Don't assume float.
-                        auto param = MaterialParameter::create(paramName);
-                        param->setValue(value.get<float>());
-                        tech->setUniform(glslName, param);
-                    }
-                    else if (value.is_array()) {
-                        auto size = value.size();
-                        if (size == 2) {
-                            auto vec = glm::make_vec2<float>(&value.get<std::vector<float>>()[0]);
-                            auto param = MaterialParameter::create(paramName);
-                            param->setValue(vec);
-                            tech->setUniform(glslName, param);
-                        }
-                        else if (size == 3) {
-                            auto vec = glm::make_vec3<float>(&value.get<std::vector<float>>()[0]);
-                            auto param = MaterialParameter::create(paramName);
-                            param->setValue(vec);
-                            tech->setUniform(glslName, param);
-                        }
-                        else if (size == 4) {
-                            auto vec = glm::make_vec4<float>(&value.get<std::vector<float>>()[0]);
-                            auto param = MaterialParameter::create(paramName);
-                            param->setValue(vec);
-                            tech->setUniform(glslName, param);
-                        }
-                    }
-                }
-                tech->setUniformName(glslName, paramName);
-            }
-        }
-    }
-
-    ref<Effect> GLTF2Loader::Impl::loadProgram(const string& id) {
-        RETURN_IF_FOUND(_effectsOld, id);
-
-        auto jPrograms = _json.find("programs");
-        if (jPrograms != _json.end()) {
-            auto jProgram = jPrograms->find(id);
-            if (jProgram != jPrograms->end()) {
-
-                auto fragShaderId = jProgram->value("fragmentShader", "");
-                auto vertShaderId = jProgram->value("vertexShader", "");
-
-                if (!fragShaderId.empty() && !vertShaderId.empty()) {
-                    string fragSource;
-                    string vertSource;
-                    loadShaderSource(fragShaderId, fragSource);
-                    loadShaderSource(vertShaderId, vertSource);
-                    auto effect = Effect::createFromSource(vertSource, fragSource);
-                    if (effect) {
-                        _effectsOld[id] = effect;
-                        return effect;
-                    }
-                    else {
-                        loge("LOAD_GLTF_PROGRAM");
-                    }
+                    _textures[index] = texture;
+                    return texture;
                 }
             }
         }
         return nullptr;
     }
 
-    ref<Texture> GLTF2Loader::Impl::loadTexture(const string& id) {
-        RETURN_IF_FOUND(_texturesOld, id);
-
-        const auto jTextures = _json.find("textures");
-        if (jTextures != _json.end()) {
-            const auto jTexture = jTextures->find(id);
-            if (jTexture != jTextures->end()) {
-                //auto format = jTexture->value<int>("format", DEFAULT_FORMAT);
-                auto internalFormat = jTexture->value<int>("internalFormat", DEFAULT_FORMAT);
-                auto target = jTexture->value<int>("target", DEFAULT_TARGET);
-                //auto type = jTexture->value<int>(TYPE, DEFAULT_TEXEL_TYPE);
-
-                const auto samplerId = jTexture->find("sampler");
-                const auto imageId = jTexture->find("source");
-
-                // TODO support more than just GL_TEXTURE_2D
-                if (target == GL_TEXTURE_2D && samplerId != jTexture->end() && imageId != jTexture->end()
-                    && samplerId->is_string() && imageId->is_string()) {
-                    auto image = loadImage(imageId->get_ref<const string&>());
-                    if (image) {
-                        auto texture = Texture::create2D(image.get(), internalFormat, true);
-                        if (texture) {
-                            auto sampler = loadSampler(samplerId->get_ref<const string&>());
-                            if (sampler) {
-                                texture->setSampler(sampler);
-                            }
-                            else {
-                                loge("LOAD_GLTF_SAMPLER ", samplerId->get_ref<const string&>().c_str());
-                            }
-                            _texturesOld[id] = texture;
-                            return texture;
-                        }
-                    }
-                }
-            }
+    ref<Sampler> GLTF2Loader::Impl::loadSampler(size_t index) {
+        RETURN_IF_FOUND(_samplers, index);
+        if (auto gSampler = _gltf.sampler(index)) {
+            auto magFilter = toMagFilterMode(gSampler.magFilter());
+            auto minFilter = toMinFilterMode(gSampler.minFilter());
+            auto wrapS = toWrapMode(gSampler.wrapS());
+            auto wrapT = toWrapMode(gSampler.wrapT());
+            // GLTF doesn't have WRAP_R
+            auto sampler = Sampler::create();
+            sampler->setFilterMode(minFilter, magFilter);
+            sampler->setWrapMode(wrapS, wrapT);
+            return sampler;
         }
         return nullptr;
     }
 
-    ref<Sampler> GLTF2Loader::Impl::loadSampler(const string& id) {
-        RETURN_IF_FOUND(_samplersOld, id);
-
-        const auto jSamplers = _json.find("samplers");
-        if (jSamplers != _json.end()) {
-            const auto jSampler = jSamplers->find(id);
-            if (jSampler != jSamplers->end()) {
-                auto sampler = Sampler::create();
-                auto magFilter = toMagFilterMode(jSampler->value<int>("magFilter", DEFAULT_MAG_FILTER));
-                auto minFilter = toMinFilterMode(jSampler->value<int>("minFilter", DEFAULT_MIN_FILTER));
-                auto wrapS = toWrapMode(jSampler->value<int>("wrapS", DEFAULT_WRAP_S));
-                auto wrapT = toWrapMode(jSampler->value<int>("wrapT", DEFAULT_WRAP_T));
-                // GLTF doesn't have WRAP_R
-                sampler->setFilterMode(minFilter, magFilter);
-                sampler->setWrapMode(wrapS, wrapT);
-                return sampler;
-            }
-        }
-        return nullptr;
-    }
-
-    ref<Image> GLTF2Loader::Impl::loadImage(const string& id) {
-        RETURN_IF_FOUND(_imagesOld, id);
-        const auto jImages = _json.find("images");
-        if (jImages != _json.end()) {
-            const auto jImage = jImages->find(id);
-            if (jImage != jImages->end()) {
-                // TODO is name needed?
-                const auto jUri = jImage->find(URI);
-                if (jUri != jImage->end() && jUri->is_string()) {
-                    const auto& uri = jUri->get_ref<const string&>();
-                    ref<Image> image;
-                    if (startsWith(uri, DATA_IMAGE_BASE64)) {
-                        auto index = uri.find_first_of(',');
-                        if (index != string::npos) {
-                            return nullptr;
-                            //auto buffer = createBufferFromBase64(uri, index + 1);
-                            //image = Image::createFromFileMemory(&((*buffer)[0]), static_cast<int>(buffer->size()));
-                        }
+    ref<Image> GLTF2Loader::Impl::loadImage(size_t index) {
+        RETURN_IF_FOUND(_images, index);
+        ref<Image> image = nullptr;
+        if (auto gImage = _gltf.image(index)) {
+            if (const char* uri = gImage.uri()) {
+                if (gImage.isBase64()) {
+                    std::vector<unsigned char> imageData;
+                    if (gImage.loadBase64(imageData)) {
+                        image = Image::createFromFileMemory(imageData.data(), static_cast<int>(imageData.size()));
                     }
-                    else {
-                        auto path = uriToPath(uri);
-
-                        auto start = std::chrono::system_clock::now();
-
-                        image = Image::createFromFile(path.c_str(), false);
-
-                        auto end = std::chrono::system_clock::now();
-                        auto time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-                        auto clogWidth = std::clog.width();
-                        std::clog.width(8);
-                        std::clog << static_cast<double>(time.count());
-                        std::clog.width(clogWidth);
-                        std::clog << " ms to load " << path.c_str() << std::endl;
-                    }
-                    if (image) {
-                        _imagesOld[id] = image;
-                        return image;
-                    }
-                    // TODO load from base64 string
+                }
+                else {
+                    std::string imagePath = _gltf.baseDir() + gImage.uri();
+                    image = Image::createFromFile(imagePath.c_str());
                 }
             }
+            else if (auto gBufferView = gImage.bufferView()) {
+                size_t bufferIndex;
+                if (gBufferView.buffer(bufferIndex)) {
+                    if (auto buffer = loadBuffer(bufferIndex)) {
+                        int bufferLength = static_cast<int>(gBufferView.byteLength());
+                        image = Image::createFromFileMemory(buffer->data() + gBufferView.byteOffset(), bufferLength);
+                    }
+                }
+            }
+            if (image) {
+                _images[index] = image;
+            }
         }
-        return nullptr;
+        return image;
     }
 
     ref<Material> GLTF2Loader::Impl::loadDefaultMaterial() {
@@ -1003,38 +701,8 @@ namespace kepler {
         return _defaultTechnique;
     }
 
-    void GLTF2Loader::Impl::loadShaderSource(const string& id, string& destination) {
-        auto jShaders = _json.find("shaders");
-        if (jShaders != _json.end()) {
-            auto jShader = jShaders->find(id);
-            if (jShader != jShaders->end()) {
-                auto jUri = jShader->find(URI);
-                if (jUri != jShader->end() && jUri->is_string()) {
-                    const auto& uri = jUri->get_ref<const string&>();
-                    if (startsWith(uri, DATA_TEXT_BASE64)) {
-                        base64Decode(uri, DATA_TEXT_BASE64.length(), destination);
-                    }
-                    else if (!uri.empty()) {
-                        string path = uriToPath(uri);
-                        readTextFile(path.c_str(), destination);
-                    }
-                }
-            }
-        }
-    }
-
     ref<Material> GLTF2Loader::Impl::loadMaterialByName(const string& name) {
-        auto jMaterials = _json.find(MATERIALS);
-        if (jMaterials != _json.end()) {
-            for (auto it = jMaterials->begin(); it != jMaterials->end(); ++it) {
-                auto jName = it->find("name");
-                if (jName != it->end()) {
-                    if (name == jName->get_ref<const string&>()) {
-                        return loadMaterial(it.key());
-                    }
-                }
-            }
-        }
+        // TODO
         return nullptr;
     }
 
@@ -1067,50 +735,7 @@ namespace kepler {
         }
     }
 
-    void GLTF2Loader::Impl::loadTransform(const json& jNode, ref<Node> node) {
-        auto matrix = jNode.find(MATRIX);
-        if (matrix != jNode.end()) {
-            if (matrix->size() == 16) {
-                float m[16];
-                float* p = m;
-                for (const auto& f : *matrix) {
-                    *p++ = f;
-                }
-                node->setLocalTransform(glm::make_mat4(m));
-            }
-        }
-
-        auto translation = jNode.find(TRANSLATION);
-        auto rotation = jNode.find(ROTATION);
-        auto scale = jNode.find(SCALE);
-
-        if (translation != jNode.end() && rotation != jNode.end() && scale != jNode.end()) {
-            if (translation->size() == 3 && rotation->size() == 4 && scale->size() == 3) {
-                auto t = translation->get<std::vector<float>>();
-                auto r = rotation->get<std::vector<float>>();
-                auto s = scale->get<std::vector<float>>();
-                node->setLocalTransform(glm::make_vec3(&t[0]), glm::make_quat(&r[0]), glm::make_vec3(&s[0]));
-                return;
-            }
-        }
-    }
-
     ////////////////////////////////////////////////////////////////
-
-    MeshPrimitive::Mode toMode(int mode) {
-        // TODO is this actually necessary?
-        switch (mode) {
-        case 0: return MeshPrimitive::POINTS;
-        case 1: return MeshPrimitive::LINES;
-        case 2: return MeshPrimitive::LINE_LOOP;
-        case 3: return MeshPrimitive::LINE_STRIP;
-        case 4: return MeshPrimitive::TRIANGLES;
-        case 5: return MeshPrimitive::TRIANGLE_STRIP;
-        case 6: return MeshPrimitive::TRIANGLE_FAN;
-        default:
-            return MeshPrimitive::TRIANGLES;
-        }
-    }
 
     MeshPrimitive::Mode toMode(gltf2::Primitive::Mode mode) {
         switch (mode) {
@@ -1227,33 +852,33 @@ namespace kepler {
         throw std::domain_error("Invalid attribute semantic type");
     }
 
-    Sampler::Wrap toWrapMode(int wrap) {
+    Sampler::Wrap toWrapMode(gltf2::Sampler::Wrap wrap) {
         switch (wrap) {
-        case GL_REPEAT: return Sampler::Wrap::REPEAT;
-        case GL_CLAMP_TO_EDGE: return Sampler::Wrap::CLAMP_TO_EDGE;
-        case GL_MIRRORED_REPEAT: return Sampler::Wrap::MIRRORED_REPEAT;
+        case gltf2::Sampler::Wrap::REPEAT:          return Sampler::Wrap::REPEAT;
+        case gltf2::Sampler::Wrap::CLAMP_TO_EDGE:   return Sampler::Wrap::CLAMP_TO_EDGE;
+        case gltf2::Sampler::Wrap::MIRRORED_REPEAT: return Sampler::Wrap::MIRRORED_REPEAT;
         default:
             throw std::domain_error("Invalid wrap mode");
         }
     }
 
-    Sampler::MinFilter toMinFilterMode(int filter) {
+    Sampler::MinFilter toMinFilterMode(gltf2::Sampler::MinFilter filter) {
         switch (filter) {
-        case GL_NEAREST: return Sampler::MinFilter::NEAREST;
-        case GL_LINEAR: return Sampler::MinFilter::LINEAR;
-        case GL_NEAREST_MIPMAP_NEAREST: return Sampler::MinFilter::NEAREST_MIPMAP_NEAREST;
-        case GL_LINEAR_MIPMAP_NEAREST: return Sampler::MinFilter::LINEAR_MIPMAP_NEAREST;
-        case GL_NEAREST_MIPMAP_LINEAR: return Sampler::MinFilter::NEAREST_MIPMAP_LINEAR;
-        case GL_LINEAR_MIPMAP_LINEAR: return Sampler::MinFilter::LINEAR_MIPMAP_LINEAR;
+        case gltf2::Sampler::MinFilter::NEAREST: return Sampler::MinFilter::NEAREST;
+        case gltf2::Sampler::MinFilter::LINEAR:  return Sampler::MinFilter::LINEAR;
+        case gltf2::Sampler::MinFilter::NEAREST_MIPMAP_NEAREST: return Sampler::MinFilter::NEAREST_MIPMAP_NEAREST;
+        case gltf2::Sampler::MinFilter::LINEAR_MIPMAP_NEAREST:  return Sampler::MinFilter::LINEAR_MIPMAP_NEAREST;
+        case gltf2::Sampler::MinFilter::NEAREST_MIPMAP_LINEAR:  return Sampler::MinFilter::NEAREST_MIPMAP_LINEAR;
+        case gltf2::Sampler::MinFilter::LINEAR_MIPMAP_LINEAR:   return Sampler::MinFilter::LINEAR_MIPMAP_LINEAR;
         default:
             throw std::domain_error("Invalid filter mode");
         }
     }
 
-    Sampler::MagFilter toMagFilterMode(int filter) {
+    Sampler::MagFilter toMagFilterMode(gltf2::Sampler::MagFilter filter) {
         switch (filter) {
-        case GL_NEAREST: return Sampler::MagFilter::NEAREST;
-        case GL_LINEAR: return Sampler::MagFilter::LINEAR;
+        case gltf2::Sampler::MagFilter::NEAREST: return Sampler::MagFilter::NEAREST;
+        case gltf2::Sampler::MagFilter::LINEAR:  return Sampler::MagFilter::LINEAR;
         default:
             throw std::domain_error("Invalid filter mode");
         }
@@ -1320,118 +945,5 @@ namespace kepler {
             logw("Unknown enable state");
             break;
         }
-    }
-
-    void setFunction(RenderState& renderState, const string& key, const json& value) {
-        if (!value.is_array()) {
-            return;
-        }
-        auto size = value.size();
-        switch (key.length()) {
-        case 7:
-            //scissor
-            if (size == 4) {
-                // TODO mistake in the GLTF spec?
-                renderState.setScissor(value[0].get<int>(), value[1].get<int>(), value[2].get<int>(), value[3].get<int>());
-            }
-            break;
-        case 8:
-            //cullFace
-            if (size == 1) {
-                renderState.setCullFace(value[0].get<int>());
-            }
-            break;
-        case 9:
-            switch (key[0]) {
-            case 'c':
-                //colorMask
-                if (size == 4) {
-                    renderState.setColorMask(value[0].get<bool>(), value[1].get<bool>(), value[2].get<bool>(), value[3].get<bool>());
-                }
-                break;
-            case 'd':
-                //depthFunc
-                //depthMask
-                if (size == 1) {
-                    if (key == "depthFunc") {
-                        renderState.setDepthFunc(value[0].get<int>());
-                    }
-                    else if (key == "depthMask") {
-                        renderState.setDepthMask(value[0].get<bool>());
-                    }
-                }
-                break;
-            case 'f':
-                //frontFace
-                if (size == 1) {
-                    renderState.setFrontFace(value[0].get<int>());
-                }
-                break;
-            case 'l':
-                //lineWidth
-                if (size == 1) {
-                    renderState.setLineWidth(value[0].get<float>());
-                }
-                break;
-            default:
-                break;
-            }
-            break;
-        case 10:
-            //blendColor
-            //depthRange
-            if (size == 4 && key == "blendColor") {
-                renderState.setBlendColor(value[0].get<float>(), value[1].get<float>(), value[2].get<float>(), value[3].get<float>());
-            }
-            else if (size == 2 && key == "depthRange") {
-                renderState.setDepthRange(value[0].get<float>(), value[1].get<float>());
-            }
-            break;
-        case 13:
-            //polygonOffset
-            if (size == 2) {
-                renderState.setPolygonOffset(value[0].get<float>(), value[0].get<float>());
-            }
-            break;
-        case 17:
-            //blendFuncSeparate
-            if (size == 4) {
-                renderState.setBlendFuncSeparate(value[0].get<int>(), value[1].get<int>(), value[2].get<int>(), value[3].get<int>());
-            }
-            break;
-        case 21:
-            //blendEquationSeparate
-            if (size == 2) {
-                renderState.setBlendEquationSeparate(value[0].get<int>(), value[0].get<int>());
-            }
-            break;
-        default:
-            logw("Unknown state function", key.c_str());
-            break;
-        }
-    }
-
-    void base64Decode(const string& text, size_t offset, string& destination) {
-        base64::decoder d;
-        std::istringstream in(text);
-        in.seekg(offset);
-        std::ostringstream out;
-        d.decode(in, out);
-        destination = out.str();
-    }
-
-    void base64Decode(std::istream& in, std::vector<ubyte>& out) {
-        base64::decoder decoder;
-        base64::base64_init_decodestate(&decoder._state);
-        std::array<char, BUFFERSIZE> code;
-        std::array<char, BUFFERSIZE> plaintext;
-        int codelength;
-        do {
-            in.read(code.data(), code.size());
-            codelength = static_cast<int>(in.gcount());
-            int plainlength = decoder.decode(code.data(), codelength, plaintext.data());
-            out.insert(out.end(), plaintext.begin(), plaintext.begin() + plainlength);
-        } while (in.good() && codelength > 0);
-        base64_init_decodestate(&decoder._state);
     }
 }
