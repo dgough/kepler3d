@@ -954,7 +954,7 @@ namespace LAZY_GLTF2_NAMESPACE {
             return findNumberOrDefault(m_json, "byteLength", 1);
         }
         size_t byteStride() const noexcept {
-            return findNumberOrDefault(m_json, "byteStride", 4);
+            return findNumberOrDefault(m_json, "byteStride", 0);
         }
 
         /// Target is not a required field so you might want to call hasTarget() first.

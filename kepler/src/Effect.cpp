@@ -10,10 +10,11 @@
 
 namespace kepler {
 
-    static const std::string VERSION_STR("#version 120\n"); // TODO move this to be platform specific.
+    static constexpr const char* VERSION_STR = "#version 120\n"; // TODO move this to be platform specific.
+    static constexpr const char* DEFINE = "#define ";
 
     //static GLuint loadShaderFromFile(const char* path, GLenum shaderType);
-    static GLuint loadShaderFromSource(const std::string& source, GLenum shaderType);
+    static GLuint loadShaderFromSource(const std::string& source, GLenum shaderType, const char* defines[] = nullptr, size_t defineCount = 0);
     static GLuint createAndLinkProgram(GLuint vertShader, GLuint fragShader);
     //static GLuint loadShaderProgramFromFile(const char* vertShaderPath, const char* fragShaderPath);
 
@@ -26,7 +27,7 @@ namespace kepler {
         }
     }
 
-    ref<Effect> Effect::createFromFile(const char* vertexShaderPath, const char* fragmentShaderPath) {
+    ref<Effect> Effect::createFromFile(const char* vertexShaderPath, const char* fragmentShaderPath, const char* defines[], size_t defineCount) {
         if (vertexShaderPath == nullptr || fragmentShaderPath == nullptr) {
             return nullptr;
         }
@@ -38,7 +39,7 @@ namespace kepler {
         if (!readTextFile(fragmentShaderPath, fragSrc)) {
             return nullptr;
         }
-        return createFromSource(vertSrc, fragSrc);
+        return createFromSource(vertSrc, fragSrc, defines, defineCount);
     }
 
     void Effect::bind() const noexcept {
@@ -132,9 +133,9 @@ namespace kepler {
         glUniform1i(uniform->_location, (GLint)uniform->_index);
     }
 
-    ref<Effect> Effect::createFromSource(const std::string& vertSource, const std::string& fragSource) {
-        GLuint vertShader = loadShaderFromSource(vertSource, GL_VERTEX_SHADER);
-        GLuint fragShader = loadShaderFromSource(fragSource, GL_FRAGMENT_SHADER);
+    ref<Effect> Effect::createFromSource(const std::string& vertSource, const std::string& fragSource, const char* defines[], size_t defineCount) {
+        GLuint vertShader = loadShaderFromSource(vertSource, GL_VERTEX_SHADER, defines, defineCount);
+        GLuint fragShader = loadShaderFromSource(fragSource, GL_FRAGMENT_SHADER, defines, defineCount);
         ProgramHandle program = createAndLinkProgram(vertShader, fragShader);
         glDeleteShader(vertShader);
         glDeleteShader(fragShader);
@@ -247,24 +248,42 @@ namespace kepler {
     //    return loadShaderFromSource(source, shaderType);
     //}
 
-    GLuint loadShaderFromSource(const std::string& source, GLenum shaderType) {
+    GLuint loadShaderFromSource(const std::string& source, GLenum shaderType, const char* defines[], size_t defineCount) {
         GLuint shaderId = glCreateShader(shaderType);
         if (shaderId == 0) {
             loge("SHADER::CREATE");
             return 0;
         }
+        std::string version;
+        std::vector<const GLchar*> srcLines;
+        srcLines.reserve(defineCount * 3 + 2);
+        const char* sourceStr = source.c_str();
 
-        const GLchar* src[2];
-        GLsizei count = 1;
-        src[0] = source.c_str();
-
-        // If the source doesn't specify a version then add our own.
-        if (!startsWith(source, "#version")) {
-            count = 2;
-            src[1] = src[0];
-            src[0] = VERSION_STR.c_str();
+        size_t versionStart = source.find("#version");
+        if (versionStart != std::string::npos) {
+            if (defineCount > 0) {
+                size_t versionEnd = source.find('\n', versionStart);
+                if (versionEnd != std::string::npos) {
+                    // copy the version, including the newline
+                    version.assign(sourceStr + versionStart, versionEnd - versionStart + 1);
+                    // move the source pointer past the version line
+                    sourceStr += versionEnd + 1;
+                    srcLines.push_back(version.c_str());
+                }
+            }
         }
-        glShaderSource(shaderId, count, src, nullptr);
+        else {
+            // If the source doesn't specify a version then add our own.
+            // This is used when loading glTF 1.0 shaders
+            srcLines.push_back(VERSION_STR);
+        }
+        for (size_t i = 0; i < defineCount; ++i) {
+            srcLines.push_back(DEFINE);
+            srcLines.push_back(defines[i]);
+            srcLines.push_back("\n");
+        }
+        srcLines.push_back(sourceStr);
+        glShaderSource(shaderId, static_cast<GLsizei>(srcLines.size()), srcLines.data(), nullptr);
         glCompileShader(shaderId);
 
         GLint success;

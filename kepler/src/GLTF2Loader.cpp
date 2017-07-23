@@ -69,55 +69,9 @@ namespace kepler {
 
     using ubyte = unsigned char;
 
-    static const string BLANK_STR = "";
-    static const string NODES = "nodes";
-    static const string SCENE = "scene";
-    static const string SCENES = "scenes";
-    static const string NAME = "name";
-    static const string CHILDREN = "children";
-    static const string TRANSLATION = "translation";
-    static const string ROTATION = "rotation";
-    static const string SCALE = "scale";
-    static const string MATRIX = "matrix";
-    static const string MESHES = "meshes";
-    static const string PRIMITIVES = "primitives";
-    static const string MODE = "mode";
-    static const string INDICES = "indices";
-    static const string ATTRIBUTES = "attributes";
-    static const string CAMERA = "camera";
-    static const string CAMERAS = "cameras";
-    static const string TYPE = "type";
-    static const string PERSPECTIVE = "perspective";
-    static const string ORTHOGRAPHIC = "orthographic";
-    static const string MATERIAL = "material";
-    static const string MATERIALS = "materials";
-    static const string TECHNIQUE = "technique";
-    static const string TECHNIQUES = "techniques";
-
-    static const string ACCESSORS = "accessors";
-    static const string BUFFER = "buffer";
-    static const string BUFFERS = "buffers";
-    static const string BUFFER_VIEW = "bufferView";
-    static const string BUFFER_VIEWS = "bufferViews";
-    static const string ARRAY_BUFFER = "arraybuffer";
-    static const string TEXT = "text";
-    static const string URI = "uri";
-
-    static const string SEMANTIC = "semantic";
-
-    static constexpr float DEFAULT_ASPECT_RATIO = 1.5f;
-    static constexpr float DEFAULT_NEAR = 0.1f;
-    static constexpr float DEFAULT_FAR = 100.0f;
-    static constexpr float DEFAULT_FOVY = PI * 0.25f;
+    static constexpr const char* HAS_UV = "HAS_UV";
 
     static constexpr int DEFAULT_FORMAT = GL_RGBA;
-    static constexpr int DEFAULT_TARGET = GL_TEXTURE_2D;
-    static constexpr int DEFAULT_TEXEL_TYPE = GL_UNSIGNED_BYTE;
-
-    static constexpr int DEFAULT_MAG_FILTER = GL_LINEAR;
-    static constexpr int DEFAULT_MIN_FILTER = GL_NEAREST_MIPMAP_LINEAR;
-    static constexpr int DEFAULT_WRAP_S = GL_REPEAT;
-    static constexpr int DEFAULT_WRAP_T = GL_REPEAT;
 
     // functions
     static MeshPrimitive::Mode toMode(gltf2::Primitive::Mode mode);
@@ -161,7 +115,7 @@ namespace kepler {
         ref<IndexAccessor> loadIndexAccessor(size_t index);
         ref<VertexAttributeAccessor> loadVertexAttributeAccessor(size_t index);
 
-        ref<Material> loadMaterial(size_t index);
+        ref<Material> loadMaterial(size_t index, MeshPrimitive& primitive);
 
         ref<Texture> loadTexture(size_t index);
         ref<Sampler> loadSampler(size_t index);
@@ -383,7 +337,7 @@ namespace kepler {
             mesh->setName(gMesh.name());
             const size_t primCount = gMesh.primitiveCount();
             for (size_t i = 0; i < primCount; ++i) {
-                if (auto gPrim = gMesh.primitive(0)) {
+                if (auto gPrim = gMesh.primitive(i)) {
                     auto prim = MeshPrimitive::create(toMode(gPrim.mode()));
                     for (const auto& attrib : gPrim.attributes()) {
                         auto vertexAttributeAccessor = loadVertexAttributeAccessor(attrib.second);
@@ -400,14 +354,15 @@ namespace kepler {
                     }
                     if (_autoLoadMaterials) {
                         // load material
+                        ref<Material> material = nullptr;
                         size_t materialIndex;
                         if (gPrim.material(materialIndex)) {
-                            if (auto material = loadMaterial(materialIndex)) {
+                            if (material = loadMaterial(materialIndex, *prim)) {
                                 prim->setMaterial(material);
                             }
-                            else {
-                                prim->setMaterial(loadDefaultMaterial());
-                            }
+                        }
+                        if (material == nullptr) {
+                            prim->setMaterial(loadDefaultMaterial());
                         }
                     }
                     mesh->addMeshPrimitive(prim);
@@ -536,9 +491,8 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<Material> GLTF2Loader::Impl::loadMaterial(size_t index) {
+    ref<Material> GLTF2Loader::Impl::loadMaterial(size_t index, MeshPrimitive& primitive) {
         RETURN_IF_FOUND(_materials, index);
-        // TODO
         if (_useDefaultMaterial) {
             return loadDefaultMaterial();
         }
@@ -548,18 +502,26 @@ namespace kepler {
                 material->setName(name);
             }
             // load basic shader
-            auto effect = Effect::createFromFile(BASIC_VERT_PATH, BASIC_FRAG_PATH);
+
+            std::vector<const char*> defines;
+            if (primitive.hasAttribute(AttributeSemantic::TEXCOORD_0)) {
+                defines.push_back(HAS_UV);
+            }
+
+            auto effect = Effect::createFromFile(BASIC_VERT_PATH, BASIC_FRAG_PATH, defines.data(), defines.size());
             if (!effect) {
                 return nullptr;
             }
             auto tech = Technique::create(effect);
+            glm::vec4 baseColorFactor(1);
             if (auto gPbr = gMaterial.pbrMetallicRoughness()) {
                 size_t textureIndex;
                 if (gPbr.baseColorTexture().index(textureIndex)) {
                     if (auto texture = loadTexture(textureIndex)) {
                         tech->setUniform("s_baseMap", MaterialParameter::create("s_baseMap", texture));
                     }
-                }
+                }                
+                gPbr.baseColorFactor(glm::value_ptr(baseColorFactor));
             }
             tech->setAttribute("a_position", AttributeSemantic::POSITION);
             tech->setAttribute("a_normal", AttributeSemantic::NORMAL);
@@ -579,10 +541,16 @@ namespace kepler {
             tech->setUniform("linearAttenuation", MaterialParameter::create("linearAttenuation", 0.f));
             tech->setUniform("quadraticAttenuation", MaterialParameter::create("quadraticAttenuation", 0.0025f));
 
+            // gltf 2.0
+            tech->setUniform("baseColorFactor", MaterialParameter::create("baseColorFactor", baseColorFactor));
+
             auto& state = tech->renderState();
             state.setDepthTest(true);
+            state.setCulling(!gMaterial.doubleSided());
 
-            return Material::create(tech);
+            material->setTechnique(tech);
+            _materials[index] = material;
+            return material;
         }
         return nullptr;
     }
@@ -739,13 +707,13 @@ namespace kepler {
 
     MeshPrimitive::Mode toMode(gltf2::Primitive::Mode mode) {
         switch (mode) {
-        case gltf2::Primitive::Mode::POINTS: return MeshPrimitive::POINTS;
-        case gltf2::Primitive::Mode::LINES: return MeshPrimitive::LINES;
-        case gltf2::Primitive::Mode::LINE_LOOP: return MeshPrimitive::LINE_LOOP;
-        case gltf2::Primitive::Mode::LINE_STRIP: return MeshPrimitive::LINE_STRIP;
-        case gltf2::Primitive::Mode::TRIANGLES: return MeshPrimitive::TRIANGLES;
+        case gltf2::Primitive::Mode::POINTS:         return MeshPrimitive::POINTS;
+        case gltf2::Primitive::Mode::LINES:          return MeshPrimitive::LINES;
+        case gltf2::Primitive::Mode::LINE_LOOP:      return MeshPrimitive::LINE_LOOP;
+        case gltf2::Primitive::Mode::LINE_STRIP:     return MeshPrimitive::LINE_STRIP;
+        case gltf2::Primitive::Mode::TRIANGLES:      return MeshPrimitive::TRIANGLES;
         case gltf2::Primitive::Mode::TRIANGLE_STRIP: return MeshPrimitive::TRIANGLE_STRIP;
-        case gltf2::Primitive::Mode::TRIANGLE_FAN: return MeshPrimitive::TRIANGLE_FAN;
+        case gltf2::Primitive::Mode::TRIANGLE_FAN:   return MeshPrimitive::TRIANGLE_FAN;
         default:
             return MeshPrimitive::TRIANGLES;
         }

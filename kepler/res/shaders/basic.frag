@@ -12,6 +12,8 @@ uniform float constantAttenuation;
 uniform float linearAttenuation;
 uniform float quadraticAttenuation;
 
+uniform vec4 baseColorFactor;
+
 in vec3 v_fragPos;
 in vec3 v_normal;
 in vec2 v_texcoord0;
@@ -44,6 +46,11 @@ void main() {
     vec3 diffuse = d * lightColor * attenuation;
     vec3 specular = s * lightColor * attenuation;
 
-    vec3 color = (ambient + diffuse + specular) * vec3(texture(s_baseMap, v_texcoord0));
+    vec3 color = (ambient + diffuse + specular) * vec3(baseColorFactor);
+
+    #ifdef HAS_UV
+        color *= vec3(texture(s_baseMap, v_texcoord0));
+    #endif
+
     fragColor = vec4(color, 1.0);
 }

@@ -24,12 +24,15 @@ namespace kepler {
             TRIANGLE_FAN = 6
         };
 
-        virtual ~MeshPrimitive() noexcept;
+        virtual ~MeshPrimitive() noexcept = default;
 
         static ref<MeshPrimitive> create(Mode mode);
 
         /// Returns the attribute with the given semantic. May be null.
         ref<VertexAttributeAccessor> attribute(AttributeSemantic semantic) const;
+
+        /// Returns true if this primitive contains this semantic.
+        bool hasAttribute(AttributeSemantic semantic) const;
 
         /// Returns the indices for this mesh primitive. May be null.
         ref<IndexAccessor> indices() const;

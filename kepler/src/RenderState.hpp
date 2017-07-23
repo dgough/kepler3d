@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base.hpp"
+#include "BaseGL.hpp"
 
 #include <string>
 #include <map>
@@ -18,7 +19,7 @@ namespace kepler {
     class RenderState {
     public:
         RenderState();
-        virtual ~RenderState() noexcept;
+        virtual ~RenderState() noexcept = default;
 
         /// Binds the RenderState and applies its changes to the global GL state.
         void bind() const noexcept;

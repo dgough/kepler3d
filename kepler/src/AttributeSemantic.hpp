@@ -9,10 +9,13 @@ namespace kepler {
         POSITION,
         NORMAL,
         TANGENT,
-        COLOR,
-        JOINT,
-        JOINTMATRIX,
-        WEIGHT,
+        COLOR, // removed in gltf 2.0
+        COLOR_0,
+        JOINT, // removed in gltf 2.0
+        JOINTS_0,
+        JOINTMATRIX, // removed in gltf 2.0
+        WEIGHT, // removed in gltf 2.0
+        WEIGHTS_0,
         TEXCOORD_0,
         TEXCOORD_1,
         TEXCOORD_2,
