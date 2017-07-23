@@ -8,8 +8,7 @@ using namespace kepler;
 /// Dropping a font file into the window will load it.
 class TextTest : public kepler::AppDelegate {
 public:
-    TextTest();
-    ~TextTest();
+    TextTest() = default;
 
     void start() override;
     void update() override;

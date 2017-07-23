@@ -25,9 +25,6 @@ static std::string g_text;
 Gltf2Test::Gltf2Test() : _moveCamera(false) {
 }
 
-Gltf2Test::~Gltf2Test() {
-}
-
 void Gltf2Test::start() {
     //glClearColor(0.16f, 0.3f, 0.5f, 1.0f);
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);

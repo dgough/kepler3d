@@ -1,5 +1,4 @@
 #include "MainMenu.hpp"
-#include "SceneTest.hpp"
 #include "TextTest.hpp"
 #include "LightTest.hpp"
 #include "Gltf2Test.hpp"
@@ -39,10 +38,6 @@ void MainMenu::start() {
         float height = static_cast<float>(_font->size()) * _font->scale() + 6.f;
         Rectangle rect(100.f, 100.f, width, height);
 
-        addButton("Scene Test", rect, []() {
-            app()->setDelegate(std::make_shared<SceneTest>());
-        });
-
         rect.pos.y += height;
         addButton("Text Test", rect, []() {
             app()->setDelegate(std::make_shared<TextTest>());
@@ -54,7 +49,7 @@ void MainMenu::start() {
         });
 
         rect.pos.y += height;
-        addButton("glTF 2.0 Test", rect, []() {
+        addButton("glTF 2.0 Scene Test", rect, []() {
             app()->setDelegate(std::make_shared<Gltf2Test>());
         });
     }

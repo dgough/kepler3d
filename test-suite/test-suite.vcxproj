@@ -161,14 +161,12 @@
     <ClCompile Include="src\Gltf2Test.cpp" />
     <ClCompile Include="src\LightTest.cpp" />
     <ClCompile Include="src\MainMenu.cpp" />
-    <ClCompile Include="src\SceneTest.cpp" />
     <ClCompile Include="src\TextTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Gltf2Test.hpp" />
     <ClInclude Include="src\LightTest.hpp" />
     <ClInclude Include="src\MainMenu.hpp" />
-    <ClInclude Include="src\SceneTest.hpp" />
     <ClInclude Include="src\TextTest.hpp" />
   </ItemGroup>
   <ItemGroup>

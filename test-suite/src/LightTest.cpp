@@ -3,7 +3,7 @@
 
 #include <BaseGL.hpp>
 #include <App.hpp>
-#include <GLTF1Loader.hpp>
+#include <GLTF2Loader.hpp>
 #include <Scene.hpp>
 #include <Camera.hpp>
 #include <MeshRenderer.hpp>
@@ -23,10 +23,10 @@
 
 using namespace kepler;
 
-static constexpr char* GLTF_PATH =
-"res/glTF/duck/Duck.gltf";
-//"res/glTF/CesiumMilkTruck/CesiumMilkTruck.gltf";
-static constexpr char* DUCK_TEXTURE_PATH = "res/glTF/duck/DuckCM.png";
+#define SAMPLES_BASE "../../glTF-Sample-Models/2.0/"
+
+static constexpr char* GLTF_PATH = SAMPLES_BASE "Duck/glTF/Duck.gltf";
+static constexpr char* DUCK_TEXTURE_PATH = SAMPLES_BASE "Duck/glTF/DuckCM.png";
 static constexpr char* FLOOR_TEXTURE_PATH = "res/textures/hardwood.jpg";
 
 static std::string g_text;
@@ -38,9 +38,6 @@ static ref<Material> createCubeMaterial();
 static ref<Material> createPointLightMaterial(const char* texture_path, ref<Node> lightNode);
 
 LightTest::LightTest() : _moveCamera(false) {
-}
-
-LightTest::~LightTest() {
 }
 
 void LightTest::start() {
@@ -166,7 +163,7 @@ void LightTest::loadSceneFromFile(const char* path) {
     _orbitCamera.detach();
     _scene.reset();
 
-    GLTF1Loader loader;
+    GLTF2Loader loader;
     loader.setAutoLoadMaterials(false);
     loader.setCameraAspectRatio(app()->aspectRatio());
     _scene = loader.loadSceneFromFile(path);

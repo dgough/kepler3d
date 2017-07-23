@@ -7,7 +7,7 @@
 
 #include <Platform.hpp>
 #include <App.hpp>
-#include <GLTF1Loader.hpp>
+#include <GLTF2Loader.hpp>
 #include <Node.hpp>
 #include <Transform.hpp>
 #include <Camera.hpp>
@@ -36,12 +36,13 @@
 
 using namespace kepler;
 
-static constexpr char* BOX_PATH = "res/glTF/Box/box.gltf";
-static constexpr char* BOX_TEXTURED_PATH = "res/glTF/BoxTextured/BoxTextured.gltf";
-static constexpr char* BOX_NO_INDICES_PATH = "res/glTF/BoxWithoutIndices/BoxWithoutIndices.gltf";
-static constexpr char* TRUCK_PATH = "res/glTF/CesiumMilkTruck/CesiumMilkTruck.gltf";
-static constexpr char* DUCK_PATH = "res/glTF/Duck/Duck.gltf";
-static constexpr char* CITY_PATH = "res/glTF/VC/VC.gltf";
+#define SAMPLES_BASE "../../glTF-Sample-Models/2.0/"
+
+static constexpr char* BOX_PATH = SAMPLES_BASE "Box/glTF/Box.gltf";
+static constexpr char* BOX_TEXTURED_PATH = SAMPLES_BASE "BoxTextured/glTF/BoxTextured.gltf";
+static constexpr char* BOX_INTERLEAVED_PATH = SAMPLES_BASE "BoxInterleaved/glTF/BoxInterleaved.gltf";
+static constexpr char* TRUCK_PATH = SAMPLES_BASE "CesiumMilkTruck/glTF/CesiumMilkTruck.gltf";
+static constexpr char* DUCK_PATH = SAMPLES_BASE "Duck/glTF/Duck.gltf";
 
 static float g_deltaTime = 0.0f;
 
@@ -64,9 +65,6 @@ static ref<Mesh> createCubeMesh();
 TestApp::TestApp() {
 }
 
-TestApp::~TestApp() {
-}
-
 void TestApp::start() {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     app()->setSwapInterval(g_use_vsync ? 1 : 0);
@@ -84,7 +82,7 @@ void TestApp::start() {
 
     _compass = std::make_unique<AxisCompass>(_scene);
 
-    GLTF1Loader::printTotalTime();
+    GLTF2Loader::printTotalTime();
 
     _font = BmpFont::createFromFile("res/fonts/arial-32.fnt");
     if (!_font) {
@@ -287,7 +285,7 @@ void TestApp::drawText() {
 }
 
 void TestApp::loadGLTF(const char* path) {
-    GLTF1Loader gltf;
+    GLTF2Loader gltf;
     //gltf.useDefaultMaterial(true);
     auto scene = gltf.loadSceneFromFile(path);
     if (_scene) {
@@ -305,7 +303,7 @@ void TestApp::loadScenes() {
     //scene = gltf.loadSceneFromFile("res/glTF/2CylinderEngine.gltf");
     if (scene) {
         _scene = scene;
-        GLTF1Loader cyLoader;
+        GLTF2Loader cyLoader;
         //cyLoader.useDefaultMaterial(true);
         ref<Scene> cylinder = nullptr;// cyLoader.loadSceneFromFile("res/glTF/2CylinderEngine.gltf");
         if (scene && cylinder) {
@@ -317,24 +315,26 @@ void TestApp::loadScenes() {
             scene->moveNodesFrom(cylinder);
         }
 
-        GLTF1Loader truckLoader;
+        GLTF2Loader truckLoader;
         //truckLoader.useDefaultMaterial(true);
-        scene->moveNodesFrom(truckLoader.loadSceneFromFile(TRUCK_PATH));
-        auto truck = scene->findFirstNodeByName("Cesium_Milk_Truck");
+        auto truckScene = truckLoader.loadSceneFromFile(TRUCK_PATH);
+        auto truck = truckScene->childAt(0);
+        truck->setName("Cesium_Milk_Truck");
+        scene->moveNodesFrom(truckScene);
         if (truck) {
             truck->translate(-2.5, -0.5, 0);
             truck->rotateY(-PI / 4);
             truck->scale(0.5f);
         }
 
-        scene->moveNodesFrom(GLTF1Loader().loadSceneFromFile(BOX_PATH));
+        scene->moveNodesFrom(GLTF2Loader().loadSceneFromFile(BOX_PATH));
+        scene->lastChild()->childAt(0)->setName("Box");
         scene->lastChild()->setTranslation(glm::vec3(0, -2, 0));
-        scene->moveNodesFrom(GLTF1Loader().loadSceneFromFile(BOX_NO_INDICES_PATH));
+        scene->moveNodesFrom(GLTF2Loader().loadSceneFromFile(BOX_INTERLEAVED_PATH));
         scene->lastChild()->setTranslation(glm::vec3(2, -2, 0));
-        scene->moveNodesFrom(GLTF1Loader().loadSceneFromFile(BOX_TEXTURED_PATH));
+        scene->moveNodesFrom(GLTF2Loader().loadSceneFromFile(BOX_TEXTURED_PATH));
+        scene->lastChild()->setTranslation(glm::vec3(2, 0, 0));
     }
-
-    //loadCityScene();
 
     auto cube = createCubeMesh();
     if (cube && _scene) {
@@ -345,7 +345,7 @@ void TestApp::loadScenes() {
 }
 
 ref<Scene> TestApp::loadDuckScene() {
-    GLTF1Loader gltf;
+    GLTF2Loader gltf;
     auto scene = gltf.loadSceneFromFile(DUCK_PATH);
     if (scene && scene->childCount() > 0) {
         scene->childAt(0)->translateY(1);
@@ -356,31 +356,20 @@ ref<Scene> TestApp::loadDuckScene() {
     return scene;
 }
 
-void TestApp::loadCityScene() {
-    GLTF1Loader loader;
-    auto city = loader.loadSceneFromFile(CITY_PATH);
-    if (_scene) {
-        _scene->moveNodesFrom(city);
-    }
-    else {
-        _scene = city;
-    }
-}
-
 void changeBoxColor(const Scene& scene) {
     static glm::vec4 color(0.8, 0, 0, 1);
     color = glm::vec4(color.z, color.x, color.y, color.w);
 
-    auto redBox = scene.findFirstNodeByName("Mesh");
+    auto redBox = scene.findFirstNodeByName("Box");
     if (redBox) {
-        auto mesh = redBox->component<MeshRenderer>()->mesh();
-        if (mesh) {
-            auto prim = mesh->primitiveAt(0);
-            if (prim) {
-                auto mat = prim->material();
-                auto param = mat->param("diffuse");
-                if (param) {
-                    param->setValue(color);
+        if (auto mesh = redBox->component<MeshRenderer>()->mesh()) {
+            if (auto prim = mesh->primitiveAt(0)) {
+                if (auto mat = prim->material()) {
+                    if (auto tech = mat->technique()) {
+                        if (auto param = tech->findValueParameter("baseColorFactor")) {
+                            param->setValue(color);
+                        }
+                    }
                 }
             }
         }
@@ -388,18 +377,18 @@ void changeBoxColor(const Scene& scene) {
 }
 
 ref<Mesh> createCubeMesh() {
-    auto prim = createLitCubePrimitive();
-    if (prim) {
-        GLTF1Loader gltf;
-        gltf.load(BOX_PATH);
-        auto material = gltf.findMaterialById("Effect-Red");
-        if (auto param = material->param("diffuse")) {
-            param->setValue(glm::vec4(1.f, 0.5f, 0.f, 1.0f));
-        }
-        prim->setMaterial(material);
-        auto mesh = Mesh::create();
-        mesh->addMeshPrimitive(prim);
-        return mesh;
-    }
+    //auto prim = createLitCubePrimitive();
+    //if (prim) {
+    //    GLTF2Loader gltf;
+    //    gltf.load(BOX_PATH);
+    //    auto material = gltf.findMaterialById("Effect-Red");
+    //    if (auto param = material->param("diffuse")) {
+    //        param->setValue(glm::vec4(1.f, 0.5f, 0.f, 1.0f));
+    //    }
+    //    prim->setMaterial(material);
+    //    auto mesh = Mesh::create();
+    //    mesh->addMeshPrimitive(prim);
+    //    return mesh;
+    //}
     return nullptr;
 }

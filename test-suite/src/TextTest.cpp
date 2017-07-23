@@ -29,12 +29,6 @@ static ref<BmpFont> loadFont(const char* path) {
     return font;
 }
 
-TextTest::TextTest() {
-}
-
-TextTest::~TextTest() {
-}
-
 void TextTest::start() {
     //glClearColor(0.16f, 0.3f, 0.5f, 1.0f);
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);

@@ -28,8 +28,6 @@ namespace kepler {
         /// @return A reference to the newly loaded scene. Will be empty if there was an error.
         ref<Scene> loadSceneFromFile(const char* path);
 
-        ref<Material> findMaterialByName(const std::string& name);
-
         ref<Mesh> findMeshByIndex(size_t index);
 
         /// Clears all of the data held by this loader.

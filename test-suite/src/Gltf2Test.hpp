@@ -11,7 +11,6 @@ using namespace kepler;
 class Gltf2Test : public kepler::AppDelegate {
 public:
     Gltf2Test();
-    ~Gltf2Test();
 
     void start() override;
     void update() override;

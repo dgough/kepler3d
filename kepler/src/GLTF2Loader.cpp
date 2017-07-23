@@ -124,9 +124,6 @@ namespace kepler {
         ref<Material> loadDefaultMaterial();
         ref<Technique> loadDefaultTechnique();
 
-        // load by name
-        ref<Material> loadMaterialByName(const string& name);
-
         string uriToPath(const string& uri) const;
 
         void useDefaultMaterial(bool value);
@@ -188,10 +185,6 @@ namespace kepler {
 
     ref<Scene> GLTF2Loader::loadSceneFromFile(const char* path) {
         return _impl->loadSceneFromFile(path);
-    }
-
-    ref<Material> GLTF2Loader::findMaterialByName(const std::string& name) {
-        return _impl->loadMaterialByName(name);
     }
 
     ref<Mesh> GLTF2Loader::findMeshByIndex(size_t index) {
@@ -585,6 +578,8 @@ namespace kepler {
             auto wrapT = toWrapMode(gSampler.wrapT());
             // GLTF doesn't have WRAP_R
             auto sampler = Sampler::create();
+            // Use trilinear filtering instead of what was specified in the gltf file.
+            minFilter = Sampler::MinFilter::LINEAR_MIPMAP_LINEAR;
             sampler->setFilterMode(minFilter, magFilter);
             sampler->setWrapMode(wrapS, wrapT);
             return sampler;
@@ -667,11 +662,6 @@ namespace kepler {
 
         _defaultTechnique = tech;
         return _defaultTechnique;
-    }
-
-    ref<Material> GLTF2Loader::Impl::loadMaterialByName(const string& name) {
-        // TODO
-        return nullptr;
     }
 
     string GLTF2Loader::Impl::uriToPath(const string& uri) const {
