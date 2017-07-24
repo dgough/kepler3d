@@ -746,7 +746,9 @@ namespace kepler {
 
     AttributeSemantic toAttributeSemantic(const string& semantic) {
         switch (semantic[0]) {
-        case 'C': if (semantic == "COLOR") return AttributeSemantic::COLOR;
+        case 'C':
+            if (semantic == "COLOR_0") return AttributeSemantic::COLOR_0;
+            if (semantic == "COLOR") return AttributeSemantic::COLOR;
             break;
         case 'J':
             if (semantic == "JOINT") return AttributeSemantic::JOINT;
