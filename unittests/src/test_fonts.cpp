@@ -18,7 +18,7 @@ static constexpr char* ARIAL_15 = "res/fonts/arial-15.fnt";
 static constexpr int WINDOW_WIDTH = 8;
 static constexpr int WINDOW_HEIGHT = 6;
 
-//#define DISABLE_FONT_TEST
+#define DISABLE_FONT_TEST
 #ifndef DISABLE_FONT_TEST
 
 TEST(fonts, file_not_found) {

@@ -16,8 +16,8 @@ namespace kepler {
     public:
         virtual ~Effect() noexcept;
 
-        static ref<Effect> createFromFile(const char* vertexShaderPath, const char* fragmentShaderPath);
-        static ref<Effect> createFromSource(const std::string& vertSource, const std::string& fragSource);
+        static ref<Effect> createFromFile(const char* vertexShaderPath, const char* fragmentShaderPath, const char* defines[] = nullptr, size_t defineCount = 0);
+        static ref<Effect> createFromSource(const std::string& vertSource, const std::string& fragSource, const char* defines[] = nullptr, size_t defineCount = 0);
 
         void bind() const noexcept;
         void unbind() const noexcept;

@@ -47,7 +47,7 @@ namespace kepler {
 
     template<typename Bits, typename Flag>
     static inline void setBit(Bits& bits, Flag flag, bool value) {
-        bits = value ? bits | flag : flag & ~flag;
+        bits = value ? bits | flag : bits & ~flag;
     }
 
     RenderState::BlendState::BlendState() :
@@ -134,9 +134,6 @@ namespace kepler {
         _state(DEFAULT_STATE),
         _colorMask(DEFAULT_COLOR_MASK),
         _lineWidth(1.f) {}
-
-    RenderState::~RenderState() noexcept {
-    }
 
     void RenderState::bind() const noexcept {
         // apply StateBlock first

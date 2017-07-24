@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "GLTFLoader.hpp"
+#include "GLTF1Loader.hpp"
 
 #include "Scene.hpp"
 #include "Camera.hpp"
@@ -139,8 +139,8 @@ namespace kepler {
 
     // Private implementation
     /// @Internal
-    class GLTFLoader::Impl final {
-        friend class GLTFLoader;
+    class GLTF1Loader::Impl final {
+        friend class GLTF1Loader;
     public:
         Impl();
         ~Impl() noexcept;
@@ -224,71 +224,71 @@ namespace kepler {
 
     ////////////////////////////////////////////////////////////////
 
-    GLTFLoader::GLTFLoader() : _impl(std::make_unique<Impl>()) {
+    GLTF1Loader::GLTF1Loader() : _impl(std::make_unique<Impl>()) {
     }
 
-    GLTFLoader::GLTFLoader(const char * path) : _impl(std::make_unique<Impl>()) {
+    GLTF1Loader::GLTF1Loader(const char * path) : _impl(std::make_unique<Impl>()) {
         _impl->loadJson(path);
     }
 
-    GLTFLoader::~GLTFLoader() noexcept {
+    GLTF1Loader::~GLTF1Loader() noexcept {
     }
 
-    GLTFLoader::operator bool() const {
+    GLTF1Loader::operator bool() const {
         return _impl->_loaded;
     }
 
-    bool GLTFLoader::load(const char* path) {
+    bool GLTF1Loader::load(const char* path) {
         return _impl->loadJson(path);
     }
 
-    ref<Scene> GLTFLoader::loadSceneFromFile(const char* path) {
+    ref<Scene> GLTF1Loader::loadSceneFromFile(const char* path) {
         return _impl->loadSceneFromFile(path);
     }
 
-    ref<Material> GLTFLoader::findMaterialById(const std::string& id) {
+    ref<Material> GLTF1Loader::findMaterialById(const std::string& id) {
         return _impl->loadMaterial(id);
     }
 
-    ref<Material> GLTFLoader::findMaterialByName(const std::string& name) {
+    ref<Material> GLTF1Loader::findMaterialByName(const std::string& name) {
         return _impl->loadMaterialByName(name);
     }
 
-    ref<Mesh> GLTFLoader::findMeshById(const std::string& id) {
+    ref<Mesh> GLTF1Loader::findMeshById(const std::string& id) {
         return _impl->loadMesh(id);
     }
 
-    void GLTFLoader::clear() {
+    void GLTF1Loader::clear() {
         _impl.reset();
         _impl = std::make_unique<Impl>();
     }
 
-    void GLTFLoader::useDefaultMaterial(bool value) {
+    void GLTF1Loader::useDefaultMaterial(bool value) {
         _impl->useDefaultMaterial(value);
     }
 
-    void GLTFLoader::setAutoLoadMaterials(bool value) {
+    void GLTF1Loader::setAutoLoadMaterials(bool value) {
         _impl->setAutoLoadMaterials(value);
     }
 
-    void GLTFLoader::setCameraAspectRatio(float aspectRatio) {
+    void GLTF1Loader::setCameraAspectRatio(float aspectRatio) {
         _impl->_aspectRatio = aspectRatio;
     }
 
-    void GLTFLoader::printTotalTime() {
+    void GLTF1Loader::printTotalTime() {
         std::clog << "Total: " << std::chrono::duration_cast<std::chrono::milliseconds>(__totalTime).count() << " ms" << std::endl;
     }
 
     ////////////////////////////////////////////////////////////////
 
-    GLTFLoader::Impl::Impl()
+    GLTF1Loader::Impl::Impl()
         : _loaded(false), _useDefaultMaterial(false), _autoLoadMaterials(true), _aspectRatio(0.0f) {
     }
 
-    GLTFLoader::Impl::~Impl() noexcept {
+    GLTF1Loader::Impl::~Impl() noexcept {
     }
 
-    bool GLTFLoader::Impl::loadJson(const char* path) {
+    bool GLTF1Loader::Impl::loadJson(const char* path) {
         _baseDir = directoryName(path);
         std::ifstream file;
         //file.exceptions(std::ifstream::badbit);
@@ -302,11 +302,11 @@ namespace kepler {
 
         //std::unique_ptr<json> p = std::make_unique<json>();
 
-        auto start = std::chrono::system_clock::now();
+        auto start = std::chrono::high_resolution_clock::now();
 
         file >> _json;
 
-        auto end = std::chrono::system_clock::now();
+        auto end = std::chrono::high_resolution_clock::now();
         _jsonLoadTime = std::chrono::duration_cast<time_type>(end - start);
 
         file.close();
@@ -314,9 +314,9 @@ namespace kepler {
         return true;
     }
 
-    ref<Scene> GLTFLoader::Impl::loadSceneFromFile(const char* path) {
+    ref<Scene> GLTF1Loader::Impl::loadSceneFromFile(const char* path) {
         // TODO call clear() first?
-        auto start = std::chrono::system_clock::now();
+        auto start = std::chrono::high_resolution_clock::now();
 
         if (!loadJson(path)) {
             loge("LOAD_SCENE_FROM_FILE ", path);
@@ -325,7 +325,7 @@ namespace kepler {
 
         auto scene = loadDefaultScene();
 
-        auto end = std::chrono::system_clock::now();
+        auto end = std::chrono::high_resolution_clock::now();
         auto t = std::chrono::duration_cast<time_type>(end - start);
         __totalTime += t;
         auto clogWidth = std::clog.width();
@@ -344,7 +344,7 @@ namespace kepler {
         return scene;
     }
 
-    ref<Scene> GLTFLoader::Impl::loadDefaultScene() {
+    ref<Scene> GLTF1Loader::Impl::loadDefaultScene() {
         auto scene = _json.find(SCENE);
         if (scene != _json.end() && scene->is_string()) {
             return loadScene(scene->get_ref<const string&>());
@@ -353,7 +353,7 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<Scene> GLTFLoader::Impl::loadScene(const string& id) {
+    ref<Scene> GLTF1Loader::Impl::loadScene(const string& id) {
         auto jScenes = _json.find(SCENES);
         if (jScenes != _json.end()) {
             auto jScene = jScenes->find(id);
@@ -372,7 +372,7 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<Node> GLTFLoader::Impl::loadNode(const string& id) {
+    ref<Node> GLTF1Loader::Impl::loadNode(const string& id) {
         RETURN_IF_FOUND(_nodes, id);
         auto jNodes = _json.find(NODES);
         if (jNodes != _json.end()) {
@@ -386,7 +386,7 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<Node> GLTFLoader::Impl::loadNode(const json& jNode) {
+    ref<Node> GLTF1Loader::Impl::loadNode(const json& jNode) {
         auto name = jNode.value(NAME, "");
         auto node = Node::create(name);
 
@@ -421,7 +421,7 @@ namespace kepler {
         return node;
     }
 
-    ref<Mesh> GLTFLoader::Impl::loadMesh(const string& id) {
+    ref<Mesh> GLTF1Loader::Impl::loadMesh(const string& id) {
         try {
             auto jMeshes = _json.find(MESHES);
             if (jMeshes != _json.end()) {
@@ -483,7 +483,7 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<Camera> GLTFLoader::Impl::loadCamera(const string& id) {
+    ref<Camera> GLTF1Loader::Impl::loadCamera(const string& id) {
         auto cameras = _json.find(CAMERAS);
         if (cameras != _json.end()) {
             auto camera = cameras->find(id);
@@ -515,7 +515,7 @@ namespace kepler {
         return nullptr;
     }
 
-    shared_ptr<std::vector<ubyte>> GLTFLoader::Impl::loadBuffer(const string& id) {
+    shared_ptr<std::vector<ubyte>> GLTF1Loader::Impl::loadBuffer(const string& id) {
         RETURN_IF_FOUND(_buffers, id);
 
         auto buffers = _json.find(BUFFERS);
@@ -535,7 +535,7 @@ namespace kepler {
                         else {
                             string path = uriToPath(uri);
                             auto buffer = std::make_shared<std::vector<ubyte>>();
-                            if (readBinaryFile(path.c_str(), *buffer.get())) {
+                            if (readBinaryFile(path.c_str(), *buffer)) {
                                 _buffers[id] = buffer;
                                 return buffer;
                             }
@@ -551,7 +551,7 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<VertexBuffer> GLTFLoader::Impl::loadVertexBuffer(const string& id) {
+    ref<VertexBuffer> GLTF1Loader::Impl::loadVertexBuffer(const string& id) {
         RETURN_IF_FOUND(_vbos, id);
         if (id.empty()) {
             return nullptr;
@@ -579,7 +579,7 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<IndexBuffer> GLTFLoader::Impl::loadIndexBuffer(const string& id) {
+    ref<IndexBuffer> GLTF1Loader::Impl::loadIndexBuffer(const string& id) {
         // TODO is it possible to have more than 1 of the same index buffer?
         RETURN_IF_FOUND(_indexBuffers, id);
 
@@ -608,7 +608,7 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<IndexAccessor> GLTFLoader::Impl::loadIndexAccessor(const string& id) {
+    ref<IndexAccessor> GLTF1Loader::Impl::loadIndexAccessor(const string& id) {
         RETURN_IF_FOUND(_indexAccessors, id);
 
         auto jAccessor = _json[ACCESSORS][id];
@@ -632,7 +632,7 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<VertexAttributeAccessor> GLTFLoader::Impl::loadVertexAttributeAccessor(const string& id) {
+    ref<VertexAttributeAccessor> GLTF1Loader::Impl::loadVertexAttributeAccessor(const string& id) {
         RETURN_IF_FOUND(_vertexAttributeAccessors, id);
 
         auto jAccessors = _json.find(ACCESSORS);
@@ -658,7 +658,7 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<Material> GLTFLoader::Impl::loadMaterial(const string& id) {
+    ref<Material> GLTF1Loader::Impl::loadMaterial(const string& id) {
         RETURN_IF_FOUND(_materials, id);
 
         if (_useDefaultMaterial) {
@@ -719,7 +719,7 @@ namespace kepler {
         return loadDefaultMaterial();
     }
 
-    ref<Technique> GLTFLoader::Impl::loadTechnique(const string& id) {
+    ref<Technique> GLTF1Loader::Impl::loadTechnique(const string& id) {
         RETURN_IF_FOUND(_techniques, id);
 
         if (_useDefaultMaterial) {
@@ -787,7 +787,7 @@ namespace kepler {
         return loadDefaultTechnique();
     }
 
-    void GLTFLoader::Impl::loadTechniqueAttribute(const string& glslName, const string& paramName, const json& parameters, ref<Technique> tech) {
+    void GLTF1Loader::Impl::loadTechniqueAttribute(const string& glslName, const string& paramName, const json& parameters, ref<Technique> tech) {
         auto jParam = parameters.find(paramName);
         if (jParam != parameters.end()) {
             string semantic(jParam->value(SEMANTIC, ""));
@@ -798,7 +798,7 @@ namespace kepler {
         }
     }
 
-    void GLTFLoader::Impl::loadTechniqueUniform(const string& glslName, const string& paramName, const json& parameters, ref<Technique> tech) {
+    void GLTF1Loader::Impl::loadTechniqueUniform(const string& glslName, const string& paramName, const json& parameters, ref<Technique> tech) {
         auto jParam = parameters.find(paramName);
         if (jParam != parameters.end()) {
             auto jSemantic = jParam->find(SEMANTIC);
@@ -865,7 +865,7 @@ namespace kepler {
         }
     }
 
-    ref<Effect> GLTFLoader::Impl::loadProgram(const string& id) {
+    ref<Effect> GLTF1Loader::Impl::loadProgram(const string& id) {
         RETURN_IF_FOUND(_effects, id);
 
         auto jPrograms = _json.find("programs");
@@ -895,7 +895,7 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<Texture> GLTFLoader::Impl::loadTexture(const string& id) {
+    ref<Texture> GLTF1Loader::Impl::loadTexture(const string& id) {
         RETURN_IF_FOUND(_textures, id);
 
         const auto jTextures = _json.find("textures");
@@ -934,7 +934,7 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<Sampler> GLTFLoader::Impl::loadSampler(const string& id) {
+    ref<Sampler> GLTF1Loader::Impl::loadSampler(const string& id) {
         RETURN_IF_FOUND(_samplers, id);
 
         const auto jSamplers = _json.find("samplers");
@@ -955,7 +955,7 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<Image> GLTFLoader::Impl::loadImage(const string& id) {
+    ref<Image> GLTF1Loader::Impl::loadImage(const string& id) {
         RETURN_IF_FOUND(_images, id);
         const auto jImages = _json.find("images");
         if (jImages != _json.end()) {
@@ -976,11 +976,11 @@ namespace kepler {
                     else {
                         auto path = uriToPath(uri);
 
-                        auto start = std::chrono::system_clock::now();
+                        auto start = std::chrono::high_resolution_clock::now();
 
                         image = Image::createFromFile(path.c_str(), false);
 
-                        auto end = std::chrono::system_clock::now();
+                        auto end = std::chrono::high_resolution_clock::now();
                         auto time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
                         auto clogWidth = std::clog.width();
                         std::clog.width(8);
@@ -999,7 +999,7 @@ namespace kepler {
         return nullptr;
     }
 
-    ref<Material> GLTFLoader::Impl::loadDefaultMaterial() {
+    ref<Material> GLTF1Loader::Impl::loadDefaultMaterial() {
         if (_defaultMaterial) {
             return _defaultMaterial;
         }
@@ -1014,7 +1014,7 @@ namespace kepler {
         return material;
     }
 
-    ref<Technique> GLTFLoader::Impl::loadDefaultTechnique() {
+    ref<Technique> GLTF1Loader::Impl::loadDefaultTechnique() {
         if (_defaultTechnique) {
             return _defaultTechnique;
         }
@@ -1044,7 +1044,7 @@ namespace kepler {
         return _defaultTechnique;
     }
 
-    void GLTFLoader::Impl::loadShaderSource(const string& id, string& destination) {
+    void GLTF1Loader::Impl::loadShaderSource(const string& id, string& destination) {
         auto jShaders = _json.find("shaders");
         if (jShaders != _json.end()) {
             auto jShader = jShaders->find(id);
@@ -1064,7 +1064,7 @@ namespace kepler {
         }
     }
 
-    ref<Material> GLTFLoader::Impl::loadMaterialByName(const string& name) {
+    ref<Material> GLTF1Loader::Impl::loadMaterialByName(const string& name) {
         auto jMaterials = _json.find(MATERIALS);
         if (jMaterials != _json.end()) {
             for (auto it = jMaterials->begin(); it != jMaterials->end(); ++it) {
@@ -1079,20 +1079,20 @@ namespace kepler {
         return nullptr;
     }
 
-    string GLTFLoader::Impl::uriToPath(const string& uri) const {
+    string GLTF1Loader::Impl::uriToPath(const string& uri) const {
         // TODO handle absolute paths for uri
         return joinPath(_baseDir, uri);
     }
 
-    void GLTFLoader::Impl::useDefaultMaterial(bool value) {
+    void GLTF1Loader::Impl::useDefaultMaterial(bool value) {
         _useDefaultMaterial = value;
     }
 
-    void GLTFLoader::Impl::setAutoLoadMaterials(bool value) {
+    void GLTF1Loader::Impl::setAutoLoadMaterials(bool value) {
         _autoLoadMaterials = value;
     }
 
-    void GLTFLoader::Impl::loadTransform(const json& jNode, ref<Node> node) {
+    void GLTF1Loader::Impl::loadTransform(const json& jNode, ref<Node> node) {
         auto matrix = jNode.find(MATRIX);
         if (matrix != jNode.end()) {
             if (matrix->size() == 16) {

@@ -38,12 +38,16 @@ namespace kepler {
         };
 
         explicit MaterialParameter(const std::string& name);
-        virtual ~MaterialParameter() noexcept;
+        explicit MaterialParameter(std::string&& name);
+        virtual ~MaterialParameter() noexcept = default;
         static ref<MaterialParameter> create(const std::string& name);
+        static ref<MaterialParameter> create(std::string&& name);
 
         template<typename T>
         static ref<MaterialParameter> create(const std::string& name, const T& type);
 
+        template<typename T>
+        static ref<MaterialParameter> create(std::string&& name, const T& type);
 
         const std::string& name() const;
 
@@ -80,6 +84,13 @@ namespace kepler {
     template<typename T>
     inline ref<MaterialParameter> MaterialParameter::create(const std::string& name, const T& type) {
         auto param = MaterialParameter::create(name);
+        param->setValue(type);
+        return param;
+    }
+
+    template<typename T>
+    inline ref<MaterialParameter> MaterialParameter::create(std::string&& name, const T& type) {
+        auto param = MaterialParameter::create(std::move(name));
         param->setValue(type);
         return param;
     }

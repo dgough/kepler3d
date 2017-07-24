@@ -12,7 +12,7 @@ namespace kepler {
     class Material : public std::enable_shared_from_this<Material> {
         ALLOW_MAKE_SHARED(Material);
     public:
-        virtual ~Material() noexcept;
+        virtual ~Material() noexcept = default;
         static ref<Material> create();
         static ref<Material> create(ref<Technique> technique);
 
@@ -35,7 +35,7 @@ namespace kepler {
         Material(const Material&) = delete;
         Material& operator=(const Material&) = delete;
     private:
-        Material();
+        Material() = default;
     private:
         std::string _name;
         ref<Technique> _technique; // TODO only 1 for now?

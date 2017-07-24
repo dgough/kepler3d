@@ -43,10 +43,17 @@ namespace kepler {
 
         void transformChanged(const Node* node) override;
 
-
         const glm::mat4& viewMatrix() const;
         const glm::mat4& projectionMatrix() const;
         const glm::mat4& viewProjectionMatrix() const;
+
+        /// Returns field of view in degrees.
+        float fov() const noexcept;
+        float aspectRatio() const noexcept;
+        float near() const noexcept;
+        float far() const noexcept;
+        float zoomX() const noexcept;
+        float zoomY() const noexcept;
 
     public:
         Camera(const Camera&) = delete;

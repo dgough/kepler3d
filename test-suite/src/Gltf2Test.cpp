@@ -1,9 +1,9 @@
-#include "SceneTest.hpp"
+#include "Gltf2Test.hpp"
 #include "MainMenu.hpp"
 
 #include <BaseGL.hpp>
 #include <App.hpp>
-#include <GLTFLoader.hpp>
+#include <GLTF2Loader.hpp>
 #include <Scene.hpp>
 #include <Camera.hpp>
 #include <MeshRenderer.hpp>
@@ -16,39 +16,31 @@ using namespace kepler;
 using glm::vec3;
 
 static constexpr char* GLTF_PATH =
-//"C:/dev/github/glTF-Sample-Models/1.0/Buggy/glTF/Buggy.gltf";
-//"C:/dev/github/glTF-Sample-Models/1.0/GearboxAssy/glTF/GearboxAssy.gltf";
-//"res/glTF/duck/Duck.gltf";
-"res/glTF/CesiumMilkTruck/CesiumMilkTruck.gltf";
-//"res/glTF/BoxWithoutIndices/BoxWithoutIndices.gltf";
-//"res/glTF/ReciprocatingSaw/ReciprocatingSaw.gltf";
+"../../glTF-Sample-Models/2.0/CesiumMilkTruck/glTF/CesiumMilkTruck.gltf";
+//"../../glTF-Sample-Models/2.0/CesiumMilkTruck/glTF-Binary/CesiumMilkTruck.glb";
+//"../../glTF-Sample-Models/2.0/CesiumMilkTruck/glTF-Embedded/CesiumMilkTruck.gltf";
 
 static std::string g_text;
 
-SceneTest::SceneTest() : _moveCamera(false) {
+Gltf2Test::Gltf2Test() : _moveCamera(false) {
 }
 
-SceneTest::~SceneTest() {
-}
-
-void SceneTest::start() {
+void Gltf2Test::start() {
     //glClearColor(0.16f, 0.3f, 0.5f, 1.0f);
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-
     loadSceneFromFile(GLTF_PATH);
     if (_scene) {
         if (auto node = _scene->findFirstNodeByName("pro12-18s")) {
             node->editLocalTransform().loadIdentity();
         }
     }
-
     _font = BmpFont::createFromFile("res/fonts/arial-32.fnt");
 }
 
-void SceneTest::update() {
+void Gltf2Test::update() {
 }
 
-void SceneTest::render() {
+void Gltf2Test::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if (_scene) {
@@ -65,7 +57,7 @@ void SceneTest::render() {
     _compass.draw();
 }
 
-void SceneTest::keyEvent(int key, int scancode, int action, int mods) {
+void Gltf2Test::keyEvent(int key, int scancode, int action, int mods) {
     if (key == KEY_ESCAPE && action == PRESS) {
         MainMenu::gotoMainMenu();
     }
@@ -80,13 +72,13 @@ void SceneTest::keyEvent(int key, int scancode, int action, int mods) {
     }
 }
 
-void SceneTest::mouseEvent(double xpos, double ypos) {
+void Gltf2Test::mouseEvent(double xpos, double ypos) {
     if (_moveCamera && app()->getMouseButton(LEFT_MOUSE)) {
         _orbitCamera.move(static_cast<float>(xpos), static_cast<float>(ypos));
     }
 }
 
-void SceneTest::mouseButtonEvent(int button, int action, int mods) {
+void Gltf2Test::mouseButtonEvent(int button, int action, int mods) {
     if (button == LEFT_MOUSE && action == PRESS) {
         double x, y;
         app()->cursorPosition(&x, &y);
@@ -95,15 +87,15 @@ void SceneTest::mouseButtonEvent(int button, int action, int mods) {
     }
 }
 
-void SceneTest::scrollEvent(double xoffset, double yoffset) {
+void Gltf2Test::scrollEvent(double xoffset, double yoffset) {
     _orbitCamera.zoomOut(static_cast<float>(-yoffset));
 }
 
-void SceneTest::dropEvent(int count, const char** paths) {
+void Gltf2Test::dropEvent(int count, const char** paths) {
     // Load the first GLTF file found. Ignore directories.
     for (int i = 0; i < count; ++i) {
         const char* path = paths[i];
-        if (endsWith(path, ".gltf")) {
+        if (endsWith(path, ".gltf") || endsWith(path, ".glb")) {
             std::clog << "Load: " << path << std::endl;
             loadSceneFromFile(paths[i]);
             return;
@@ -111,7 +103,7 @@ void SceneTest::dropEvent(int count, const char** paths) {
     }
 }
 
-void SceneTest::loadSceneFromFile(const char* path) {
+void Gltf2Test::loadSceneFromFile(const char* path) {
     if (path == nullptr || *path == '\0') {
         std::clog << "Invalid path" << std::endl;
         return;
@@ -119,7 +111,7 @@ void SceneTest::loadSceneFromFile(const char* path) {
     _orbitCamera.detach();
     _scene.reset();
 
-    GLTFLoader loader;
+    GLTF2Loader loader;
     loader.setCameraAspectRatio(app()->aspectRatio());
     _scene = loader.loadSceneFromFile(path);
 

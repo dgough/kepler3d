@@ -6,12 +6,11 @@
 
 using namespace kepler;
 
-/// Test loading a single scene.
+/// Test loading a glTF 2.0 
 /// Dropping a gltf file into the window will load it.
-class SceneTest : public kepler::AppDelegate {
+class Gltf2Test : public kepler::AppDelegate {
 public:
-    SceneTest();
-    ~SceneTest();
+    Gltf2Test();
 
     void start() override;
     void update() override;

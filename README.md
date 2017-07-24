@@ -46,5 +46,6 @@ No. I want to stay as the sole contributor for now.
 - [glm](http://glm.g-truc.net)
 - [SOIL2](https://bitbucket.org/SpartanJ/soil2)
 - [nlohmann/json](https://github.com/nlohmann/json)
+- [RapidJSON](https://github.com/miloyip/rapidjson)
 - [libb64](http://libb64.sourceforge.net)
 - [google test](https://github.com/google/googletest)

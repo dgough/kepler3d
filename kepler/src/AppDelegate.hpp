@@ -18,7 +18,7 @@ namespace kepler {
     class AppDelegate {
     public:
         AppDelegate() {}
-        virtual ~AppDelegate() noexcept {};
+        virtual ~AppDelegate() noexcept = default;
 
         virtual void start() {}
         virtual void stop() {}

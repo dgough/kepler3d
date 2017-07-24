@@ -74,10 +74,11 @@ namespace kepler {
     }
 
     void Scene::moveNodesFrom(const ref<Scene> src) {
-        if (src == nullptr) return;
-        while (!src->_children.empty()) {
-            auto child = src->childAt(0);
-            addNode(child);
+        if (src) {
+            while (!src->_children.empty()) {
+                auto child = src->childAt(0);
+                addNode(child);
+            }
         }
     }
 

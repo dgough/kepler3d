@@ -8,10 +8,14 @@ namespace kepler {
     enum class AttributeSemantic {
         POSITION,
         NORMAL,
-        COLOR,
-        JOINT,
-        JOINTMATRIX,
-        WEIGHT,
+        TANGENT,
+        COLOR, // removed in gltf 2.0
+        COLOR_0,
+        JOINT, // removed in gltf 2.0
+        JOINTS_0,
+        JOINTMATRIX, // removed in gltf 2.0
+        WEIGHT, // removed in gltf 2.0
+        WEIGHTS_0,
         TEXCOORD_0,
         TEXCOORD_1,
         TEXCOORD_2,

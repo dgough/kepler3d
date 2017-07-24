@@ -7,11 +7,16 @@ namespace kepler {
         : _name(name), _semantic(Semantic::NONE), _uniform(nullptr) {
     }
 
-    MaterialParameter::~MaterialParameter() noexcept {
+    MaterialParameter::MaterialParameter(std::string&& name)
+        : _name(std::move(name)), _semantic(Semantic::NONE), _uniform(nullptr) {
     }
 
     ref<MaterialParameter> MaterialParameter::create(const std::string& name) {
         return MAKE_SHARED(MaterialParameter, name);
+    }
+
+    ref<MaterialParameter> MaterialParameter::create(std::string&& name) {
+        return MAKE_SHARED(MaterialParameter, std::move(name));
     }
 
     const std::string& MaterialParameter::name() const {

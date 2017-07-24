@@ -4,12 +4,6 @@
 
 namespace kepler {
 
-    Material::Material() {
-    }
-
-    Material::~Material() noexcept {
-    }
-
     ref<Material> Material::create() {
         return MAKE_SHARED(Material);
     }

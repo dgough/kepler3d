@@ -11,7 +11,6 @@ class TestApp : public AppDelegate
 {
 public:
     TestApp();
-    ~TestApp();
 
     void start() override;
     void update() override;
@@ -29,7 +28,6 @@ private:
     void loadGLTF(const char* path);
     void loadScenes();
     ref<Scene> loadDuckScene();
-    void loadCityScene();
 
 private:
     ref<Scene> _scene;

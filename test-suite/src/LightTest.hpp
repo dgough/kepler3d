@@ -9,7 +9,6 @@ using namespace kepler;
 class LightTest : public kepler::AppDelegate {
 public:
     LightTest();
-    ~LightTest();
 
     void start() override;
     void update() override;

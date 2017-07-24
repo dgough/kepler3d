@@ -18,21 +18,15 @@ static const char* FONT_PATH = "res/fonts/arial-32.fnt";
 static std::string g_text;
 
 static ref<BmpFont> loadFont(const char* path) {
-    auto start = std::chrono::system_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
 
     auto font = BmpFont::createFromFile(path);
-    auto end = std::chrono::system_clock::now();
+    auto end = std::chrono::high_resolution_clock::now();
     auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
     std::clog << static_cast<double>(time.count()) / 1000000.0;
     std::clog << " ms to load font file " << path << std::endl;
     g_text.assign(path);
     return font;
-}
-
-TextTest::TextTest() {
-}
-
-TextTest::~TextTest() {
 }
 
 void TextTest::start() {

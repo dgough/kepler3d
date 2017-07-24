@@ -8,7 +8,7 @@
 
 namespace kepler {
 
-    static constexpr float MIN_ZOOM = 1.f;
+    static constexpr float MIN_ZOOM = 0.2f;
     static constexpr float FOV = 45.f;
     static constexpr float NEAR = 0.1f;
     static constexpr float FAR = 1000.f;

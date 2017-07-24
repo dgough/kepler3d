@@ -12,9 +12,6 @@ namespace kepler {
     MeshPrimitive::MeshPrimitive(Mode mode) : _mode(mode) {
     }
 
-    MeshPrimitive::~MeshPrimitive() noexcept {
-    }
-
     ref<MeshPrimitive> MeshPrimitive::create(Mode mode) {
         return MAKE_SHARED(MeshPrimitive, mode);
     }
@@ -25,6 +22,10 @@ namespace kepler {
             return it->second;
         }
         return nullptr;
+    }
+
+    bool MeshPrimitive::hasAttribute(AttributeSemantic semantic) const {
+        return _attributes.count(semantic) != 0;
     }
 
     ref<IndexAccessor> MeshPrimitive::indices() const {

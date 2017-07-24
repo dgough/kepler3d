@@ -19,8 +19,11 @@ namespace kepler {
     /// Each node holds a strong reference to its components and its children but a weak reference to its parent.
     class Node : public std::enable_shared_from_this<Node> {
         friend class Scene;
-        ALLOW_MAKE_SHARED(Node);
     public:
+        // Don't use constructors directly. Use Node::create().
+        Node();
+        explicit Node(const char* name);
+        explicit Node(const std::string& name);
         virtual ~Node() noexcept;
 
         /// Creates a node and returns a std::shared_ptr to it.
@@ -289,10 +292,6 @@ namespace kepler {
 
     private:
         using NodeListenerList = std::vector<std::weak_ptr<Listener>>;
-        // Hidden constructors. Use Node::create().
-        Node();
-        explicit Node(const char* name);
-        explicit Node(const std::string& name);
 
         static void removeChild(NodeList& children, size_t index);
 
