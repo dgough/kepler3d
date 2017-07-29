@@ -28,9 +28,6 @@
 #include <chrono>
 #include <array>
 
-using std::string;
-using std::shared_ptr;
-
 #define RETURN_IF_FOUND(map, key) \
     { \
         auto i = (map).find(key); \
@@ -39,33 +36,37 @@ using std::shared_ptr;
         } \
     }
 
-static constexpr GLchar* DEFAULT_VERT_SHADER = "precision highp float;\n"
-"\n"
-"uniform mat4 u_modelViewMatrix;\n"
-"uniform mat3 u_normalMatrix;\n"
-"uniform mat4 u_projectionMatrix;\n"
-"\n"
-"attribute vec3 a_normal;\n"
-"attribute vec3 a_position;\n"
-"\n"
-"void main(void)\n"
-"{\n"
-"    gl_Position = u_projectionMatrix * u_modelViewMatrix * vec4(a_position,1.0);\n"
-"}\n";
-
-static constexpr GLchar* DEFAULT_FRAG_SHADER = "precision highp float;\n"
-"\n"
-"uniform vec4 u_emission;\n"
-"\n"
-"void main(void)\n"
-"{\n"
-"    gl_FragColor = u_emission;\n"
-"}\n";
-
-static constexpr const GLchar* BASIC_VERT_PATH = "../kepler/res/shaders/basic.vert";
-static constexpr const GLchar* BASIC_FRAG_PATH = "../kepler/res/shaders/basic.frag";
-
 namespace kepler {
+
+    static constexpr GLchar* DEFAULT_VERT_SHADER = "precision highp float;\n"
+        "\n"
+        "uniform mat4 u_modelViewMatrix;\n"
+        "uniform mat3 u_normalMatrix;\n"
+        "uniform mat4 u_projectionMatrix;\n"
+        "\n"
+        "attribute vec3 a_normal;\n"
+        "attribute vec3 a_position;\n"
+        "\n"
+        "void main(void)\n"
+        "{\n"
+        "    gl_Position = u_projectionMatrix * u_modelViewMatrix * vec4(a_position,1.0);\n"
+        "}\n";
+
+    static constexpr GLchar* DEFAULT_FRAG_SHADER = "precision highp float;\n"
+        "\n"
+        "uniform vec4 u_emission;\n"
+        "\n"
+        "void main(void)\n"
+        "{\n"
+        "    gl_FragColor = u_emission;\n"
+        "}\n";
+
+    static constexpr const GLchar* BASIC_VERT_PATH = "../kepler/res/shaders/basic.vert";
+    static constexpr const GLchar* BASIC_FRAG_PATH = "../kepler/res/shaders/basic.frag";
+
+    using std::string;
+    using std::shared_ptr;
+    using std::chrono::high_resolution_clock;
 
     using ubyte = unsigned char;
 
@@ -82,6 +83,15 @@ namespace kepler {
     static Sampler::MagFilter toMagFilterMode(gltf2::Sampler::MagFilter filter);
     static GLint numComponentsOfType(const string& type);
     static void setState(int state, RenderState& block);
+    template<typename T>
+    static void printTime(T start, T end, const char* str) {
+        auto time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+        auto clogWidth = std::clog.width();
+        std::clog.width(8);
+        std::clog << static_cast<double>(time.count());
+        std::clog.width(clogWidth);
+        std::clog << str << std::endl;
+    }
 
     using time_type = std::chrono::nanoseconds;
     static time_type __totalTime;
@@ -123,6 +133,7 @@ namespace kepler {
 
         ref<Material> loadDefaultMaterial();
         ref<Technique> loadDefaultTechnique();
+        ref<Sampler> loadDefaultSampler();
 
         string uriToPath(const string& uri) const;
 
@@ -152,6 +163,7 @@ namespace kepler {
 
         ref<Material> _defaultMaterial;
         ref<Technique> _defaultTechnique;
+        ref<Sampler> _defaultSampler;
 
         string _baseDir;
 
@@ -224,11 +236,11 @@ namespace kepler {
     bool GLTF2Loader::Impl::loadJson(const char* path) {
         _baseDir = directoryName(path);
 
-        auto start = std::chrono::high_resolution_clock::now();
+        auto start = high_resolution_clock::now();
 
         _loaded = _gltf.load(path);
 
-        auto end = std::chrono::high_resolution_clock::now();
+        auto end = high_resolution_clock::now();
         _jsonLoadTime = std::chrono::duration_cast<time_type>(end - start);
 
         return _loaded;
@@ -236,7 +248,7 @@ namespace kepler {
 
     ref<Scene> GLTF2Loader::Impl::loadSceneFromFile(const char* path) {
         // TODO call clear() first?
-        auto start = std::chrono::high_resolution_clock::now();
+        auto start = high_resolution_clock::now();
 
         if (!loadJson(path)) {
             loge("LOAD_SCENE_FROM_FILE ", path);
@@ -245,12 +257,13 @@ namespace kepler {
 
         auto scene = loadDefaultScene();
 
-        auto end = std::chrono::high_resolution_clock::now();
+        auto end = high_resolution_clock::now();
         auto t = std::chrono::duration_cast<time_type>(end - start);
         __totalTime += t;
         auto clogWidth = std::clog.width();
         std::clog.width(8);
-        std::clog << std::chrono::duration_cast<std::chrono::milliseconds>(t).count() << " ms to load ";
+        std::clog << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms to load ";
+
 
         std::clog << "(";
         double percent = (double)_jsonLoadTime.count() / (double)t.count() * 100.0;
@@ -513,7 +526,7 @@ namespace kepler {
                     if (auto texture = loadTexture(textureIndex)) {
                         tech->setUniform("s_baseMap", MaterialParameter::create("s_baseMap", texture));
                     }
-                }                
+                }
                 gPbr.baseColorFactor(glm::value_ptr(baseColorFactor));
             }
             tech->setAttribute("a_position", AttributeSemantic::POSITION);
@@ -555,12 +568,17 @@ namespace kepler {
             if (gTexture.source(imageIndex)) {
                 if (auto image = loadImage(imageIndex)) {
                     auto texture = Texture::create2D(image.get(), DEFAULT_FORMAT, true);
+                    ref<Sampler> sampler;
                     size_t samplerIndex;
                     if (gTexture.sampler(samplerIndex)) {
-                        if (auto sampler = loadSampler(samplerIndex)) {
+                        if (sampler = loadSampler(samplerIndex)) {
                             texture->setSampler(sampler);
                         }
                     }
+                    if (sampler == nullptr) {
+                        sampler = loadDefaultSampler();
+                    }
+                    texture->setSampler(sampler);
                     _textures[index] = texture;
                     return texture;
                 }
@@ -582,6 +600,7 @@ namespace kepler {
             minFilter = Sampler::MinFilter::LINEAR_MIPMAP_LINEAR;
             sampler->setFilterMode(minFilter, magFilter);
             sampler->setWrapMode(wrapS, wrapT);
+            _samplers[index] = sampler;
             return sampler;
         }
         return nullptr;
@@ -590,6 +609,9 @@ namespace kepler {
     ref<Image> GLTF2Loader::Impl::loadImage(size_t index) {
         RETURN_IF_FOUND(_images, index);
         ref<Image> image = nullptr;
+
+        auto start = high_resolution_clock::now();
+
         if (auto gImage = _gltf.image(index)) {
             if (const char* uri = gImage.uri()) {
                 if (gImage.isBase64()) {
@@ -616,6 +638,9 @@ namespace kepler {
                 _images[index] = image;
             }
         }
+
+        auto end = high_resolution_clock::now();
+        printTime(start, end, " ms to load image");
         return image;
     }
 
@@ -662,6 +687,16 @@ namespace kepler {
 
         _defaultTechnique = tech;
         return _defaultTechnique;
+    }
+
+    ref<Sampler> GLTF2Loader::Impl::loadDefaultSampler() {
+        if (_defaultSampler) {
+            return _defaultSampler;
+        }
+        _defaultSampler = Sampler::create();
+        _defaultSampler->setWrapMode(Sampler::Wrap::REPEAT, Sampler::Wrap::REPEAT);
+        _defaultSampler->setFilterMode(Sampler::MinFilter::LINEAR_MIPMAP_LINEAR, Sampler::MagFilter::LINEAR);
+        return _defaultSampler;
     }
 
     string GLTF2Loader::Impl::uriToPath(const string& uri) const {
