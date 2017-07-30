@@ -23,6 +23,12 @@ namespace kepler {
     }
 
     void Mesh::addMeshPrimitive(ref<MeshPrimitive> primitive) {
+        if (_box.empty()) {
+            _box = primitive->boundingBox();
+        }
+        else {
+            _box.merge(primitive->boundingBox());
+        }
         _primitives.push_back(std::move(primitive));
     }
 
@@ -52,5 +58,9 @@ namespace kepler {
 
     size_t Mesh::primitiveCount() const {
         return _primitives.size();
+    }
+
+    const BoundingBox& Mesh::boundingBox() const {
+        return _box;
     }
 }

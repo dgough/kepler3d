@@ -45,6 +45,7 @@ namespace kepler {
         glm::vec2 _start;
 
         ref<Node> _cameraNode;
+        /// The parent node of _cameraNode
         ref<Node> _lookatNode;
         std::weak_ptr<Node> _oldCameraNode;
     };

@@ -165,6 +165,12 @@
     <ClCompile Include="src\GLTF2Loader.cpp">
       <Filter>src\glTF</Filter>
     </ClCompile>
+    <ClCompile Include="src\Performance.cpp">
+      <Filter>src\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BoundingBox.cpp">
+      <Filter>src\Geometry</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\App.hpp">
@@ -305,11 +311,14 @@
     <ClInclude Include="src\lib64.hpp">
       <Filter>src\glTF</Filter>
     </ClInclude>
+    <ClInclude Include="src\Performance.hpp">
+      <Filter>src\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BoundingBox.hpp">
+      <Filter>src\Geometry</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\cpp.hint">
-      <Filter>src\Base</Filter>
-    </None>
     <None Include="src\Transform.inl">
       <Filter>src\Scene</Filter>
     </None>

@@ -484,7 +484,7 @@ namespace kepler {
                 std::clog << "ERROR::READ_TEXT_FILE " << path << std::endl;
                 return false;
             }
-            auto font = MAKE_SHARED(BmpFont);
+            auto font = std::make_shared<BmpFont>();
             font->_impl->loadFromFile(path, file);
             file.close();
             font->_impl->loadTextures();

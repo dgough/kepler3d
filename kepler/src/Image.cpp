@@ -31,7 +31,7 @@ namespace kepler {
         if (flipY) {
             flipImageY(data, width, height, format);
         }
-        return MAKE_SHARED(Image, width, height, toImageFormat(format), data);
+        return std::make_shared<Image>(width, height, toImageFormat(format), data);
     }
 
     ref<Image> Image::createFromFileMemory(const unsigned char* buffer, int bufferLength, bool flipY) {
@@ -44,7 +44,7 @@ namespace kepler {
         if (flipY) {
             flipImageY(data, width, height, format);
         }
-        return MAKE_SHARED(Image, width, height, toImageFormat(format), data);
+        return std::make_shared<Image>(width, height, toImageFormat(format), data);
     }
 
     ref<Image> Image::createFromMemory(int width, int height, Format format, const unsigned char* data) {
@@ -55,7 +55,7 @@ namespace kepler {
             return nullptr;
         }
         std::memcpy(d, data, size);
-        return MAKE_SHARED(Image, width, height, format, d);
+        return std::make_shared<Image>(width, height, format, d);
     }
 
     bool Image::savePNG(const char* path, int width, int height, Format format, const unsigned char* data) {

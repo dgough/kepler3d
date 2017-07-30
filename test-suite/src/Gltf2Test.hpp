@@ -3,6 +3,7 @@
 #include <AppDelegate.hpp>
 #include <OrbitCamera.hpp>
 #include <AxisCompass.hpp>
+#include <BoundingBox.hpp>
 
 using namespace kepler;
 
@@ -22,7 +23,11 @@ public:
     void dropEvent(int count, const char** paths) override;
 
 private:
+    void focus();
     void loadSceneFromFile(const char* path);
+    void loadNextPath();
+    void loadPrevPath();
+    void calcBoundingBox();
 
 private:
     bool _moveCamera;
@@ -30,4 +35,5 @@ private:
     ref<BmpFont> _font;
     AxisCompass _compass;
     OrbitCamera _orbitCamera;
+    BoundingBox _box;
 };

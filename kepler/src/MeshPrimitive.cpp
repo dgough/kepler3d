@@ -13,7 +13,7 @@ namespace kepler {
     }
 
     ref<MeshPrimitive> MeshPrimitive::create(Mode mode) {
-        return MAKE_SHARED(MeshPrimitive, mode);
+        return std::make_shared<MeshPrimitive>(mode);
     }
 
     ref<VertexAttributeAccessor> MeshPrimitive::attribute(AttributeSemantic semantic) const {
@@ -73,6 +73,14 @@ namespace kepler {
         _material = material;
         _vertexBinding = VertexAttributeBinding::createUnique(shared_from_this(), tech);
         updateBindings();
+    }
+
+    const BoundingBox& MeshPrimitive::boundingBox() const {
+        return _box;
+    }
+
+    void MeshPrimitive::setBoundingBox(const glm::vec3& min, const glm::vec3& max) {
+        _box.set(min, max);
     }
 
     void MeshPrimitive::draw() {

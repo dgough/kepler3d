@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "GLTF1Loader.hpp"
 
+#ifdef USE_GLTF1LOADER
+
 #include "Scene.hpp"
 #include "Camera.hpp"
 #include "Node.hpp"
@@ -1452,3 +1454,5 @@ namespace kepler {
         return buffer;
     }
 }
+
+#endif // USE_GLTF1LOADER

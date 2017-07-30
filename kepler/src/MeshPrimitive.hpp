@@ -3,6 +3,7 @@
 #include "Base.hpp"
 #include "AttributeSemantic.hpp"
 #include "MaterialBinding.hpp"
+#include "BoundingBox.hpp"
 
 #include <map>
 
@@ -10,7 +11,6 @@ namespace kepler {
 
     /// A MeshPrimitive is the data required to draw a primitive with glDrawArrays or glDrawElements.
     class MeshPrimitive : public std::enable_shared_from_this<MeshPrimitive> {
-        ALLOW_MAKE_SHARED(MeshPrimitive);
         friend Mesh;
     public:
 
@@ -23,8 +23,11 @@ namespace kepler {
             TRIANGLE_STRIP = 5,
             TRIANGLE_FAN = 6
         };
-
+        /// Use MeshPrimitive::create() instead.
+        explicit MeshPrimitive(Mode mode);
         virtual ~MeshPrimitive() noexcept = default;
+        MeshPrimitive(const MeshPrimitive&) = delete;
+        MeshPrimitive& operator=(const MeshPrimitive&) = delete;
 
         static ref<MeshPrimitive> create(Mode mode);
 
@@ -47,14 +50,13 @@ namespace kepler {
         /// Sets the Material that will be used to draw with.
         void setMaterial(ref<Material> material);
 
+        const BoundingBox& boundingBox() const;
+
+        void setBoundingBox(const glm::vec3& min, const glm::vec3& max);
+
         void draw();
 
-    public:
-        MeshPrimitive(const MeshPrimitive&) = delete;
-        MeshPrimitive& operator=(const MeshPrimitive&) = delete;
     private:
-        explicit MeshPrimitive(Mode mode);
-
         void updateBindings();
         void setNode(ref<Node> node);
 
@@ -68,5 +70,6 @@ namespace kepler {
 
         std::unique_ptr<VertexAttributeBinding> _vertexBinding;
         std::weak_ptr<Node> _node;
+        BoundingBox _box;
     };
 }

@@ -1209,7 +1209,7 @@ namespace LAZY_GLTF2_NAMESPACE {
             return startsWith(s, LAZY_GLTF2_DATA_IMAGE_JPG) || startsWith(s, LAZY_GLTF2_DATA_IMAGE_PNG);
         }
         template<typename T>
-        bool loadBase64(std::vector<T>& data);
+        bool loadBase64(std::vector<T>& data) const;
     };
 
     /// Texture sampler
@@ -2121,7 +2121,7 @@ namespace LAZY_GLTF2_NAMESPACE {
     }
 
     template<typename T>
-    bool Image::loadBase64(std::vector<T>& data) {
+    bool Image::loadBase64(std::vector<T>& data) const {
         const char* text = uri();
         if (startsWith(text, LAZY_GLTF2_DATA_IMAGE_JPG)) {
             text += sizeof(LAZY_GLTF2_DATA_IMAGE_JPG) - 1;

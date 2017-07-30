@@ -12,7 +12,7 @@ namespace kepler {
     }
 
     ref<VertexBuffer> VertexBuffer::create(GLsizeiptr size, const GLvoid* data, GLenum usage) {
-        auto buffer = MAKE_SHARED(VertexBuffer);
+        auto buffer = std::make_shared<VertexBuffer>();
         glGenBuffers(1, &buffer->_handle);
         glBindBuffer(GL_ARRAY_BUFFER, buffer->_handle);
         glBufferData(GL_ARRAY_BUFFER, size, data, usage);

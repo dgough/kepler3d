@@ -10,8 +10,9 @@ namespace kepler {
 
     /// A technique describes the shading used for a material.
     class Technique {
-        ALLOW_MAKE_SHARED(Technique);
     public:
+        /// Use Technique::create() instead.
+        Technique();
         virtual ~Technique() noexcept;
         static ref<Technique> create();
         static ref<Technique> create(ref<Effect> effect);
@@ -35,7 +36,7 @@ namespace kepler {
         void setUniformName(const std::string& glslName, const std::string& paramName);
 
         void setUniform(const std::string& glslName, ref<MaterialParameter> param);
-        void setSemanticUniform(const std::string& glslName, const std::string& paramName, MaterialParameter::Semantic semantic);
+        void setSemanticUniform(const std::string& glslName, MaterialParameter::Semantic semantic);
         void setEffect(ref<Effect> effect);
         void setMaterial(ref<Material> material);
 
@@ -46,7 +47,6 @@ namespace kepler {
         ref<MaterialParameter> findValueParameter(const std::string& paramName);
 
     private:
-        Technique();
         Technique(const Technique&) = delete;
         Technique& operator=(const Technique&) = delete;
 

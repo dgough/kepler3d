@@ -155,6 +155,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\main_tests.cpp" />
+    <ClCompile Include="src\test_BoundingBox.cpp" />
     <ClCompile Include="src\test_filesystem.cpp" />
     <ClCompile Include="src\test_fonts.cpp" />
     <ClCompile Include="src\test_gltf.cpp" />

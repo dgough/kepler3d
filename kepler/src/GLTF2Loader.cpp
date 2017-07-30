@@ -116,6 +116,8 @@ namespace kepler {
         ref<Node> loadNode(const gltf2::Node& gNode);
 
         ref<Mesh> loadMesh(size_t index);
+        ref<MeshPrimitive> loadPrimitive(const gltf2::Primitive& gPrim);
+
         ref<Camera> loadCamera(size_t index);
 
         shared_ptr<std::vector<ubyte>> loadBuffer(size_t index);
@@ -344,33 +346,7 @@ namespace kepler {
             const size_t primCount = gMesh.primitiveCount();
             for (size_t i = 0; i < primCount; ++i) {
                 if (auto gPrim = gMesh.primitive(i)) {
-                    auto prim = MeshPrimitive::create(toMode(gPrim.mode()));
-                    for (const auto& attrib : gPrim.attributes()) {
-                        auto vertexAttributeAccessor = loadVertexAttributeAccessor(attrib.second);
-                        if (vertexAttributeAccessor) {
-                            prim->setAttribute(toAttributeSemantic(attrib.first), vertexAttributeAccessor);
-                        }
-                    }
-                    // load indices
-                    size_t indicesIndex;
-                    if (gPrim.indices(indicesIndex)) {
-                        if (auto indexAccessor = loadIndexAccessor(indicesIndex)) {
-                            prim->setIndices(indexAccessor);
-                        }
-                    }
-                    if (_autoLoadMaterials) {
-                        // load material
-                        ref<Material> material = nullptr;
-                        size_t materialIndex;
-                        if (gPrim.material(materialIndex)) {
-                            if (material = loadMaterial(materialIndex, *prim)) {
-                                prim->setMaterial(material);
-                            }
-                        }
-                        if (material == nullptr) {
-                            prim->setMaterial(loadDefaultMaterial());
-                        }
-                    }
+                    auto prim = loadPrimitive(gPrim);
                     mesh->addMeshPrimitive(prim);
                 }
             }
@@ -382,6 +358,47 @@ namespace kepler {
             }
         }
         return nullptr;
+    }
+
+    ref<MeshPrimitive> GLTF2Loader::Impl::loadPrimitive(const gltf2::Primitive& gPrim) {
+        auto prim = MeshPrimitive::create(toMode(gPrim.mode()));
+        for (const auto& attrib : gPrim.attributes()) {
+            auto vertexAttributeAccessor = loadVertexAttributeAccessor(attrib.second);
+            if (vertexAttributeAccessor) {
+                auto attribSemantic = toAttributeSemantic(attrib.first);
+                prim->setAttribute(attribSemantic, vertexAttributeAccessor);
+                if (attribSemantic == AttributeSemantic::POSITION) {
+                    // find the bounding box
+                    auto gAccessor = _gltf.accessor(attrib.second);
+                    glm::vec3 min;
+                    glm::vec3 max;
+                    if (gAccessor.min(glm::value_ptr(min), 3) && gAccessor.max(glm::value_ptr(max), 3)) {
+                        prim->setBoundingBox(min, max);
+                    }
+                }
+            }
+        }
+        // load indices
+        size_t indicesIndex;
+        if (gPrim.indices(indicesIndex)) {
+            if (auto indexAccessor = loadIndexAccessor(indicesIndex)) {
+                prim->setIndices(indexAccessor);
+            }
+        }
+        if (_autoLoadMaterials) {
+            // load material
+            ref<Material> material = nullptr;
+            size_t materialIndex;
+            if (gPrim.material(materialIndex)) {
+                if (material = loadMaterial(materialIndex, *prim)) {
+                    prim->setMaterial(material);
+                }
+            }
+            if (material == nullptr) {
+                prim->setMaterial(loadDefaultMaterial());
+            }
+        }
+        return prim;
     }
 
     ref<Camera> GLTF2Loader::Impl::loadCamera(size_t index) {
@@ -533,9 +550,9 @@ namespace kepler {
             tech->setAttribute("a_normal", AttributeSemantic::NORMAL);
             tech->setAttribute("a_texcoord0", AttributeSemantic::TEXCOORD_0);
 
-            tech->setSemanticUniform("mvp", "mvp", MaterialParameter::Semantic::MODELVIEWPROJECTION);
-            tech->setSemanticUniform("modelView", "modelView", MaterialParameter::Semantic::MODELVIEW);
-            tech->setSemanticUniform("normalMatrix", "normalMatrix", MaterialParameter::Semantic::MODELVIEWINVERSETRANSPOSE);
+            tech->setSemanticUniform("mvp", MaterialParameter::Semantic::MODELVIEWPROJECTION);
+            tech->setSemanticUniform("modelView", MaterialParameter::Semantic::MODELVIEW);
+            tech->setSemanticUniform("normalMatrix", MaterialParameter::Semantic::MODELVIEWINVERSETRANSPOSE);
 
             tech->setUniform("lightPos", MaterialParameter::create("lightPos", glm::vec3(1, 1, 1)));
             tech->setUniform("lightColor", MaterialParameter::create("lightColor", glm::vec3(1, 1, 1)));
@@ -677,9 +694,9 @@ namespace kepler {
 
         tech->setUniformName("u_emission", "emission");
 
-        tech->setSemanticUniform("u_modelViewMatrix", "modelViewMatrix", MaterialParameter::Semantic::MODELVIEW);
-        tech->setSemanticUniform("u_normalMatrix", "normalMatrix", MaterialParameter::Semantic::MODELVIEWINVERSETRANSPOSE);
-        tech->setSemanticUniform("u_projectionMatrix", "projectionMatrix", MaterialParameter::Semantic::PROJECTION);
+        tech->setSemanticUniform("u_modelViewMatrix", MaterialParameter::Semantic::MODELVIEW);
+        tech->setSemanticUniform("u_normalMatrix", MaterialParameter::Semantic::MODELVIEWINVERSETRANSPOSE);
+        tech->setSemanticUniform("u_projectionMatrix", MaterialParameter::Semantic::PROJECTION);
 
         auto& state = tech->renderState();
         state.setCulling(true);
@@ -786,6 +803,7 @@ namespace kepler {
             if (semantic == "COLOR") return AttributeSemantic::COLOR;
             break;
         case 'J':
+            if (semantic == "JOINTS_0") return AttributeSemantic::JOINTS_0;
             if (semantic == "JOINT") return AttributeSemantic::JOINT;
             if (semantic == "JOINTMATRIX") return AttributeSemantic::JOINTMATRIX; // TODO remove?
             break;
@@ -793,7 +811,9 @@ namespace kepler {
             break;
         case 'P': if (semantic == "POSITION") return AttributeSemantic::POSITION;
             break;
-        case 'W': if (semantic == "WEIGHT") return AttributeSemantic::WEIGHT;
+        case 'W':
+            if (semantic == "WEIGHTS_0") return AttributeSemantic::WEIGHTS_0;
+            if (semantic == "WEIGHT") return AttributeSemantic::WEIGHT;
             break;
         case 'T':
             if (semantic == "TANGENT") {

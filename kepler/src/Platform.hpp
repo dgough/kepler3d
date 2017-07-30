@@ -156,6 +156,8 @@ namespace kepler {
 static constexpr int LEFT_MOUSE = MOUSE_BUTTON_0;
 static constexpr int RIGHT_MOUSE = MOUSE_BUTTON_1;
 static constexpr int MIDDLE_MOUSE = MOUSE_BUTTON_2;
+static constexpr int BACK_MOUSE = MOUSE_BUTTON_3;
+static constexpr int FORWARD_MOUSE = MOUSE_BUTTON_4;
 // TODO back and forward?
 
 }

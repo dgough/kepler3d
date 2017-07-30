@@ -7,9 +7,12 @@ namespace kepler {
 
     /// Wrapper for a Vertex Buffer Object (GL_ARRAY_BUFFER).
     class VertexBuffer {
-        ALLOW_MAKE_SHARED(VertexBuffer);
     public:
+        /// Use VertexBuffer::create() instead.
+        VertexBuffer();
         virtual ~VertexBuffer() noexcept;
+        VertexBuffer(const VertexBuffer&) = delete;
+        VertexBuffer& operator=(const VertexBuffer&) = delete;
 
         /// Creates a VertexBuffer.
         /// 
@@ -20,11 +23,6 @@ namespace kepler {
         
         /// Binds this buffer.
         void bind() const noexcept;
-    public:
-        VertexBuffer(const VertexBuffer&) = delete;
-        VertexBuffer& operator=(const VertexBuffer&) = delete;
-    private:
-        VertexBuffer();
 
     private:
         VertexBufferHandle _handle;

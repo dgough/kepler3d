@@ -84,9 +84,9 @@ namespace kepler {
                 tech->setEffect(effect);
                 tech->setAttribute("a_position", AttributeSemantic::POSITION);
                 tech->setAttribute("a_color", AttributeSemantic::COLOR);
-                tech->setSemanticUniform("model", "model", MaterialParameter::Semantic::MODEL);
-                tech->setSemanticUniform("view", "view", MaterialParameter::Semantic::VIEW);
-                tech->setSemanticUniform("proj", "proj", MaterialParameter::Semantic::PROJECTION);
+                tech->setSemanticUniform("model", MaterialParameter::Semantic::MODEL);
+                tech->setSemanticUniform("view", MaterialParameter::Semantic::VIEW);
+                tech->setSemanticUniform("proj", MaterialParameter::Semantic::PROJECTION);
 
                 auto& state = tech->renderState();
                 state.setDepthTest(true);

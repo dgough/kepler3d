@@ -12,7 +12,7 @@ namespace kepler {
     }
 
     ref<IndexBuffer> IndexBuffer::create(GLsizeiptr size, const GLvoid* data, GLenum usage) {
-        auto buffer = MAKE_SHARED(IndexBuffer);
+        auto buffer = std::make_shared<IndexBuffer>();
         glGenBuffers(1, &buffer->_handle);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer->_handle);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, usage);

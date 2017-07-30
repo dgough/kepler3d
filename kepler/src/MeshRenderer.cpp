@@ -14,7 +14,7 @@ namespace kepler {
     }
 
     ref<MeshRenderer> MeshRenderer::create(ref<Mesh> mesh) {
-        return MAKE_SHARED(MeshRenderer, mesh);
+        return std::make_shared<MeshRenderer>(mesh);
     }
 
     void MeshRenderer::draw() {

@@ -5,8 +5,9 @@
 namespace kepler {
 
     class Scene : public std::enable_shared_from_this<Scene> {
-        ALLOW_MAKE_SHARED(Scene);
     public:
+        /// Use Scene::create()
+        Scene();
         virtual ~Scene() noexcept;
 
         /// Creates a new scene object.
@@ -60,8 +61,6 @@ namespace kepler {
     public:
         Scene(const Scene&) = delete;
         Scene& operator=(const Scene&) = delete;
-    private:
-        Scene();
 
         template <class Func>
         void visitNode(const Func& func, Node* node) const;

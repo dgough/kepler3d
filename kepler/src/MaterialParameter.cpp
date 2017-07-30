@@ -12,11 +12,11 @@ namespace kepler {
     }
 
     ref<MaterialParameter> MaterialParameter::create(const std::string& name) {
-        return MAKE_SHARED(MaterialParameter, name);
+        return std::make_shared<MaterialParameter>(name);
     }
 
     ref<MaterialParameter> MaterialParameter::create(std::string&& name) {
-        return MAKE_SHARED(MaterialParameter, std::move(name));
+        return std::make_shared<MaterialParameter>(std::move(name));
     }
 
     const std::string& MaterialParameter::name() const {

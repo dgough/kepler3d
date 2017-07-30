@@ -9,26 +9,86 @@
 #include <MeshRenderer.hpp>
 #include <StringUtils.hpp>
 #include <BmpFont.hpp>
+#include <Performance.hpp>
+#include <Mesh.hpp>
 
 #include <iostream>
+#include <algorithm>
 
 using namespace kepler;
 using glm::vec3;
 
-static constexpr char* GLTF_PATH =
-"../../glTF-Sample-Models/2.0/CesiumMilkTruck/glTF/CesiumMilkTruck.gltf";
-//"../../glTF-Sample-Models/2.0/CesiumMilkTruck/glTF-Binary/CesiumMilkTruck.glb";
-//"../../glTF-Sample-Models/2.0/CesiumMilkTruck/glTF-Embedded/CesiumMilkTruck.gltf";
+static std::vector<const char*> g_paths{
+    "../../glTF-Sample-Models/2.0/CesiumMilkTruck/glTF/CesiumMilkTruck.gltf",
+    "../../glTF-Sample-Models/2.0/Duck/glTF/Duck.gltf",
+    "../../glTF-Sample-Models/2.0/Box/glTF/Box.gltf",
+    "../../glTF-Sample-Models/2.0/Lantern/glTF/Lantern.gltf",
+    "../../glTF-Sample-Models/2.0/SciFiHelmet/glTF/SciFiHelmet.gltf",
+    "../../glTF-Sample-Models/2.0/BoxAnimated/glTF/BoxAnimated.gltf",
+    "../../glTF-Sample-Models/2.0/AnimatedCube/glTF/AnimatedCube.gltf",
+    "../../glTF-Sample-Models/2.0/AnimatedMorphCube/glTF/AnimatedMorphCube.gltf",
+    "../../glTF-Sample-Models/2.0/AnimatedMorphSphere/glTF/AnimatedMorphSphere.gltf",
+    "../../glTF-Sample-Models/2.0/Avocado/glTF/Avocado.gltf",
+    "../../glTF-Sample-Models/2.0/BarramundiFish/glTF/BarramundiFish.gltf",
+    "../../glTF-Sample-Models/2.0/BoomBox/glTF/BoomBox.gltf",
+    "../../glTF-Sample-Models/2.0/BoxInterleaved/glTF/BoxInterleaved.gltf",
+    "../../glTF-Sample-Models/2.0/BoxTextured/glTF/BoxTextured.gltf",
+    "../../glTF-Sample-Models/2.0/BrainStem/glTF/BrainStem.gltf",
+    "../../glTF-Sample-Models/2.0/Buggy/glTF/Buggy.gltf",
+    "../../glTF-Sample-Models/2.0/Cameras/glTF/Cameras.gltf",
+    "../../glTF-Sample-Models/2.0/CesiumMan/glTF/CesiumMan.gltf",
+    "../../glTF-Sample-Models/2.0/Corset/glTF/Corset.gltf",
+    "../../glTF-Sample-Models/2.0/Cube/glTF/Cube.gltf",
+    "../../glTF-Sample-Models/2.0/GearboxAssy/glTF/GearboxAssy.gltf",
+    "../../glTF-Sample-Models/2.0/MetalRoughSpheres/glTF/MetalRoughSpheres.gltf",
+    "../../glTF-Sample-Models/2.0/Monster/glTF/Monster.gltf",
+    "../../glTF-Sample-Models/2.0/NormalTangentTest/glTF/NormalTangentTest.gltf",
+    "../../glTF-Sample-Models/2.0/ReciprocatingSaw/glTF/ReciprocatingSaw.gltf",
+    "../../glTF-Sample-Models/2.0/RiggedFigure/glTF/RiggedFigure.gltf",
+    "../../glTF-Sample-Models/2.0/RiggedSimple/glTF/RiggedSimple.gltf",
+    "../../glTF-Sample-Models/2.0/SimpleMeshes/glTF/SimpleMeshes.gltf",
+    "../../glTF-Sample-Models/2.0/SmilingFace/glTF/SmilingFace.gltf",
+    "../../glTF-Sample-Models/2.0/Suzanne/glTF/Suzanne.gltf",
+    "../../glTF-Sample-Models/2.0/TextureSettingsTest/glTF/TextureSettingsTest.gltf",
+    "../../glTF-Sample-Models/2.0/Triangle/glTF/Triangle.gltf",
+    "../../glTF-Sample-Models/2.0/TriangleWithoutIndices/glTF/TriangleWithoutIndices.gltf",
+    "../../glTF-Sample-Models/2.0/AnimatedTriangle/glTF/AnimatedTriangle.gltf",
+    "../../glTF-Sample-Models/2.0/TwoSidedPlane/glTF/TwoSidedPlane.gltf",
+    "../../glTF-Sample-Models/2.0/WalkingLady/glTF/WalkingLady.gltf",
+    "../../glTF-Sample-Models/2.0/2CylinderEngine/glTF/2CylinderEngine.gltf",
+    "../../glTF-Sample-Models/2.0/VC/glTF/VC.gltf",
+};
+static size_t g_pathIndex = 0;
 
 static std::string g_text;
+
+static const char* nextPath() {
+    g_pathIndex = (g_pathIndex + 1) % g_paths.size();
+    return g_paths[g_pathIndex];
+}
+
+static const char* prevPath() {
+    if (g_pathIndex == 0) {
+        g_pathIndex = g_paths.size() - 1;
+    }
+    else {
+        g_pathIndex = (g_pathIndex - 1) % g_paths.size();
+    }
+    return g_paths[g_pathIndex];
+}
+
+static const char* getCurrentPath() {
+    return g_paths[g_pathIndex];
+}
 
 Gltf2Test::Gltf2Test() : _moveCamera(false) {
 }
 
 void Gltf2Test::start() {
+    g_pathIndex = 0;
     //glClearColor(0.16f, 0.3f, 0.5f, 1.0f);
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-    loadSceneFromFile(GLTF_PATH);
+    loadSceneFromFile(getCurrentPath());
     if (_scene) {
         if (auto node = _scene->findFirstNodeByName("pro12-18s")) {
             node->editLocalTransform().loadIdentity();
@@ -64,7 +124,18 @@ void Gltf2Test::keyEvent(int key, int scancode, int action, int mods) {
     if (action == PRESS) {
         switch (key) {
         case KEY_F:
-            _orbitCamera.setZoom(10.f);
+            focus();
+            break;
+        case KEY_N:
+            loadNextPath();
+            break;
+        case KEY_P:
+            loadPrevPath();
+            break;
+        case KEY_F4:
+            if (mods & MOD_CTRL) {
+                MainMenu::gotoMainMenu();
+            }
             break;
         default:
             break;
@@ -79,11 +150,19 @@ void Gltf2Test::mouseEvent(double xpos, double ypos) {
 }
 
 void Gltf2Test::mouseButtonEvent(int button, int action, int mods) {
-    if (button == LEFT_MOUSE && action == PRESS) {
-        double x, y;
-        app()->cursorPosition(&x, &y);
-        _orbitCamera.start(static_cast<float>(x), static_cast<float>(y));
-        _moveCamera = true;
+    if (action == PRESS) {
+        if (button == LEFT_MOUSE) {
+            double x, y;
+            app()->cursorPosition(&x, &y);
+            _orbitCamera.start(static_cast<float>(x), static_cast<float>(y));
+            _moveCamera = true;
+        }
+        else if (button == FORWARD_MOUSE) {
+            loadNextPath();
+        }
+        else if (button == BACK_MOUSE) {
+            loadPrevPath();
+        }
     }
 }
 
@@ -103,6 +182,10 @@ void Gltf2Test::dropEvent(int count, const char** paths) {
     }
 }
 
+void Gltf2Test::focus() {
+    _orbitCamera.setZoom(10.0f);
+}
+
 void Gltf2Test::loadSceneFromFile(const char* path) {
     if (path == nullptr || *path == '\0') {
         std::clog << "Invalid path" << std::endl;
@@ -120,4 +203,26 @@ void Gltf2Test::loadSceneFromFile(const char* path) {
         _compass.setScene(_scene);
     }
     g_text.assign(path);
+    calcBoundingBox();
+}
+
+void Gltf2Test::loadNextPath() {
+    loadSceneFromFile(nextPath());
+}
+
+void Gltf2Test::loadPrevPath() {
+    loadSceneFromFile(prevPath());
+}
+
+void Gltf2Test::calcBoundingBox() {
+    _box = BoundingBox();
+    if (_scene) {
+        _scene->visit([this](Node* node) {
+            if (auto meshRenderer = node->component<MeshRenderer>()) {
+                if (auto mesh = meshRenderer->mesh()) {
+                    _box.merge(mesh->boundingBox());
+                }
+            }
+        });
+    }
 }

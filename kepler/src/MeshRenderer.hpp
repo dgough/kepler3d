@@ -7,8 +7,9 @@ namespace kepler {
 
     // DrawableComponent for rendering a Mesh.
     class MeshRenderer : public virtual DrawableComponent {
-        ALLOW_MAKE_SHARED(MeshRenderer);
     public:
+        /// Use MeshRenderer::create()
+        explicit MeshRenderer(ref<Mesh> mesh);
         virtual ~MeshRenderer() noexcept;
 
         static ref<MeshRenderer> create(ref<Mesh> mesh);
@@ -24,8 +25,7 @@ namespace kepler {
     public:
         MeshRenderer(const MeshRenderer&) = delete;
         MeshRenderer& operator=(const MeshRenderer&) = delete;
-    private:
-        explicit MeshRenderer(ref<Mesh> mesh);
+        
     private:
         // for now, only have 1 mesh per renderer
         ref<Mesh> _mesh;

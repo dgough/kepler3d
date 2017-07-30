@@ -142,7 +142,7 @@ namespace kepler {
         if (program == 0) {
             return nullptr;
         }
-        ref<Effect> effect = MAKE_SHARED(Effect, program);
+        ref<Effect> effect = std::make_shared<Effect>(program);
         effect->queryAttributes();
         effect->queryUniforms();
         return effect;

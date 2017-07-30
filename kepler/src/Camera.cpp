@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Camera.hpp"
 #include "Node.hpp"
+#include "Performance.hpp"
 
 namespace kepler {
 
@@ -29,7 +30,7 @@ namespace kepler {
     }
 
     ref<Camera> Camera::createPerspective(float fov, float aspectRatio, float near, float far) {
-        return MAKE_SHARED(Camera, fov, aspectRatio, near, far);
+        return std::make_shared<Camera>(fov, aspectRatio, near, far);
     }
 
     ref<Camera> Camera::createPerspectiveFov(float fov, float width, float height, float near, float far) {
@@ -37,7 +38,7 @@ namespace kepler {
     }
 
     ref<Camera> Camera::createOrthographic(float zoomX, float zoomY, float aspectRatio, float near, float far) {
-        return MAKE_SHARED(Camera, zoomX, zoomY, aspectRatio, near, far);
+        return std::make_shared<Camera>(zoomX, zoomY, aspectRatio, near, far);
     }
 
     void Camera::onNodeChanged(const ref<Node>& oldNode, const ref<Node>& newNode) {
@@ -63,9 +64,8 @@ namespace kepler {
 
     const glm::mat4& Camera::viewMatrix() const {
         if (_dirtyBits & VIEW_DIRTY) {
-            if (ref<Node> node = _node.lock()) {
-                glm::mat4 m = node->worldMatrix();
-                _view = glm::inverse(m);
+            if (auto node = _node.lock()) {
+                _view = glm::inverse(node->worldMatrix());
             }
             else {
                 _view = IDENTITY_MATRIX;
