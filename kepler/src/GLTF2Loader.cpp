@@ -71,6 +71,9 @@ namespace kepler {
     using ubyte = unsigned char;
 
     static constexpr const char* HAS_UV = "HAS_UV";
+    static constexpr const char* HAS_NORMALS = "HAS_NORMALS";
+    static constexpr const char* HAS_TANGENTS = "HAS_TANGENTS";
+    static constexpr const char* HAS_BASE_COLOR_MAP = "HAS_BASE_COLOR_MAP";
 
     static constexpr int DEFAULT_FORMAT = GL_RGBA;
 
@@ -531,21 +534,29 @@ namespace kepler {
                 defines.push_back(HAS_UV);
             }
 
+            ref<Texture> baseMapTexture;
+            glm::vec4 baseColorFactor(1);
+            auto gPbr = gMaterial.pbrMetallicRoughness();
+            if (gPbr) {
+                size_t textureIndex;
+                if (gPbr.baseColorTexture().index(textureIndex)) {
+                    if (baseMapTexture = loadTexture(textureIndex)) {
+                        defines.push_back(HAS_BASE_COLOR_MAP);
+                    }
+                }
+                gPbr.baseColorFactor(glm::value_ptr(baseColorFactor));
+            }
+
             auto effect = Effect::createFromFile(BASIC_VERT_PATH, BASIC_FRAG_PATH, defines.data(), defines.size());
             if (!effect) {
                 return nullptr;
             }
             auto tech = Technique::create(effect);
-            glm::vec4 baseColorFactor(1);
-            if (auto gPbr = gMaterial.pbrMetallicRoughness()) {
-                size_t textureIndex;
-                if (gPbr.baseColorTexture().index(textureIndex)) {
-                    if (auto texture = loadTexture(textureIndex)) {
-                        tech->setUniform("s_baseMap", MaterialParameter::create("s_baseMap", texture));
-                    }
-                }
-                gPbr.baseColorFactor(glm::value_ptr(baseColorFactor));
+
+            if (baseMapTexture) {
+                tech->setUniform("s_baseMap", MaterialParameter::create("s_baseMap", baseMapTexture));
             }
+            
             tech->setAttribute("a_position", AttributeSemantic::POSITION);
             tech->setAttribute("a_normal", AttributeSemantic::NORMAL);
             tech->setAttribute("a_texcoord0", AttributeSemantic::TEXCOORD_0);

@@ -9,12 +9,18 @@ uniform mat3 normalMatrix;
 
 out vec3 v_fragPos;
 out vec3 v_normal;
+
+#ifdef HAS_UV
 out vec2 v_texcoord0;
+#endif
 
 void main() {
     vec4 position = vec4(a_position, 1.0);
     gl_Position = mvp * position;
     v_fragPos = vec3(modelView * position);
     v_normal = normalize(normalMatrix * a_normal);
+
+    #ifdef HAS_UV
     v_texcoord0 = a_texcoord0;
+    #endif
 }

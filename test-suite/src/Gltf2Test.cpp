@@ -21,9 +21,9 @@ using glm::vec3;
 static std::vector<const char*> g_paths{
     "../../glTF-Sample-Models/2.0/CesiumMilkTruck/glTF/CesiumMilkTruck.gltf",
     "../../glTF-Sample-Models/2.0/Duck/glTF/Duck.gltf",
-    "../../glTF-Sample-Models/2.0/Box/glTF/Box.gltf",
     "../../glTF-Sample-Models/2.0/Lantern/glTF/Lantern.gltf",
     "../../glTF-Sample-Models/2.0/SciFiHelmet/glTF/SciFiHelmet.gltf",
+    "../../glTF-Sample-Models/2.0/Box/glTF/Box.gltf",
     "../../glTF-Sample-Models/2.0/BoxAnimated/glTF/BoxAnimated.gltf",
     "../../glTF-Sample-Models/2.0/AnimatedCube/glTF/AnimatedCube.gltf",
     "../../glTF-Sample-Models/2.0/AnimatedMorphCube/glTF/AnimatedMorphCube.gltf",

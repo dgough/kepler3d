@@ -934,7 +934,8 @@ namespace LAZY_GLTF2_NAMESPACE {
 
         enum Target {
             ARRAY_BUFFER = 34962,
-            ELEMENT_ARRAY_BUFFER = 34963
+            ELEMENT_ARRAY_BUFFER = 34963,
+            UNKNOWN = 0
         };
 
         Buffer buffer() const noexcept {
@@ -957,8 +958,6 @@ namespace LAZY_GLTF2_NAMESPACE {
             return findNumberOrDefault(m_json, "byteStride", 0);
         }
 
-        /// Target is not a required field so you might want to call hasTarget() first.
-        /// Will return Target::ARRAY_BUFFER if the target is not found.
         Target target() const noexcept {
             int num;
             if (findNumber<int>(m_json, "target", num)) {
@@ -969,16 +968,11 @@ namespace LAZY_GLTF2_NAMESPACE {
                     return Target::ARRAY_BUFFER;
                 }
             }
-            return Target::ARRAY_BUFFER;
+            return Target::UNKNOWN;
         }
 
         bool target(int& value) const noexcept {
             return findNumber<int>(m_json, "target", value);
-        }
-
-        bool hasTarget() const noexcept {
-            int num;
-            return findNumber<int>(m_json, "target", num);
         }
     };
 
