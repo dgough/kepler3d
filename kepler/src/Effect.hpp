@@ -12,9 +12,12 @@ namespace kepler {
 
     /// An effect represents a shader program.
     class Effect : public std::enable_shared_from_this<Effect> {
-        ALLOW_MAKE_SHARED(Effect);
     public:
+        // Use one of the static create methods.
+        explicit Effect(ProgramHandle program);
         virtual ~Effect() noexcept;
+        Effect(const Effect&) = delete;
+        Effect& operator=(const Effect&) = delete;
 
         static ref<Effect> createFromFile(const char* vertexShaderPath, const char* fragmentShaderPath, const char* defines[] = nullptr, size_t defineCount = 0);
         static ref<Effect> createFromSource(const std::string& vertSource, const std::string& fragSource, const char* defines[] = nullptr, size_t defineCount = 0);
@@ -48,11 +51,7 @@ namespace kepler {
 
         void setTexture(const Uniform* uniform, ref<Texture> texture) const noexcept;
 
-    public:
-        Effect(const Effect&) = delete;
-        Effect& operator=(const Effect&) = delete;
     private:
-        explicit Effect(ProgramHandle program);
 
         void saveAttribLocation(const GLchar* attribName, GLint location);
         void queryAttributes();

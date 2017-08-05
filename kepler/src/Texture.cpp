@@ -56,7 +56,7 @@ namespace kepler {
         if (image == nullptr) {
             return nullptr;
         }
-        auto texture = MAKE_SHARED(Texture, Type::TEXTURE_2D);
+        auto texture = std::make_shared<Texture>(Type::TEXTURE_2D);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glGenTextures(1, &texture->_handle);
         glBindTexture(GL_TEXTURE_2D, texture->_handle);

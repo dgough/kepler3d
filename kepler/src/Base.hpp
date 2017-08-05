@@ -2,15 +2,6 @@
 
 #include <memory>
 
-// Macros for creating ref counted objects. Prefer to use std::make_shard when available.
-#if defined(_MSC_VER) && _MSC_VER >= 1800
-#define ALLOW_MAKE_SHARED(type) friend class ::std::_Ref_count_obj<type>;
-#define MAKE_SHARED(type, ...) std::make_shared<type>(##__VA_ARGS__)
-#else
-#define ALLOW_MAKE_SHARED(x)
-#define MAKE_SHARED(type, ...) std::shared_ptr<type>(new type(##__VA_ARGS__))
-#endif
-
 namespace kepler {
 
     class Node;

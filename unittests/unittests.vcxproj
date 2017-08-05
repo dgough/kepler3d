@@ -112,7 +112,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>gtest.lib;opengl32.lib;glfw3.lib;libb64.lib;soil2-debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gtest.lib;opengl32.lib;glfw3.lib;soil2-debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -150,11 +150,12 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>gtest.lib;opengl32.lib;glfw3.lib;libb64.lib;soil2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gtest.lib;opengl32.lib;glfw3.lib;soil2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\main_tests.cpp" />
+    <ClCompile Include="src\test_BoundingBox.cpp" />
     <ClCompile Include="src\test_filesystem.cpp" />
     <ClCompile Include="src\test_fonts.cpp" />
     <ClCompile Include="src\test_gltf.cpp" />

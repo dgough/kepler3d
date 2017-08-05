@@ -146,6 +146,7 @@
     <ClCompile Include="src\BaseGL.cpp" />
     <ClCompile Include="src\BaseMath.cpp" />
     <ClCompile Include="src\BmpFont.cpp" />
+    <ClCompile Include="src\BoundingBox.cpp" />
     <ClCompile Include="src\Button.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Component.cpp" />
@@ -169,6 +170,7 @@
     <ClCompile Include="src\MeshUtils.cpp" />
     <ClCompile Include="src\Node.cpp" />
     <ClCompile Include="src\OrbitCamera.cpp" />
+    <ClCompile Include="src\Performance.cpp" />
     <ClCompile Include="src\Rectangle.cpp" />
     <ClCompile Include="src\RenderState.cpp" />
     <ClCompile Include="src\Sampler.cpp" />
@@ -194,6 +196,7 @@
     <ClInclude Include="src\BaseGL.hpp" />
     <ClInclude Include="src\BaseMath.hpp" />
     <ClInclude Include="src\BmpFont.hpp" />
+    <ClInclude Include="src\BoundingBox.hpp" />
     <ClInclude Include="src\Button.hpp" />
     <ClInclude Include="src\Camera.hpp" />
     <ClInclude Include="src\Component.hpp" />
@@ -218,6 +221,7 @@
     <ClInclude Include="src\MeshUtils.hpp" />
     <ClInclude Include="src\Node.hpp" />
     <ClInclude Include="src\OrbitCamera.hpp" />
+    <ClInclude Include="src\Performance.hpp" />
     <ClInclude Include="src\Platform.hpp" />
     <ClInclude Include="src\Rectangle.hpp" />
     <ClInclude Include="src\RenderState.hpp" />
@@ -234,7 +238,6 @@
     <ClInclude Include="src\VertexBuffer.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\cpp.hint" />
     <None Include="src\Rectangle.inl" />
     <None Include="src\Transform.inl" />
   </ItemGroup>

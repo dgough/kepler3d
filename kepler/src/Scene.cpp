@@ -11,7 +11,7 @@ namespace kepler {
     }
 
     ref<Scene> Scene::create() {
-        return MAKE_SHARED(Scene);
+        return std::make_shared<Scene>();
     }
 
     void Scene::addNode(ref<Node>& node) {

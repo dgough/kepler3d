@@ -7,7 +7,6 @@ namespace kepler {
 
     /// The camera class represents an orthographic or perspective camera.
     class Camera : public Component, public Node::Listener, public std::enable_shared_from_this<Camera> {
-        ALLOW_MAKE_SHARED(Camera);
     public:
 
         /// Camera types.
@@ -16,6 +15,10 @@ namespace kepler {
             ORTHOGRAPHIC = 2
         };
 
+        /// Perspective camera constructor. Use Camera::createPerspective() instead.
+        Camera(float fov, float aspectRatio, float near, float far);
+        /// Orthographic camera constructor. Use Camera::createOrthographic() instead.
+        Camera(float zoomX, float zoomY, float aspectRatio, float near, float far);
         virtual ~Camera() noexcept;
 
         /// Creates a perspective camera.
@@ -58,11 +61,6 @@ namespace kepler {
     public:
         Camera(const Camera&) = delete;
         Camera& operator=(const Camera&) = delete;
-    private:
-        /// Perspective camera constructor.
-        Camera(float fov, float aspectRatio, float near, float far);
-        /// Orthographic camera constructor.
-        Camera(float zoomX, float zoomY, float aspectRatio, float near, float far);
 
     private:
         Camera::Type _type;

@@ -6,7 +6,6 @@ namespace kepler {
 
     /// Uncompressed image data.
     class Image {
-        ALLOW_MAKE_SHARED(Image);
     public:
         enum class Format {
             L = 0x1909, ///< Luminance
@@ -15,7 +14,11 @@ namespace kepler {
             RGBA = 0x1908
         };
 
+        /// Use one of the static create methods instead.
+        Image(int width, int height, Format format, unsigned char* data);
         virtual ~Image() noexcept;
+        Image(const Image&) = delete;
+        Image& operator=(const Image&) = delete;
 
         /// Creates an Image from a file.
         static ref<Image> createFromFile(const char* path, bool flipY = false);
@@ -55,11 +58,6 @@ namespace kepler {
         /// Returns the data type. Currently always GL_UNSIGNED_BYTE.
         unsigned int type() const;
 
-    public:
-        Image(const Image&) = delete;
-        Image& operator=(const Image&) = delete;
-    private:
-        Image(int width, int height, Format format, unsigned char* data);
     private:
         int _width;
         int _height;

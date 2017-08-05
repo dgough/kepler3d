@@ -196,7 +196,7 @@ static ref<Material> createCubeMaterial() {
     if (effect) {
         auto tech = Technique::create(effect);
         tech->setAttribute("a_position", AttributeSemantic::POSITION);
-        tech->setSemanticUniform("mvp", "mvp", MaterialParameter::Semantic::MODELVIEWPROJECTION);
+        tech->setSemanticUniform("mvp", MaterialParameter::Semantic::MODELVIEWPROJECTION);
         auto f = [](Effect& effect, const Uniform* uniform) {effect.setValue(uniform, _lightColor);};
         tech->setUniform("color", MaterialParameter::create("color", f));
 
@@ -230,9 +230,9 @@ static ref<Material> createPointLightMaterial(const char* texture_path, ref<Node
     tech->setAttribute("a_normal", AttributeSemantic::NORMAL);
     tech->setAttribute("a_texcoord0", AttributeSemantic::TEXCOORD_0);
 
-    tech->setSemanticUniform("mvp", "mvp", MaterialParameter::Semantic::MODELVIEWPROJECTION);
-    tech->setSemanticUniform("modelView", "modelView", MaterialParameter::Semantic::MODELVIEW);
-    tech->setSemanticUniform("normalMatrix", "normalMatrix", MaterialParameter::Semantic::MODELVIEWINVERSETRANSPOSE);
+    tech->setSemanticUniform("mvp", MaterialParameter::Semantic::MODELVIEWPROJECTION);
+    tech->setSemanticUniform("modelView", MaterialParameter::Semantic::MODELVIEW);
+    tech->setSemanticUniform("normalMatrix", MaterialParameter::Semantic::MODELVIEWINVERSETRANSPOSE);
 
     auto lightPos = MaterialParameter::create("lightPos", 
         [lightNode](Effect& effect, const Uniform* uniform) {

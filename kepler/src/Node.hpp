@@ -113,7 +113,7 @@ namespace kepler {
         const char* namePtr() const;
 
         /// Returns the name of this node.
-        const std::string& name() const;
+        std::string name() const;
 
         /// Sets this node's name.
         /// Node names are not unique.
@@ -311,7 +311,7 @@ namespace kepler {
         void notifyTransformChanged() const;
 
     private:
-        std::string _name;
+        std::unique_ptr<std::string> _name;
         std::weak_ptr<Node> _parent;
         NodeList _children;
         ComponentList _components;

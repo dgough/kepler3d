@@ -5,7 +5,7 @@
 namespace kepler {
 
     ref<Material> Material::create() {
-        return MAKE_SHARED(Material);
+        return std::make_shared<Material>();
     }
 
     ref<Material> Material::create(ref<Technique> technique) {

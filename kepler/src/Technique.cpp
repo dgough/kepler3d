@@ -12,7 +12,7 @@ namespace kepler {
     }
 
     ref<Technique> Technique::create() {
-        return MAKE_SHARED(Technique);
+        return std::make_shared<Technique>();
     }
 
     ref<Technique> Technique::create(ref<Effect> effect) {
@@ -55,10 +55,10 @@ namespace kepler {
         updateUniform(*param, glslName);
     }
 
-    void Technique::setSemanticUniform(const std::string& glslName, const std::string& paramName, MaterialParameter::Semantic semantic) {
-        auto p = MaterialParameter::create(paramName);
+    void Technique::setSemanticUniform(const std::string& glslName, MaterialParameter::Semantic semantic) {
+        auto p = MaterialParameter::create(glslName);
         p->setSemantic(semantic);
-        _semantics[paramName] = p;
+        _semantics[glslName] = p;
         updateUniform(*p, glslName);
     }
 

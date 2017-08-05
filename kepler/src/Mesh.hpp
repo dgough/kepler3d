@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base.hpp"
+#include "BoundingBox.hpp"
 
 #include <vector>
 
@@ -36,6 +37,8 @@ namespace kepler {
         /// Returns the number of MeshPrimitives held by this Mesh.
         size_t primitiveCount() const;
 
+        const BoundingBox& Mesh::boundingBox() const;
+
     public:
         Mesh(const Mesh&) = delete;
         Mesh& operator=(const Mesh&) = delete;
@@ -43,5 +46,6 @@ namespace kepler {
     private:
         std::vector<ref<MeshPrimitive>> _primitives;
         std::unique_ptr<std::string> _name;
+        BoundingBox _box;
     };
 }

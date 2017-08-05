@@ -1,7 +1,10 @@
 #version 330 core
 precision mediump float;
 
+#ifdef HAS_BASE_COLOR_MAP
 uniform sampler2D s_baseMap;
+#endif
+
 uniform vec3 lightPos;
 uniform vec3 lightColor;
 uniform vec3 ambient;
@@ -14,9 +17,17 @@ uniform float quadraticAttenuation;
 
 uniform vec4 baseColorFactor;
 
+vec2 u_MetallicRoughness;
+
 in vec3 v_fragPos;
+
+//#ifdef HAS_NORMALS
 in vec3 v_normal;
+//#endif
+
+#ifdef HAS_UV
 in vec2 v_texcoord0;
+#endif
 
 layout(location = 0) out vec4 fragColor;
 
@@ -48,7 +59,7 @@ void main() {
 
     vec3 color = (ambient + diffuse + specular) * vec3(baseColorFactor);
 
-    #ifdef HAS_UV
+    #if defined(HAS_UV) && defined(HAS_BASE_COLOR_MAP)
         color *= vec3(texture(s_baseMap, v_texcoord0));
     #endif
 

@@ -7,7 +7,6 @@ namespace kepler {
 
     class Texture {
         friend class Sampler;
-        ALLOW_MAKE_SHARED(Texture);
     public:
 
         enum class Type {
@@ -16,7 +15,11 @@ namespace kepler {
             TEXTURE_2D_ARRAY = GL_TEXTURE_2D_ARRAY,
             TEXTURE_CUBE_MAP = GL_TEXTURE_CUBE_MAP
         };
-
+        
+        // Use Texture::create2D() to create a texture.
+        explicit Texture(Type type);
+        Texture(const Texture&) = delete;
+        Texture& operator=(const Texture&) = delete;
         void bind(GLenum textureUnit) const noexcept;
 
         Type type() const;
@@ -39,11 +42,7 @@ namespace kepler {
         static ref<Texture> create2D(Image* image, int internalFormat, bool generateMipmaps = false);
 
         // TODO immutable 2D texture
-    public:
-        Texture(const Texture&) = delete;
-        Texture& operator=(const Texture&) = delete;
-    private:
-        explicit Texture(Type type);
+        
     private:
         TextureHandle _handle;
         Type _type;

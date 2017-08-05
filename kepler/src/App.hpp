@@ -24,7 +24,7 @@ namespace kepler {
         /// @param[in] key      Keyboard key (See the Key enum).
         /// @param[in] scancode Scancode of the key.
         /// @param[in] action   RELEASE, PRESS or REPEAT.
-        /// @param[in] mods     Modifier keys.
+        /// @param[in] mods     Modifier keys. (MOD_SHIFT, MOD_CTRL, MOD_ALT, MOD_SUPER)
         void keyEvent(int key, int scancode, int action, int mods);
 
         /// Mouse movement event. Top left is (0, 0).

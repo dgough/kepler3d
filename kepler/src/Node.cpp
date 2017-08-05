@@ -14,27 +14,28 @@ namespace kepler {
 
     Node::Node(const char* name) : _dirtyBits(0) {
         if (name != nullptr) {
-            _name.assign(name);
+            setName(name);
         }
     }
 
     Node::Node(const std::string& name)
-        : _name(name), _dirtyBits(0) {
+        : _dirtyBits(0) {
+        setName(name);
     }
 
     Node::~Node() noexcept {
     }
 
     ref<Node> Node::create() {
-        return MAKE_SHARED(Node);
+        return std::make_shared<Node>();
     }
 
     ref<Node> Node::create(const char* name) {
-        return MAKE_SHARED(Node, name);
+        return std::make_shared<Node>(name);
     }
 
     ref<Node> Node::create(const std::string& name) {
-        return MAKE_SHARED(Node, name);
+        return std::make_shared<Node>(name);
     }
 
     ref<Node> Node::createChild(const std::string& name) {
@@ -145,15 +146,20 @@ namespace kepler {
     }
 
     const char* Node::namePtr() const {
-        return _name.c_str();
+        return _name ? _name->c_str() : nullptr;
     }
 
-    const std::string& Node::name() const {
-        return _name;
+    std::string Node::name() const {
+        return _name ? *_name : std::string();
     }
 
     void Node::setName(const std::string& name) {
-        _name.assign(name);
+        if (_name) {
+            _name->assign(name);
+        }
+        else {
+            _name = std::make_unique<std::string>(name);
+        }
     }
 
     ref<Node> Node::childAt(size_t index) const {
