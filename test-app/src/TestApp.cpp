@@ -90,7 +90,9 @@ void TestApp::start() {
         app()->setShouldClose(true);
         return;
     }
-    changeBoxColor(*_scene);
+    if (_scene) {
+        changeBoxColor(*_scene);
+    }
 }
 
 void TestApp::update() {
@@ -102,12 +104,11 @@ void TestApp::render() {
     g_deltaTime = static_cast<float>(deltaTime());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    static auto truck = _scene->findFirstNodeByName("Cesium_Milk_Truck");
-    if (truck) {
-        truck->rotateY(g_deltaTime * PI_OVER_2);
-    }
-
     if (_scene) {
+        static auto truck = _scene->findFirstNodeByName("Cesium_Milk_Truck");
+        if (truck) {
+            truck->rotateY(g_deltaTime * PI_OVER_2);
+        }
         _scene->visit(renderAll);
     }
 
