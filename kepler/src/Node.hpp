@@ -73,13 +73,7 @@ namespace kepler {
         ref<Node> root();
 
         /// Returns the scene that this node belongs to. May be null.
-        ref<Scene> scene() const;
-
-        /// Sets this node's scene. 
-        /// Normally you shouldn't used this method but it is handy when a node doesn't 
-        /// belong to a scene but it still needs access to the scene, like getting the camera.
-        /// @param[in] scene The scene; may be null.
-        void setScene(ref<Scene> scene);
+        Scene* scene() const;
 
         /// Finds the first descendant node that matches the given name.
         /// Immediate children are checked first before recursing.
@@ -298,7 +292,7 @@ namespace kepler {
         /// Removes the child from the list of children but doesn't update its parent or scene.
         static void removeFromList(NodeList& children, const ref<Node> child);
 
-        void setAllChildrenScene(const ref<Scene>& scene);
+        void setAllChildrenScene(Scene* scene);
 
         void setParentInner(const ref<Node>& parent);
         void clearParent();
@@ -315,7 +309,7 @@ namespace kepler {
         std::weak_ptr<Node> _parent;
         NodeList _children;
         ComponentList _components;
-        std::weak_ptr<Scene> _scene;
+        Scene* _scene = nullptr;
         std::unique_ptr<NodeListenerList> _listeners;
 
         mutable Transform _local;

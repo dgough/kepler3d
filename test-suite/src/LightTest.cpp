@@ -18,6 +18,7 @@
 #include <Image.hpp>
 #include <Sampler.hpp>
 #include <Logging.hpp>
+#include <Performance.hpp>
 
 #include <iostream>
 
@@ -77,6 +78,9 @@ void LightTest::start() {
         floor->rotateX(-PI_OVER_2);
         floor->scale(20.f, 20.f, 1.f);
     }
+    if (_scene) {
+        _scene->addNode(_compass.node());
+    }
 }
 
 void LightTest::update() {
@@ -104,7 +108,6 @@ void LightTest::render() {
         _font->drawText("[r,g,b,w] - change light color", 0.f, y += lineHeight, _lightColor);
         _font->drawText("[space] - pause", 0.f, y += lineHeight);
     }
-    _compass.draw();
 }
 
 void LightTest::keyEvent(int key, int scancode, int action, int mods) {
@@ -130,6 +133,15 @@ void LightTest::keyEvent(int key, int scancode, int action, int mods) {
             break;
         case KEY_F:
             _orbitCamera.setZoom(10.f);
+            break;
+        case KEY_1:
+            ProfileBlock::printTime(0);
+            break;
+        case KEY_2:
+            ProfileBlock::printTime(1);
+            break;
+        case KEY_3:
+            ProfileBlock::printTime(2);
             break;
         }
     }
@@ -169,8 +181,7 @@ void LightTest::loadSceneFromFile(const char* path) {
     _scene = loader.loadSceneFromFile(path);
 
     if (_scene) {
-        _orbitCamera.attach(_scene);
-        _compass.setScene(_scene);
+        _orbitCamera.attach(_scene.get());
     }
     g_text.assign(path);
 }

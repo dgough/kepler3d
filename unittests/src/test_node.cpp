@@ -76,18 +76,18 @@ TEST(node, get_root_node_2) {
 
     std::weak_ptr<Node> b = root->findFirstNodeByName("B");
 
-    EXPECT_TRUE(n->root() == root);
+    EXPECT_EQ(root, n->root());
     EXPECT_TRUE(n->parent() == b.lock());
     root = nullptr;
-    EXPECT_TRUE(n->root() == n);
-    EXPECT_TRUE(n->parent() == nullptr);
+    EXPECT_EQ(n, n->root());
+    EXPECT_EQ(nullptr, n->parent());
 }
 
 TEST(node, initializer_list) {
     auto root = Node::create("root");
     constexpr size_t count = 5;
     root->createChildren({ "1", "2", "3", "4", "5" });
-    EXPECT_EQ(root->childCount(), count);
+    EXPECT_EQ(count, root->childCount());
     for (size_t i = 0; i < count; ++i) {
         const std::string& name = root->childAt(i)->name();
         char ch = '1' + (char)i;

@@ -4,11 +4,12 @@
 #include <Camera.hpp>
 
 using namespace kepler;
+using std::vector;
 
 static void expectAllChildrenInScene(ref<Node>& node, ref<Scene>& scene) {
     for (size_t i = 0; i < node->childCount(); ++i) {
         auto& child = node->childAt(i);
-        EXPECT_EQ(child->scene(), scene);
+        EXPECT_EQ(child->scene(), scene.get());
         EXPECT_EQ(child->parent(), node);
         expectAllChildrenInScene(child, scene);
     }
@@ -23,7 +24,7 @@ TEST(scene, create_child) {
     auto scene = Scene::create();
     auto n1 = scene->createChild();
     EXPECT_EQ(scene->childCount(), 1);
-    EXPECT_EQ(n1->scene(), scene);
+    EXPECT_EQ(n1->scene(), scene.get());
     EXPECT_EQ(n1->parent(), nullptr);
     EXPECT_EQ(n1->root(), n1);
 
@@ -31,7 +32,7 @@ TEST(scene, create_child) {
     auto n2 = scene->createChild(nodeName);
     EXPECT_EQ(scene->childCount(), 2);
     EXPECT_EQ(n2->name(), nodeName);
-    EXPECT_EQ(n1->scene(), scene);
+    EXPECT_EQ(n1->scene(), scene.get());
     EXPECT_EQ(n2->parent(), nullptr);
     EXPECT_EQ(n2->root(), n2);
 }
@@ -45,7 +46,7 @@ TEST(scene, add_child) {
     (*root)[1]->createChildren({ "C1", "C2", "C3" });
 
     scene->addNode(root);
-    EXPECT_EQ(root->scene(), scene);
+    EXPECT_EQ(root->scene(), scene.get());
     expectAllChildrenInScene(root, scene);
 }
 
@@ -57,7 +58,7 @@ TEST(scene, add_child_from_other_scene) {
     s2->addNode(node);
     EXPECT_EQ(s1->childCount(), 0);
     EXPECT_EQ(s2->childCount(), 1);
-    EXPECT_EQ(s2, node->scene());
+    EXPECT_EQ(s2.get(), node->scene());
 }
 
 TEST(scene, find_first) {
@@ -194,6 +195,31 @@ TEST(scene, move_nodes_from) {
     EXPECT_EQ(a->childAt(2)->name(), "A3");
 
     a->visit([a](Node* node) {
-        EXPECT_EQ(node->scene(), a);
+        EXPECT_EQ(node->scene(), a.get());
     });
+}
+
+TEST(scene, delete_scene) {
+    auto scene = Scene::create();
+    scene->createChildren({"A1", "A2", "A3"});
+    scene->childAt(0)->createChildren({ "B1", "B2" });
+    scene->childAt(1)->createChildren({ "C1", "C2", "C3" });
+    scene->childAt(2)->createChildren({ "D1" });
+    scene->childAt(2)->childAt(0)->createChildren({"W1", "W2", "W3"});
+
+    vector<ref<Node>> nodes;
+    for (size_t i = 0; i < scene->childCount(); ++i) {
+        nodes.emplace_back(scene->childAt(i));
+    }
+    scene->visit([&nodes](Node* node) {
+        nodes.push_back(node->shared_from_this());
+    });
+    scene.reset();
+    for (auto& node : nodes) {
+        if (node->scene() != nullptr) {
+            EXPECT_EQ(nullptr, node->scene());
+        }
+    }
+
+
 }

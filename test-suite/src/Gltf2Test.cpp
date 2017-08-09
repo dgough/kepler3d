@@ -11,6 +11,7 @@
 #include <BmpFont.hpp>
 #include <Performance.hpp>
 #include <Mesh.hpp>
+#include <Scene.hpp>
 
 #include <iostream>
 #include <algorithm>
@@ -114,7 +115,6 @@ void Gltf2Test::render() {
     if (_font) {
         _font->drawText(g_text.c_str(), 0.f, 0.f);
     }
-    _compass.draw();
 }
 
 void Gltf2Test::keyEvent(int key, int scancode, int action, int mods) {
@@ -199,8 +199,8 @@ void Gltf2Test::loadSceneFromFile(const char* path) {
     _scene = loader.loadSceneFromFile(path);
 
     if (_scene) {
-        _orbitCamera.attach(_scene);
-        _compass.setScene(_scene);
+        _orbitCamera.attach(_scene.get());
+        _scene->addNode(_compass.node());
     }
     g_text.assign(path);
     calcBoundingBox();
@@ -220,7 +220,13 @@ void Gltf2Test::calcBoundingBox() {
         _scene->visit([this](Node* node) {
             if (auto meshRenderer = node->component<MeshRenderer>()) {
                 if (auto mesh = meshRenderer->mesh()) {
-                    _box.merge(mesh->boundingBox());
+                    const auto& box = mesh->boundingBox();
+                    if (_box.empty()) {
+                        _box = box;
+                    }
+                    else {
+                        _box.merge(box);
+                    }
                 }
             }
         });

@@ -8,6 +8,10 @@ namespace kepler {
     Scene::Scene() {
     }
     Scene::~Scene() noexcept {
+        for (auto& node : _children) {
+            node->_scene = nullptr;
+            node->setAllChildrenScene(nullptr);
+        }
     }
 
     ref<Scene> Scene::create() {
@@ -20,20 +24,19 @@ namespace kepler {
         if (ref<Node> parent = node->_parent.lock()) {
             Node::removeFromList(parent->_children, node);
         }
-        else if (auto oldScene = node->_scene.lock()) {
+        else if (auto oldScene = node->_scene) {
             oldScene->removeChild(node);
         }
         node->_parent.reset();
-        ref<Scene> scene = shared_from_this();
-        node->_scene = scene;
+        node->_scene = this;
         _children.push_back(node);
-        node->setAllChildrenScene(scene);
+        node->setAllChildrenScene(this);
         node->parentChanged();
     }
 
     ref<Node> Scene::createChild(const std::string& name) {
         auto node = Node::create(name);
-        node->_scene = shared_from_this();
+        node->_scene = this;
         _children.push_back(node);
         return node;
     }

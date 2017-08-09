@@ -31,6 +31,7 @@
 #include <Logging.hpp>
 #include <StringUtils.hpp>
 #include <MeshUtils.hpp>
+#include <Performance.hpp>
 
 #include <iostream>
 
@@ -61,6 +62,11 @@ static void renderAll(Node* node) {
 }
 static void changeBoxColor(const Scene& scene);
 static ref<Mesh> createCubeMesh();
+static void printCursor() {
+    double x, y;
+    app()->cursorPosition(&x, &y);
+    std::clog << "x=" << x << " y=" << y << std::endl;
+}
 
 TestApp::TestApp() {
 }
@@ -78,9 +84,8 @@ void TestApp::start() {
     if (_scene) {
         _scene->addNode(_firstPerson->rootNode());
         _scene->setActiveCamera(_firstPerson->camera());
+        _compass = std::make_unique<AxisCompass>(_scene.get());
     }
-
-    _compass = std::make_unique<AxisCompass>(_scene);
 
     GLTF2Loader::printTotalTime();
 
@@ -128,7 +133,6 @@ void TestApp::render() {
     if (g_showText) {
         drawText();
     }
-    _compass->draw();
 }
 
 void TestApp::keyEvent(int key, int scancode, int action, int mods) {
@@ -161,12 +165,17 @@ void TestApp::keyEvent(int key, int scancode, int action, int mods) {
             changeBoxColor(*_scene);
             break;
         case KEY_U:
-        {
-            double x, y;
-            app()->cursorPosition(&x, &y);
-            std::clog << "x=" << x << " y=" << y << std::endl;
+            printCursor();
             break;
-        }
+        case KEY_1:
+            ProfileBlock::printTime(0);
+            break;
+        case KEY_2:
+            ProfileBlock::printTime(1);
+            break;
+        case KEY_3:
+            ProfileBlock::printTime(2);
+            break;
         default:
             break;
         }

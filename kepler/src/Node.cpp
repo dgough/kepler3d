@@ -4,6 +4,7 @@
 #include "Camera.hpp"
 #include "DrawableComponent.hpp"
 #include "Logging.hpp"
+#include "Performance.hpp"
 
 #include <algorithm>
 
@@ -24,6 +25,10 @@ namespace kepler {
     }
 
     Node::~Node() noexcept {
+        for (auto& node : _children) {
+            //node->_parent = nullptr;
+            node->_parent.reset();
+        }
     }
 
     ref<Node> Node::create() {
@@ -120,12 +125,8 @@ namespace kepler {
         return shared_from_this();
     }
 
-    ref<Scene> Node::scene() const {
-        return _scene.lock();
-    }
-
-    void Node::setScene(ref<Scene> scene) {
-        _scene = scene;
+    Scene* Node::scene() const {
+        return _scene;
     }
 
     ref<Node> Node::findFirstNodeByName(const std::string& name, bool recursive) const {
@@ -317,7 +318,8 @@ namespace kepler {
     }
 
     const glm::mat4& Node::viewMatrix() const {
-        if (ref<Scene> scene = _scene.lock()) {
+        ProfileBlock p(0);
+        if (auto scene = _scene) {
             auto camera = scene->activeCamera();
             if (camera) {
                 return camera->viewMatrix();
@@ -334,7 +336,7 @@ namespace kepler {
     }
 
     const glm::mat4& Node::projectionMatrix() const {
-        if (ref<Scene> scene = _scene.lock()) {
+        if (auto scene = _scene) {
             auto camera = scene->activeCamera();
             if (camera) {
                 return camera->projectionMatrix();
@@ -355,7 +357,6 @@ namespace kepler {
             return _world;
         }
         _dirtyBits &= ~WORLD_DIRTY;
-
         if (auto parent = _parent.lock()) {
             const Transform& parentWorldTransform = parent->worldTransform();
             _world = _local;
@@ -400,7 +401,7 @@ namespace kepler {
     }
 
     const glm::mat4 Node::modelViewProjectionMatrix() const {
-        if (ref<Scene> scene = _scene.lock()) {
+        if (auto scene = _scene) {
             auto camera = scene->activeCamera();
             if (camera) {
                 return camera->viewProjectionMatrix() * worldMatrix();
@@ -512,7 +513,7 @@ namespace kepler {
         children.erase(std::remove(children.begin(), children.end(), child), children.end());
     }
 
-    void Node::setAllChildrenScene(const ref<Scene>& scene) {
+    void Node::setAllChildrenScene(Scene* scene) {
         for (auto child : _children) {
             child->_scene = scene;
             child->setAllChildrenScene(scene);
@@ -526,7 +527,7 @@ namespace kepler {
 
     void Node::clearParent() {
         _parent.reset();
-        _scene.reset();
+        _scene = nullptr;
         parentChanged();
     }
 
