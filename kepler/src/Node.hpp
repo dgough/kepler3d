@@ -24,6 +24,8 @@ namespace kepler {
         Node();
         explicit Node(const char* name);
         explicit Node(const std::string& name);
+        Node(const Node&) = delete;
+        Node& operator=(const Node&) = delete;
         virtual ~Node() noexcept;
 
         /// Creates a node and returns a std::shared_ptr to it.
@@ -56,8 +58,8 @@ namespace kepler {
         /// This does not include grandchildren.
         void removeChild(const ref<Node>& child);
 
-        /// Returns a reference to the parent node. May be null.
-        ref<Node> parent() const;
+        /// Returns a pointer to the parent node. May be null.
+        Node* parent() const;
 
         /// Returns true if this node has a parent; false otherwise.
         bool hasParent() const;
@@ -70,7 +72,7 @@ namespace kepler {
 
         /// Returns the root node.
         /// This node will be the root node if it doesn't have a parent.
-        ref<Node> root();
+        Node* root();
 
         /// Returns the scene that this node belongs to. May be null.
         Scene* scene() const;
@@ -280,21 +282,17 @@ namespace kepler {
         /// Returns an iterator referring to the past-the-end child (not the last child).
         Iterator end() const;
 
-    public:
-        Node(const Node&) = delete;
-        Node& operator=(const Node&) = delete;
-
     private:
         using NodeListenerList = std::vector<std::weak_ptr<Listener>>;
 
         static void removeChild(NodeList& children, size_t index);
 
         /// Removes the child from the list of children but doesn't update its parent or scene.
-        static void removeFromList(NodeList& children, const ref<Node> child);
+        static void removeFromList(NodeList& children, const ref<Node>& child);
 
         void setAllChildrenScene(Scene* scene);
 
-        void setParentInner(const ref<Node>& parent);
+        void setParentInner(Node* parent);
         void clearParent();
         void parentChanged();
 
@@ -306,7 +304,7 @@ namespace kepler {
 
     private:
         std::unique_ptr<std::string> _name;
-        std::weak_ptr<Node> _parent;
+        Node* _parent = nullptr;
         NodeList _children;
         ComponentList _components;
         Scene* _scene = nullptr;

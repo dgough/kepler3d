@@ -19,7 +19,7 @@ TEST(node, initial_node) {
     EXPECT_EQ(node->childCount(), 0);
     EXPECT_EQ(node->hasParent(), false);
     EXPECT_EQ(node->parent(), nullptr);
-    EXPECT_EQ(node->root(), node);
+    EXPECT_EQ(node->root(), node.get());
     EXPECT_EQ(node->scene(), nullptr);
     EXPECT_STREQ(node->namePtr(), name.c_str());
     EXPECT_EQ(node->name(), name);
@@ -47,23 +47,30 @@ TEST(node, add_nullptr) {
 TEST(node, get_root_node) {
     auto root = Node::create("Root");
 
-    auto n = root;
+    auto node = root;
     ref<Node> mid = nullptr;
     constexpr size_t len = 10;
     for (size_t i = 0; i < len; ++i) {
-        n = n->createChild();
+        node = node->createChild();
         if (i == len / 2) {
-            mid = n;
+            mid = node;
         }
     }
     mid->setName("mid");
-    auto leaf = n;
-    while (n != root) {
-        EXPECT_EQ(n->root(), root);
-        n = n->parent();
+    auto leaf = node;
+    while (node.get() != root.get()) {
+        ASSERT_NE(nullptr, node);
+        EXPECT_EQ(node->root(), root.get());
+        auto parent = node->parent();
+        if (parent != nullptr) {
+            node = parent->shared_from_this();
+        }
+        else {
+            node = ref<Node>();
+        }
     }
     mid->removeFromParent();
-    EXPECT_EQ(leaf->root(), mid);
+    EXPECT_EQ(leaf->root(), mid.get());
 
     std::weak_ptr<Node> rootWeak = root;
     root.reset();
@@ -76,11 +83,22 @@ TEST(node, get_root_node_2) {
 
     std::weak_ptr<Node> b = root->findFirstNodeByName("B");
 
-    EXPECT_EQ(root, n->root());
-    EXPECT_TRUE(n->parent() == b.lock());
+    EXPECT_EQ(root.get(), n->root());
+    EXPECT_TRUE(n->parent() == b.lock().get());
     root = nullptr;
-    EXPECT_EQ(n, n->root());
+    EXPECT_EQ(n.get(), n->root());
     EXPECT_EQ(nullptr, n->parent());
+}
+
+TEST(node, parent) {
+    auto node = Node::create();
+    EXPECT_EQ(nullptr, node->parent());
+    EXPECT_EQ(node.get(), node->root());
+    auto child = node->createChild("asdf");
+    EXPECT_EQ(node.get(), child->parent());
+    node.reset();
+    EXPECT_EQ(nullptr, child->parent());
+    EXPECT_EQ(child.get(), child->root());
 }
 
 TEST(node, initializer_list) {

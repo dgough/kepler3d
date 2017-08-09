@@ -21,13 +21,13 @@ namespace kepler {
     void Scene::addNode(ref<Node>& node) {
         if (node == nullptr) return;
 
-        if (ref<Node> parent = node->_parent.lock()) {
+        if (auto parent = node->_parent) {
             Node::removeFromList(parent->_children, node);
         }
         else if (auto oldScene = node->_scene) {
             oldScene->removeChild(node);
         }
-        node->_parent.reset();
+        node->_parent = nullptr;
         node->_scene = this;
         _children.push_back(node);
         node->setAllChildrenScene(this);

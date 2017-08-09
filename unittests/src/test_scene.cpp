@@ -10,7 +10,7 @@ static void expectAllChildrenInScene(ref<Node>& node, ref<Scene>& scene) {
     for (size_t i = 0; i < node->childCount(); ++i) {
         auto& child = node->childAt(i);
         EXPECT_EQ(child->scene(), scene.get());
-        EXPECT_EQ(child->parent(), node);
+        EXPECT_EQ(child->parent(), node.get());
         expectAllChildrenInScene(child, scene);
     }
 }
@@ -26,7 +26,7 @@ TEST(scene, create_child) {
     EXPECT_EQ(scene->childCount(), 1);
     EXPECT_EQ(n1->scene(), scene.get());
     EXPECT_EQ(n1->parent(), nullptr);
-    EXPECT_EQ(n1->root(), n1);
+    EXPECT_EQ(n1->root(), n1.get());
 
     const std::string nodeName("Node Name");
     auto n2 = scene->createChild(nodeName);
@@ -34,7 +34,7 @@ TEST(scene, create_child) {
     EXPECT_EQ(n2->name(), nodeName);
     EXPECT_EQ(n1->scene(), scene.get());
     EXPECT_EQ(n2->parent(), nullptr);
-    EXPECT_EQ(n2->root(), n2);
+    EXPECT_EQ(n2->root(), n2.get());
 }
 
 TEST(scene, add_child) {

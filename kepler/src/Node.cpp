@@ -26,8 +26,7 @@ namespace kepler {
 
     Node::~Node() noexcept {
         for (auto& node : _children) {
-            //node->_parent = nullptr;
-            node->_parent.reset();
+            node->_parent = nullptr;
         }
     }
 
@@ -45,11 +44,9 @@ namespace kepler {
 
     ref<Node> Node::createChild(const std::string& name) {
         std::unique_ptr<Node> p = nullptr;
-        auto size = sizeof(std::string);
-        auto pp = sizeof(p);
         ref<Node> node = create(name);
         _children.push_back(node);
-        node->setParentInner(shared_from_this());
+        node->_parent = this;
         node->_scene = _scene;
         return node;
     }
@@ -63,16 +60,16 @@ namespace kepler {
     void Node::addNode(const ref<Node>& child) {
         if (child == nullptr) return;
 
-        if (ref<Node> parent = child->_parent.lock()) {
+        if (auto parent = child->_parent) {
             // Do nothing if the node is already a child.
-            if (parent.get() == this) {
+            if (parent == this) {
                 return;
             }
             // Remove the node from its old parent.
             child->removeFromParent();
         }
         _children.push_back(child);
-        child->setParentInner(shared_from_this());
+        child->setParentInner(this);
         child->_scene = _scene;
     }
 
@@ -91,38 +88,36 @@ namespace kepler {
         }
     }
 
-    ref<Node> Node::parent() const {
-        return _parent.lock();
+    Node* Node::parent() const {
+        return _parent;
     }
 
     bool Node::hasParent() const {
-        return !_parent.expired();
+        return _parent != nullptr;
     }
 
-    void Node::setParent(const ref<Node>& newParent) {
+    void Node::setParent(const ref<Node>& newParent) { // TODO change this to Node*?
         removeFromParent();
         if (newParent) {
             newParent->_children.push_back(shared_from_this());
-            _parent = newParent;
+            _parent = newParent.get();
             _scene = newParent->_scene;
             parentChanged();
         }
     }
 
     void Node::removeFromParent() {
-        if (ref<Node> parent = _parent.lock()) {
+        if (auto parent = _parent) {
             parent->removeChild(shared_from_this());
         }
     }
 
-    ref<Node> Node::root() {
-        if (ref<Node> parent = _parent.lock()) {
-            while (!parent->_parent.expired()) {
-                parent = parent->_parent.lock();
-            }
-            return parent;
+    Node* Node::root() {
+        auto node = this;
+        while (node->_parent != nullptr) {
+            node = node->_parent;
         }
-        return shared_from_this();
+        return node;
     }
 
     Scene* Node::scene() const {
@@ -357,7 +352,7 @@ namespace kepler {
             return _world;
         }
         _dirtyBits &= ~WORLD_DIRTY;
-        if (auto parent = _parent.lock()) {
+        if (auto parent = _parent) {
             const Transform& parentWorldTransform = parent->worldTransform();
             _world = _local;
             _world.combineWithParent(parentWorldTransform);
@@ -509,7 +504,7 @@ namespace kepler {
         }
     }
 
-    void Node::removeFromList(NodeList& children, const ref<Node> child) {
+    void Node::removeFromList(NodeList& children, const ref<Node>& child) {
         children.erase(std::remove(children.begin(), children.end(), child), children.end());
     }
 
@@ -520,13 +515,13 @@ namespace kepler {
         }
     }
 
-    void Node::setParentInner(const ref<Node>& parent) {
+    void Node::setParentInner(Node* parent) {
         _parent = parent;
         parentChanged();
     }
 
     void Node::clearParent() {
-        _parent.reset();
+        _parent = nullptr;
         _scene = nullptr;
         parentChanged();
     }
