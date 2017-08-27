@@ -3,6 +3,7 @@
 #include "MeshPrimitive.hpp"
 #include "VertexBuffer.hpp"
 #include "IndexBuffer.hpp"
+#include "BoundingBox.hpp"
 #include "VertexAttributeAccessor.hpp"
 #include "IndexAccessor.hpp"
 
@@ -90,6 +91,25 @@ namespace kepler {
         prim->setAttribute(AttributeSemantic::POSITION, VertexAttributeAccessor::create(vbo, 3, GL_FLOAT, false, stride, 0, count));
         prim->setAttribute(AttributeSemantic::NORMAL, VertexAttributeAccessor::create(vbo, 3, GL_FLOAT, false, stride, 3 * sizeof(GLfloat), count));
         prim->setAttribute(AttributeSemantic::TEXCOORD_0, VertexAttributeAccessor::create(vbo, 2, GL_FLOAT, false, stride, 6 * sizeof(GLfloat), count));
+        return prim;
+    }
+
+    ref<MeshPrimitive> createWireframeBoxPrimitive(const BoundingBox& box) {
+        glm::vec3 corners[8];
+        box.corners(corners);
+        auto vbo = VertexBuffer::create(sizeof(corners), corners);
+        static constexpr GLsizei stride = 3 * sizeof(GLfloat);
+        static constexpr GLsizei count = 8;
+        auto prim = MeshPrimitive::create(MeshPrimitive::Mode::LINES);
+        prim->setAttribute(AttributeSemantic::POSITION, VertexAttributeAccessor::create(vbo, 3, GL_FLOAT, false, stride, 0, count));
+        static constexpr std::array<GLubyte, 24> indices = {
+            0,1, 1,2, 2,3, 0,3,
+            4,5, 5,6, 6,7, 4,7,
+            0,7, 3,4, 1,6, 2,5
+        };
+        auto indexBuffer = IndexBuffer::create(sizeof(indices), indices.data());
+        auto indexAccessor = IndexAccessor::create(indexBuffer, static_cast<GLsizei>(indices.size()), IndexAccessor::UNSIGNED_BYTE, 0);
+        prim->setIndices(indexAccessor);
         return prim;
     }
 

@@ -26,6 +26,7 @@ namespace kepler {
     class BmpFont;
     class DrawableComponent;
     class Button;
+    class BoundingBox;
 
     class App;
     class AppDelegate;

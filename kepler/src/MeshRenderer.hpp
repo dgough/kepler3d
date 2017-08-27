@@ -18,7 +18,11 @@ namespace kepler {
 
         void onNodeChanged(const ref<Node>& oldNode, const ref<Node>& newNode) override;
 
+        /// Returns the shared_ptr to the mesh.
         ref<Mesh> mesh() const;
+
+        /// Gets a pointer to the mesh.
+        void mesh(Mesh** mesh);
 
         const std::string& typeName() const override;
 

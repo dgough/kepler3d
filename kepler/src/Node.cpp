@@ -3,12 +3,19 @@
 #include "Scene.hpp"
 #include "Camera.hpp"
 #include "DrawableComponent.hpp"
+#include "MeshRenderer.hpp"
+#include "Mesh.hpp"
 #include "Logging.hpp"
 #include "Performance.hpp"
 
 #include <algorithm>
 
 namespace kepler {
+
+    static constexpr unsigned char WORLD_DIRTY = 1;
+    static constexpr unsigned char BOUNDS_DIRTY = 2;
+
+    static constexpr unsigned char ALL_DIRTY = WORLD_DIRTY | BOUNDS_DIRTY;
 
     Node::Node() {
     }
@@ -189,7 +196,7 @@ namespace kepler {
         _components.erase(it, _components.end());
     }
 
-    ref<DrawableComponent> Node::drawable() {
+    ref<DrawableComponent> Node::drawable() const {
         // TODO make this faster
         return component<DrawableComponent>();
     }
@@ -205,12 +212,12 @@ namespace kepler {
 
     void Node::translate(const glm::vec3& translation) {
         _local.translate(translation);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::translate(float x, float y, float z) {
         _local.translate(x, y, z);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::translateX(float x) {
@@ -227,52 +234,52 @@ namespace kepler {
 
     void Node::scale(const glm::vec3& scale) {
         _local.scale(scale);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::scale(float scale) {
         _local.scale(scale);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::scale(float x, float y, float z) {
         _local.scale(x, y, z);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::rotate(const glm::quat& rotation) {
         _local.rotate(rotation);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::rotateX(float angle) {
         _local.rotate(glm::angleAxis(angle, glm::vec3(1, 0, 0)));
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::rotateY(float angle) {
         _local.rotate(glm::angleAxis(angle, glm::vec3(0, 1, 0)));
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::rotateZ(float angle) {
         _local.rotate(glm::angleAxis(angle, glm::vec3(0, 0, 1)));
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::setTranslation(const glm::vec3& translation) {
         _local.setTranslation(translation);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::setTranslation(float x, float y, float z) {
         _local.setTranslation(x, y, z);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::setScale(const glm::vec3& scale) {
         _local.setScale(scale);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::setScale(float scale) {
@@ -281,26 +288,26 @@ namespace kepler {
 
     void Node::setScale(float x, float y, float z) {
         _local.setScale(x, y, z);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::setRotation(const glm::quat& rotation) {
         _local.setRotation(rotation);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::setRotationFromEuler(const glm::vec3& eulerAngles) {
         _local.setRotationFromEuler(eulerAngles);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::setRotationFromEuler(float pitch, float yaw, float roll) {
         _local.setRotationFromEuler(pitch, yaw, roll);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     Transform& Node::editLocalTransform() {
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
         return _local;
     }
 
@@ -463,20 +470,56 @@ namespace kepler {
 
     void Node::setLocalTransform(const Transform& transform) {
         _local = transform;
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::setLocalTransform(const glm::vec3& translation, const glm::quat& rotation, const glm::vec3& scale) {
         _local.set(translation, rotation, scale);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     bool Node::setLocalTransform(const glm::mat4& matrix) {
         if (_local.set(matrix)) {
-            setDirty(WORLD_DIRTY);
+            setDirty(ALL_DIRTY);
             return true;
         }
         return false;
+    }
+
+    const BoundingBox& Node::boundingBox() const {
+        if ((_dirtyBits & BOUNDS_DIRTY) == 0) {
+            return _box;
+        }
+        _dirtyBits &= ~BOUNDS_DIRTY;
+        bool empty = true;
+        // TODO add faster way of getting mesh
+        auto meshRenderer = component<MeshRenderer>();
+        if (meshRenderer) {
+            Mesh* mesh;
+            meshRenderer->mesh(&mesh);
+            if (mesh != nullptr) {
+                empty = false;
+                _box = mesh->boundingBox();
+            }
+        }
+        if (!empty) {
+            _box.transform(worldMatrix());
+            
+        }
+        // merge with children
+        for (const auto& child : _children) {
+            const auto& box = child->boundingBox();
+            if (!box.empty()) {
+                if (empty) {
+                    _box = box;
+                    empty = false;
+                }
+                else {
+                    _box.merge(box);
+                }
+            }
+        }
+        return _box;
     }
 
     void Node::addListener(std::shared_ptr<Listener> listener) {
@@ -509,7 +552,7 @@ namespace kepler {
     }
 
     void Node::setAllChildrenScene(Scene* scene) {
-        for (auto child : _children) {
+        for (const auto& child : _children) {
             child->_scene = scene;
             child->setAllChildrenScene(scene);
         }
@@ -527,7 +570,7 @@ namespace kepler {
     }
 
     void Node::parentChanged() {
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::setDirty(unsigned char dirtyBits) const {

@@ -36,6 +36,10 @@ namespace kepler {
         return _mesh;
     }
 
+    void MeshRenderer::mesh(Mesh** mesh) {
+        *mesh = _mesh.get();
+    }
+
     const std::string& MeshRenderer::typeName() const {
         return _typeName;
     }

@@ -27,7 +27,7 @@ private:
     void loadSceneFromFile(const char* path);
     void loadNextPath();
     void loadPrevPath();
-    void calcBoundingBox();
+    void calcBoundingBox(Scene* scene);
 
 private:
     bool _moveCamera;
@@ -36,4 +36,5 @@ private:
     AxisCompass _compass;
     OrbitCamera _orbitCamera;
     BoundingBox _box;
+    float _zoomMag = 1.0f;
 };

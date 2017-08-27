@@ -11,7 +11,7 @@ namespace kepler {
     class App {
     public:
         App();
-        App(int width, int height, bool fullscreen = false);
+        App(int width, int height, bool fullscreen);
         virtual ~App() noexcept;
 
         /// Sets the delegate that will receive callbacks.

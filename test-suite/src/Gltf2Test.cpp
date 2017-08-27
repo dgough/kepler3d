@@ -11,7 +11,11 @@
 #include <BmpFont.hpp>
 #include <Performance.hpp>
 #include <Mesh.hpp>
+#include <MeshPrimitive.hpp>
+#include <MeshUtils.hpp>
 #include <Scene.hpp>
+#include <Technique.hpp>
+#include <Material.hpp>
 
 #include <iostream>
 #include <algorithm>
@@ -21,8 +25,8 @@ using glm::vec3;
 
 static std::vector<const char*> g_paths{
     "../../glTF-Sample-Models/2.0/CesiumMilkTruck/glTF/CesiumMilkTruck.gltf",
-    "../../glTF-Sample-Models/2.0/Duck/glTF/Duck.gltf",
     "../../glTF-Sample-Models/2.0/Lantern/glTF/Lantern.gltf",
+    "../../glTF-Sample-Models/2.0/Duck/glTF/Duck.gltf",
     "../../glTF-Sample-Models/2.0/SciFiHelmet/glTF/SciFiHelmet.gltf",
     "../../glTF-Sample-Models/2.0/Box/glTF/Box.gltf",
     "../../glTF-Sample-Models/2.0/BoxAnimated/glTF/BoxAnimated.gltf",
@@ -62,6 +66,8 @@ static std::vector<const char*> g_paths{
 static size_t g_pathIndex = 0;
 
 static std::string g_text;
+
+ref<Material> createBoxMaterial();
 
 static const char* nextPath() {
     g_pathIndex = (g_pathIndex + 1) % g_paths.size();
@@ -167,7 +173,8 @@ void Gltf2Test::mouseButtonEvent(int button, int action, int mods) {
 }
 
 void Gltf2Test::scrollEvent(double xoffset, double yoffset) {
-    _orbitCamera.zoomOut(static_cast<float>(-yoffset));
+    float offset = static_cast<float>(yoffset) * _zoomMag * -0.5f;
+    _orbitCamera.zoomOut(offset);
 }
 
 void Gltf2Test::dropEvent(int count, const char** paths) {
@@ -183,7 +190,10 @@ void Gltf2Test::dropEvent(int count, const char** paths) {
 }
 
 void Gltf2Test::focus() {
-    _orbitCamera.setZoom(10.0f);
+    using std::max;
+    // account for near plane
+    float zoom = _zoomMag + 0.2f;
+    _orbitCamera.setZoom(zoom);
 }
 
 void Gltf2Test::loadSceneFromFile(const char* path) {
@@ -199,11 +209,11 @@ void Gltf2Test::loadSceneFromFile(const char* path) {
     _scene = loader.loadSceneFromFile(path);
 
     if (_scene) {
+        calcBoundingBox(_scene.get());
         _orbitCamera.attach(_scene.get());
         _scene->addNode(_compass.node());
     }
     g_text.assign(path);
-    calcBoundingBox();
 }
 
 void Gltf2Test::loadNextPath() {
@@ -214,21 +224,52 @@ void Gltf2Test::loadPrevPath() {
     loadSceneFromFile(prevPath());
 }
 
-void Gltf2Test::calcBoundingBox() {
+void Gltf2Test::calcBoundingBox(Scene* scene) {
     _box = BoundingBox();
-    if (_scene) {
-        _scene->visit([this](Node* node) {
-            if (auto meshRenderer = node->component<MeshRenderer>()) {
-                if (auto mesh = meshRenderer->mesh()) {
-                    const auto& box = mesh->boundingBox();
-                    if (_box.empty()) {
-                        _box = box;
-                    }
-                    else {
-                        _box.merge(box);
-                    }
+    if (scene) {
+        for (size_t i = 0; i < scene->childCount(); ++i) {
+            const auto& childBox = scene->childAt(i)->boundingBox();
+            if (!childBox.empty()) {
+                if (_box.empty()) {
+                    _box = childBox;
+                }
+                else {
+                    _box.merge(childBox);
                 }
             }
-        });
+        }
     }
+    auto v1 = glm::abs(_box.max);
+    auto v2 = glm::abs(_box.min);
+    auto v = vec3(std::max(v1.x, v2.x), std::max(v1.y, v2.y), std::max(v1.z, v2.z));
+    _zoomMag = std::sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
+
+    auto prim = createWireframeBoxPrimitive(_box);
+    auto material = createBoxMaterial();
+    if (prim && material) {
+        prim->setMaterial(material);
+        auto node = Node::create("box");
+        node->addComponent(MeshRenderer::create(Mesh::create(prim)));
+        scene->addNode(node);
+    }
+}
+
+ref<Material> createBoxMaterial() {
+    static constexpr char* VERT_PATH = "res/shaders/lamp.vert";
+    static constexpr char* FRAG_PATH = "res/shaders/lamp.frag";
+    auto effect = Effect::createFromFile(VERT_PATH, FRAG_PATH);
+    if (effect) {
+        auto tech = Technique::create(effect);
+        tech->setAttribute("a_position", AttributeSemantic::POSITION);
+        tech->setSemanticUniform("mvp", MaterialParameter::Semantic::MODELVIEWPROJECTION);
+        auto f = [](Effect& effect, const Uniform* uniform) {effect.setValue(uniform, glm::vec3(1, 0, 0));};
+        tech->setUniform("color", MaterialParameter::create("color", f));
+
+        auto& state = tech->renderState();
+        state.setDepthTest(true);
+        state.setCulling(true);
+
+        return Material::create(tech);
+    }
+    return nullptr;
 }

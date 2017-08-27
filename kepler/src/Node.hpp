@@ -3,6 +3,7 @@
 #include "Base.hpp"
 #include "Transform.hpp"
 #include "Component.hpp"
+#include "BoundingBox.hpp"
 
 #include <vector>
 #include <initializer_list>
@@ -136,11 +137,14 @@ namespace kepler {
 
         /// Returns the component of the specified type.
         template<class T>
-        std::shared_ptr<T> component();
+        std::shared_ptr<T> component() const;
+
+        template<class T>
+        void component(T* ptr) const;
 
         /// Returns the first drawable component of this node.
         /// @return Shared ref to a DrawableComponent; may be null.
-        ref<DrawableComponent> drawable();
+        ref<DrawableComponent> drawable() const;
 
         /// Returns true if this node contains the component.
         /// You cannot search for abstract components because this is a simple string comparison.
@@ -237,6 +241,9 @@ namespace kepler {
         /// @return True if the matrix was successfully decompose; false if decompose failed and the transform was not changed.
         bool setLocalTransform(const glm::mat4& matrix);
 
+        /// Returns the bounding box for this node in world space and merges it with all of its descendants.
+        const BoundingBox& boundingBox() const;
+
         /// Node Listener
         class Listener {
         public:
@@ -313,8 +320,7 @@ namespace kepler {
         mutable Transform _local;
         mutable Transform _world;
         mutable unsigned char _dirtyBits;
-
-        static constexpr unsigned char WORLD_DIRTY = 1;
+        mutable BoundingBox _box;
     };
 
     // Methods
@@ -338,10 +344,21 @@ namespace kepler {
     }
 
     template<class T>
-    std::shared_ptr<T> Node::component() {
+    std::shared_ptr<T> Node::component() const {
         for (const auto& c : _components) {
             if (dynamic_cast<T*>(c.get()) != nullptr) {
                 return std::dynamic_pointer_cast<T>(c);
+            }
+        }
+        return nullptr;
+    }
+
+    template<class T>
+    void Node::component(T* ptr) const {
+        for (const auto& c : _components) {
+            ptr = dynamic_cast<T*>(c.get();
+            if (ptr) != nullptr) {
+                return ptr;
             }
         }
         return nullptr;
