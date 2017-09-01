@@ -36,8 +36,12 @@ namespace kepler {
         return _mesh;
     }
 
-    void MeshRenderer::mesh(Mesh** mesh) {
-        *mesh = _mesh.get();
+    bool MeshRenderer::getBoundingBox(BoundingBox& box) {
+        if (_mesh) {
+            box = _mesh->boundingBox();
+            return true;
+        }
+        return false;
     }
 
     const std::string& MeshRenderer::typeName() const {

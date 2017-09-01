@@ -495,11 +495,8 @@ namespace kepler {
         // TODO add faster way of getting mesh
         auto meshRenderer = component<MeshRenderer>();
         if (meshRenderer) {
-            Mesh* mesh;
-            meshRenderer->mesh(&mesh);
-            if (mesh != nullptr) {
+            if (meshRenderer->getBoundingBox(_box)) {
                 empty = false;
-                _box = mesh->boundingBox();
             }
         }
         if (!empty) {

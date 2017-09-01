@@ -174,6 +174,8 @@ void Gltf2Test::mouseButtonEvent(int button, int action, int mods) {
 
 void Gltf2Test::scrollEvent(double xoffset, double yoffset) {
     float offset = static_cast<float>(yoffset) * _zoomMag * -0.5f;
+    offset = std::min(5.0f, offset);
+    offset = std::max(-5.0f, offset);
     _orbitCamera.zoomOut(offset);
 }
 

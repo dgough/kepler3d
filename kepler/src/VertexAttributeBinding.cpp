@@ -36,10 +36,7 @@ namespace kepler {
             glDeleteVertexArrays(1, &handle);
             return nullptr;
         }
-        auto indices = meshPrim->indices();
-        if (indices) {
-            indices->bind();
-        }
+        meshPrim->bindIndices();
         for (const auto& attrib : technique->attributes()) {
             const auto& shaderAttribName = attrib.first;
             auto location = effect->attribLocation(shaderAttribName);

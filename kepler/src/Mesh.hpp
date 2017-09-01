@@ -10,6 +10,7 @@ namespace kepler {
     /// A Mesh is a collection of MeshPrimitives.
     class Mesh {
     public:
+        friend MeshRenderer;
         /// Use Mesh::create() instead.
         Mesh();
         explicit Mesh(ref<MeshPrimitive> primitive);
@@ -27,7 +28,6 @@ namespace kepler {
 
         void setName(const char* name);
         void setName(const std::string& name);
-        void setNode(ref<Node> node); // TODO make this private?
 
         /// Returns the MeshPrimitive at the given index.
         /// @param[in] index The index of the MeshPrimitive.
@@ -44,6 +44,9 @@ namespace kepler {
         Mesh& operator=(const Mesh&) = delete;
 
     private:
+
+        void setNode(ref<Node> node);
+
         std::vector<ref<MeshPrimitive>> _primitives;
         std::unique_ptr<std::string> _name;
         BoundingBox _box;

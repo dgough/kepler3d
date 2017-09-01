@@ -21,8 +21,8 @@ namespace kepler {
         /// Returns the shared_ptr to the mesh.
         ref<Mesh> mesh() const;
 
-        /// Gets a pointer to the mesh.
-        void mesh(Mesh** mesh);
+        /// Gets the boundings box if found.
+        bool getBoundingBox(BoundingBox& box);
 
         const std::string& typeName() const override;
 
