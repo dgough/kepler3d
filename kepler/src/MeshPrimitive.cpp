@@ -28,8 +28,10 @@ namespace kepler {
         return _attributes.count(semantic) != 0;
     }
 
-    ref<IndexAccessor> MeshPrimitive::indices() const {
-        return _indices;
+    void MeshPrimitive::bindIndices() {
+        if (_indices) {
+            _indices->bind();
+        }
     }
 
     void MeshPrimitive::setAttribute(AttributeSemantic semantic, ref<VertexAttributeAccessor> accessor) {

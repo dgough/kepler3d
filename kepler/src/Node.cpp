@@ -3,11 +3,19 @@
 #include "Scene.hpp"
 #include "Camera.hpp"
 #include "DrawableComponent.hpp"
+#include "MeshRenderer.hpp"
+#include "Mesh.hpp"
 #include "Logging.hpp"
+#include "Performance.hpp"
 
 #include <algorithm>
 
 namespace kepler {
+
+    static constexpr unsigned char WORLD_DIRTY = 1;
+    static constexpr unsigned char BOUNDS_DIRTY = 2;
+
+    static constexpr unsigned char ALL_DIRTY = WORLD_DIRTY | BOUNDS_DIRTY;
 
     Node::Node() {
     }
@@ -24,6 +32,9 @@ namespace kepler {
     }
 
     Node::~Node() noexcept {
+        for (auto& node : _children) {
+            node->_parent = nullptr;
+        }
     }
 
     ref<Node> Node::create() {
@@ -40,11 +51,9 @@ namespace kepler {
 
     ref<Node> Node::createChild(const std::string& name) {
         std::unique_ptr<Node> p = nullptr;
-        auto size = sizeof(std::string);
-        auto pp = sizeof(p);
         ref<Node> node = create(name);
         _children.push_back(node);
-        node->setParentInner(shared_from_this());
+        node->_parent = this;
         node->_scene = _scene;
         return node;
     }
@@ -58,16 +67,16 @@ namespace kepler {
     void Node::addNode(const ref<Node>& child) {
         if (child == nullptr) return;
 
-        if (ref<Node> parent = child->_parent.lock()) {
+        if (auto parent = child->_parent) {
             // Do nothing if the node is already a child.
-            if (parent.get() == this) {
+            if (parent == this) {
                 return;
             }
             // Remove the node from its old parent.
             child->removeFromParent();
         }
         _children.push_back(child);
-        child->setParentInner(shared_from_this());
+        child->setParentInner(this);
         child->_scene = _scene;
     }
 
@@ -86,46 +95,40 @@ namespace kepler {
         }
     }
 
-    ref<Node> Node::parent() const {
-        return _parent.lock();
+    Node* Node::parent() const {
+        return _parent;
     }
 
     bool Node::hasParent() const {
-        return !_parent.expired();
+        return _parent != nullptr;
     }
 
-    void Node::setParent(const ref<Node>& newParent) {
+    void Node::setParent(const ref<Node>& newParent) { // TODO change this to Node*?
         removeFromParent();
         if (newParent) {
             newParent->_children.push_back(shared_from_this());
-            _parent = newParent;
+            _parent = newParent.get();
             _scene = newParent->_scene;
             parentChanged();
         }
     }
 
     void Node::removeFromParent() {
-        if (ref<Node> parent = _parent.lock()) {
+        if (auto parent = _parent) {
             parent->removeChild(shared_from_this());
         }
     }
 
-    ref<Node> Node::root() {
-        if (ref<Node> parent = _parent.lock()) {
-            while (!parent->_parent.expired()) {
-                parent = parent->_parent.lock();
-            }
-            return parent;
+    Node* Node::root() {
+        auto node = this;
+        while (node->_parent != nullptr) {
+            node = node->_parent;
         }
-        return shared_from_this();
+        return node;
     }
 
-    ref<Scene> Node::scene() const {
-        return _scene.lock();
-    }
-
-    void Node::setScene(ref<Scene> scene) {
-        _scene = scene;
+    Scene* Node::scene() const {
+        return _scene;
     }
 
     ref<Node> Node::findFirstNodeByName(const std::string& name, bool recursive) const {
@@ -193,7 +196,7 @@ namespace kepler {
         _components.erase(it, _components.end());
     }
 
-    ref<DrawableComponent> Node::drawable() {
+    ref<DrawableComponent> Node::drawable() const {
         // TODO make this faster
         return component<DrawableComponent>();
     }
@@ -209,12 +212,12 @@ namespace kepler {
 
     void Node::translate(const glm::vec3& translation) {
         _local.translate(translation);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::translate(float x, float y, float z) {
         _local.translate(x, y, z);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::translateX(float x) {
@@ -231,52 +234,52 @@ namespace kepler {
 
     void Node::scale(const glm::vec3& scale) {
         _local.scale(scale);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::scale(float scale) {
         _local.scale(scale);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::scale(float x, float y, float z) {
         _local.scale(x, y, z);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::rotate(const glm::quat& rotation) {
         _local.rotate(rotation);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::rotateX(float angle) {
         _local.rotate(glm::angleAxis(angle, glm::vec3(1, 0, 0)));
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::rotateY(float angle) {
         _local.rotate(glm::angleAxis(angle, glm::vec3(0, 1, 0)));
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::rotateZ(float angle) {
         _local.rotate(glm::angleAxis(angle, glm::vec3(0, 0, 1)));
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::setTranslation(const glm::vec3& translation) {
         _local.setTranslation(translation);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::setTranslation(float x, float y, float z) {
         _local.setTranslation(x, y, z);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::setScale(const glm::vec3& scale) {
         _local.setScale(scale);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::setScale(float scale) {
@@ -285,26 +288,26 @@ namespace kepler {
 
     void Node::setScale(float x, float y, float z) {
         _local.setScale(x, y, z);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::setRotation(const glm::quat& rotation) {
         _local.setRotation(rotation);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::setRotationFromEuler(const glm::vec3& eulerAngles) {
         _local.setRotationFromEuler(eulerAngles);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::setRotationFromEuler(float pitch, float yaw, float roll) {
         _local.setRotationFromEuler(pitch, yaw, roll);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     Transform& Node::editLocalTransform() {
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
         return _local;
     }
 
@@ -317,7 +320,8 @@ namespace kepler {
     }
 
     const glm::mat4& Node::viewMatrix() const {
-        if (ref<Scene> scene = _scene.lock()) {
+        ProfileBlock p(0);
+        if (auto scene = _scene) {
             auto camera = scene->activeCamera();
             if (camera) {
                 return camera->viewMatrix();
@@ -334,7 +338,7 @@ namespace kepler {
     }
 
     const glm::mat4& Node::projectionMatrix() const {
-        if (ref<Scene> scene = _scene.lock()) {
+        if (auto scene = _scene) {
             auto camera = scene->activeCamera();
             if (camera) {
                 return camera->projectionMatrix();
@@ -355,8 +359,7 @@ namespace kepler {
             return _world;
         }
         _dirtyBits &= ~WORLD_DIRTY;
-
-        if (auto parent = _parent.lock()) {
+        if (auto parent = _parent) {
             const Transform& parentWorldTransform = parent->worldTransform();
             _world = _local;
             _world.combineWithParent(parentWorldTransform);
@@ -400,7 +403,7 @@ namespace kepler {
     }
 
     const glm::mat4 Node::modelViewProjectionMatrix() const {
-        if (ref<Scene> scene = _scene.lock()) {
+        if (auto scene = _scene) {
             auto camera = scene->activeCamera();
             if (camera) {
                 return camera->viewProjectionMatrix() * worldMatrix();
@@ -467,20 +470,53 @@ namespace kepler {
 
     void Node::setLocalTransform(const Transform& transform) {
         _local = transform;
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::setLocalTransform(const glm::vec3& translation, const glm::quat& rotation, const glm::vec3& scale) {
         _local.set(translation, rotation, scale);
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     bool Node::setLocalTransform(const glm::mat4& matrix) {
         if (_local.set(matrix)) {
-            setDirty(WORLD_DIRTY);
+            setDirty(ALL_DIRTY);
             return true;
         }
         return false;
+    }
+
+    const BoundingBox& Node::boundingBox() const {
+        if ((_dirtyBits & BOUNDS_DIRTY) == 0) {
+            return _box;
+        }
+        _dirtyBits &= ~BOUNDS_DIRTY;
+        bool empty = true;
+        // TODO add faster way of getting mesh
+        auto meshRenderer = component<MeshRenderer>();
+        if (meshRenderer) {
+            if (meshRenderer->getBoundingBox(_box)) {
+                empty = false;
+            }
+        }
+        if (!empty) {
+            _box.transform(worldMatrix());
+            
+        }
+        // merge with children
+        for (const auto& child : _children) {
+            const auto& box = child->boundingBox();
+            if (!box.empty()) {
+                if (empty) {
+                    _box = box;
+                    empty = false;
+                }
+                else {
+                    _box.merge(box);
+                }
+            }
+        }
+        return _box;
     }
 
     void Node::addListener(std::shared_ptr<Listener> listener) {
@@ -508,30 +544,30 @@ namespace kepler {
         }
     }
 
-    void Node::removeFromList(NodeList& children, const ref<Node> child) {
+    void Node::removeFromList(NodeList& children, const ref<Node>& child) {
         children.erase(std::remove(children.begin(), children.end(), child), children.end());
     }
 
-    void Node::setAllChildrenScene(const ref<Scene>& scene) {
-        for (auto child : _children) {
+    void Node::setAllChildrenScene(Scene* scene) {
+        for (const auto& child : _children) {
             child->_scene = scene;
             child->setAllChildrenScene(scene);
         }
     }
 
-    void Node::setParentInner(const ref<Node>& parent) {
+    void Node::setParentInner(Node* parent) {
         _parent = parent;
         parentChanged();
     }
 
     void Node::clearParent() {
-        _parent.reset();
-        _scene.reset();
+        _parent = nullptr;
+        _scene = nullptr;
         parentChanged();
     }
 
     void Node::parentChanged() {
-        setDirty(WORLD_DIRTY);
+        setDirty(ALL_DIRTY);
     }
 
     void Node::setDirty(unsigned char dirtyBits) const {

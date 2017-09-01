@@ -2,6 +2,7 @@
 #include "AxisCompass.hpp"
 
 #include "Node.hpp"
+#include "Scene.hpp"
 #include "Mesh.hpp"
 #include "MeshPrimitive.hpp"
 #include "MeshRenderer.hpp"
@@ -30,28 +31,14 @@ namespace kepler {
         _node = createNode();
     }
 
-    AxisCompass::AxisCompass(ref<Scene> scene) : AxisCompass() {
+    AxisCompass::AxisCompass(Scene* scene) : AxisCompass() {
         if (_node) {
-            _node->setScene(scene);
-        }
-    }
-
-    void AxisCompass::draw() {
-        if (_node) {
-            if (auto renderer = _node->drawable()) {
-                renderer->draw();
-            }
+            scene->addNode(_node);
         }
     }
 
     ref<Node> AxisCompass::node() const {
         return _node;
-    }
-
-    void AxisCompass::setScene(ref<Scene> scene) {
-        if (_node) {
-            _node->setScene(scene);
-        }
     }
 
     ref<MeshPrimitive> createPrimitive() {

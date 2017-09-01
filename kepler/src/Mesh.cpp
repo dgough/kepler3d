@@ -42,12 +42,6 @@ namespace kepler {
         _name = std::make_unique<std::string>(name);
     }
 
-    void Mesh::setNode(ref<Node> node) {
-        for (const auto& primitive : _primitives) {
-            primitive->setNode(node);
-        }
-    }
-
     ref<MeshPrimitive> Mesh::primitiveAt(size_t index) const {
         return _primitives.at(index);
     }
@@ -62,5 +56,11 @@ namespace kepler {
 
     const BoundingBox& Mesh::boundingBox() const {
         return _box;
+    }
+
+    void Mesh::setNode(ref<Node> node) {
+        for (const auto& primitive : _primitives) {
+            primitive->setNode(node);
+        }
     }
 }

@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test-suite", "test-suite\te
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test-app", "test-app\test-app.vcxproj", "{86E0787F-EC79-408B-81AE-C89962A82241}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vulkan-app", "vulkan-app\vulkan-app.vcxproj", "{2452BA0A-88DF-4C91-90B1-2BB042068BC5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -33,6 +35,10 @@ Global
 		{86E0787F-EC79-408B-81AE-C89962A82241}.Debug|x64.Build.0 = Debug|x64
 		{86E0787F-EC79-408B-81AE-C89962A82241}.Release|x64.ActiveCfg = Release|x64
 		{86E0787F-EC79-408B-81AE-C89962A82241}.Release|x64.Build.0 = Release|x64
+		{2452BA0A-88DF-4C91-90B1-2BB042068BC5}.Debug|x64.ActiveCfg = Debug|x64
+		{2452BA0A-88DF-4C91-90B1-2BB042068BC5}.Debug|x64.Build.0 = Debug|x64
+		{2452BA0A-88DF-4C91-90B1-2BB042068BC5}.Release|x64.ActiveCfg = Release|x64
+		{2452BA0A-88DF-4C91-90B1-2BB042068BC5}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

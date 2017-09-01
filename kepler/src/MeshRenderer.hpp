@@ -18,7 +18,11 @@ namespace kepler {
 
         void onNodeChanged(const ref<Node>& oldNode, const ref<Node>& newNode) override;
 
+        /// Returns the shared_ptr to the mesh.
         ref<Mesh> mesh() const;
+
+        /// Gets the boundings box if found.
+        bool getBoundingBox(BoundingBox& box);
 
         const std::string& typeName() const override;
 

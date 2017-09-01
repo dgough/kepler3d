@@ -12,7 +12,7 @@ namespace kepler {
 
     class ProfileBlock final {
     public:
-        ProfileBlock(size_t index) : _index(index) {
+        explicit ProfileBlock(size_t index) : _index(index) {
             _t1 = std::chrono::high_resolution_clock::now();
         }
         ~ProfileBlock() {

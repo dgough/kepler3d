@@ -625,7 +625,9 @@ namespace kepler {
             // GLTF doesn't have WRAP_R
             auto sampler = Sampler::create();
             // Use trilinear filtering instead of what was specified in the gltf file.
-            minFilter = Sampler::MinFilter::LINEAR_MIPMAP_LINEAR;
+            if (minFilter != Sampler::MinFilter::LINEAR && minFilter != Sampler::MinFilter::NEAREST) {
+                minFilter = Sampler::MinFilter::LINEAR_MIPMAP_LINEAR;
+            }
             sampler->setFilterMode(minFilter, magFilter);
             sampler->setWrapMode(wrapS, wrapT);
             _samplers[index] = sampler;

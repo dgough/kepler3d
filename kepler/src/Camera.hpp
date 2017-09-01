@@ -64,12 +64,12 @@ namespace kepler {
 
     private:
         Camera::Type _type;
-        float _fov;
+        float _fov = 45.0f;
         float _aspectRatio;
         float _near;
         float _far;
-        float _zoomX;
-        float _zoomY;
+        float _zoomX = 0.0f;
+        float _zoomY = 0.0f;
 
         mutable glm::mat4 _view;
         mutable glm::mat4 _projection;

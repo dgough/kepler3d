@@ -25,11 +25,10 @@ namespace kepler {
     OrbitCamera::OrbitCamera() : _yaw(DEFAULT_YAW), _pitch(DEFAULT_PITCH), _radius(DEFAULT_RADIUS) {
     }
 
-    void OrbitCamera::attach(ref<Scene> scene) {
-        if (!scene) {
+    void OrbitCamera::attach(Scene* scene) {
+        if (scene == nullptr) {
             return;
         }
-
         if (scene->activeCamera()) {
             _oldCameraNode = scene->activeCamera()->node();
         }

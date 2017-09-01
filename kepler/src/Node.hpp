@@ -3,6 +3,7 @@
 #include "Base.hpp"
 #include "Transform.hpp"
 #include "Component.hpp"
+#include "BoundingBox.hpp"
 
 #include <vector>
 #include <initializer_list>
@@ -24,6 +25,8 @@ namespace kepler {
         Node();
         explicit Node(const char* name);
         explicit Node(const std::string& name);
+        Node(const Node&) = delete;
+        Node& operator=(const Node&) = delete;
         virtual ~Node() noexcept;
 
         /// Creates a node and returns a std::shared_ptr to it.
@@ -56,8 +59,8 @@ namespace kepler {
         /// This does not include grandchildren.
         void removeChild(const ref<Node>& child);
 
-        /// Returns a reference to the parent node. May be null.
-        ref<Node> parent() const;
+        /// Returns a pointer to the parent node. May be null.
+        Node* parent() const;
 
         /// Returns true if this node has a parent; false otherwise.
         bool hasParent() const;
@@ -70,16 +73,10 @@ namespace kepler {
 
         /// Returns the root node.
         /// This node will be the root node if it doesn't have a parent.
-        ref<Node> root();
+        Node* root();
 
         /// Returns the scene that this node belongs to. May be null.
-        ref<Scene> scene() const;
-
-        /// Sets this node's scene. 
-        /// Normally you shouldn't used this method but it is handy when a node doesn't 
-        /// belong to a scene but it still needs access to the scene, like getting the camera.
-        /// @param[in] scene The scene; may be null.
-        void setScene(ref<Scene> scene);
+        Scene* scene() const;
 
         /// Finds the first descendant node that matches the given name.
         /// Immediate children are checked first before recursing.
@@ -140,11 +137,14 @@ namespace kepler {
 
         /// Returns the component of the specified type.
         template<class T>
-        std::shared_ptr<T> component();
+        std::shared_ptr<T> component() const;
+
+        template<class T>
+        void component(T* ptr) const;
 
         /// Returns the first drawable component of this node.
         /// @return Shared ref to a DrawableComponent; may be null.
-        ref<DrawableComponent> drawable();
+        ref<DrawableComponent> drawable() const;
 
         /// Returns true if this node contains the component.
         /// You cannot search for abstract components because this is a simple string comparison.
@@ -241,6 +241,9 @@ namespace kepler {
         /// @return True if the matrix was successfully decompose; false if decompose failed and the transform was not changed.
         bool setLocalTransform(const glm::mat4& matrix);
 
+        /// Returns the bounding box for this node in world space and merges it with all of its descendants.
+        const BoundingBox& boundingBox() const;
+
         /// Node Listener
         class Listener {
         public:
@@ -286,21 +289,17 @@ namespace kepler {
         /// Returns an iterator referring to the past-the-end child (not the last child).
         Iterator end() const;
 
-    public:
-        Node(const Node&) = delete;
-        Node& operator=(const Node&) = delete;
-
     private:
         using NodeListenerList = std::vector<std::weak_ptr<Listener>>;
 
         static void removeChild(NodeList& children, size_t index);
 
         /// Removes the child from the list of children but doesn't update its parent or scene.
-        static void removeFromList(NodeList& children, const ref<Node> child);
+        static void removeFromList(NodeList& children, const ref<Node>& child);
 
-        void setAllChildrenScene(const ref<Scene>& scene);
+        void setAllChildrenScene(Scene* scene);
 
-        void setParentInner(const ref<Node>& parent);
+        void setParentInner(Node* parent);
         void clearParent();
         void parentChanged();
 
@@ -312,17 +311,16 @@ namespace kepler {
 
     private:
         std::unique_ptr<std::string> _name;
-        std::weak_ptr<Node> _parent;
+        Node* _parent = nullptr;
         NodeList _children;
         ComponentList _components;
-        std::weak_ptr<Scene> _scene;
+        Scene* _scene = nullptr;
         std::unique_ptr<NodeListenerList> _listeners;
 
         mutable Transform _local;
         mutable Transform _world;
         mutable unsigned char _dirtyBits;
-
-        static constexpr unsigned char WORLD_DIRTY = 1;
+        mutable BoundingBox _box;
     };
 
     // Methods
@@ -346,10 +344,21 @@ namespace kepler {
     }
 
     template<class T>
-    std::shared_ptr<T> Node::component() {
+    std::shared_ptr<T> Node::component() const {
         for (const auto& c : _components) {
             if (dynamic_cast<T*>(c.get()) != nullptr) {
                 return std::dynamic_pointer_cast<T>(c);
+            }
+        }
+        return nullptr;
+    }
+
+    template<class T>
+    void Node::component(T* ptr) const {
+        for (const auto& c : _components) {
+            ptr = dynamic_cast<T*>(c.get();
+            if (ptr) != nullptr) {
+                return ptr;
             }
         }
         return nullptr;

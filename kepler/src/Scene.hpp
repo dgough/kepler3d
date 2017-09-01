@@ -8,6 +8,8 @@ namespace kepler {
     public:
         /// Use Scene::create()
         Scene();
+        Scene(const Scene&) = delete;
+        Scene& operator=(const Scene&) = delete;
         virtual ~Scene() noexcept;
 
         /// Creates a new scene object.
@@ -53,19 +55,15 @@ namespace kepler {
         ref<Camera> activeCamera() const;
         void setActiveCamera(const ref<Camera>& camera);
 
-        /// Visits each node and calls the given function pass a pointer to the current node.
+        /// Visits each node and calls the given function that is passed a pointer to the current node.
         /// The expected signature is <code>void func(Node*);</code>
         template <class Func>
         void visit(const Func& func) const;
 
-    public:
-        Scene(const Scene&) = delete;
-        Scene& operator=(const Scene&) = delete;
-
+    private:
         template <class Func>
         void visitNode(const Func& func, Node* node) const;
 
-    private:
         NodeList _children;
         ref<Camera> _activeCamera;
     };

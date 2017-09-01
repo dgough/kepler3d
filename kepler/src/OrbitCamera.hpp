@@ -16,7 +16,7 @@ namespace kepler {
         OrbitCamera(); // TODO args. Allow passing in a camera?
 
         /// Attaches this OrbitCamera to the scene.
-        void attach(ref<Scene> scene);
+        void attach(Scene* scene);
 
         /// Detaches this OrbitCamera from the scene it is attached to.
         void detach();

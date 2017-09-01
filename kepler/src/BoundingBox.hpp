@@ -21,9 +21,11 @@ namespace kepler {
         bool empty() const;
         /// Returns the center 3D position.
         glm::vec3 center() const;
-
+        void corners(glm::vec3* p) const;
 
         void merge(const BoundingBox& box);
+
+        void transform(const glm::mat4& matrix);
 
         glm::vec3 min;
         glm::vec3 max;

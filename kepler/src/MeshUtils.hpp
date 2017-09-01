@@ -12,4 +12,6 @@ namespace kepler {
     /// The quad is vertical and facing the positive Z axis.
     ref<MeshPrimitive> createTexturedLitQuadPrimitive(glm::vec2 maxTexCoords = glm::vec2(1));
 
+    ref<MeshPrimitive> createWireframeBoxPrimitive(const BoundingBox& box);
+
 }

@@ -37,8 +37,8 @@ namespace kepler {
         /// Returns true if this primitive contains this semantic.
         bool hasAttribute(AttributeSemantic semantic) const;
 
-        /// Returns the indices for this mesh primitive. May be null.
-        ref<IndexAccessor> indices() const;
+        /// Binds the indices for this mesh's primitive if they exist.
+        void bindIndices();
 
         void setAttribute(AttributeSemantic semantic, ref<VertexAttributeAccessor> accessor);
         /// Sets the IndexAccessor.
@@ -67,7 +67,6 @@ namespace kepler {
         std::map<AttributeSemantic, ref<VertexAttributeAccessor>> _attributes;
         ref<Material> _material;
         std::unique_ptr<MaterialBinding> _materialBinding;
-
         std::unique_ptr<VertexAttributeBinding> _vertexBinding;
         std::weak_ptr<Node> _node;
         BoundingBox _box;
