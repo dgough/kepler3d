@@ -50,5 +50,8 @@
     <ClInclude Include="src\macros.hpp">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\KeplerEnvironment.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

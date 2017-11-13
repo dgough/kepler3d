@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "Mesh.hpp"
 #include "MeshPrimitive.hpp"
-#include "VertexBuffer.hpp"
 
 namespace kepler {
 

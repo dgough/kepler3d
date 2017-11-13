@@ -168,6 +168,7 @@
     <ClCompile Include="src\test_transform.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\KeplerEnvironment.hpp" />
     <ClInclude Include="src\macros.hpp" />
   </ItemGroup>
   <ItemGroup>
