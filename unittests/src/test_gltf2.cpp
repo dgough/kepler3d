@@ -20,32 +20,10 @@ static constexpr char* ANIMATED_BOX_PATH = BASE_DIR "BoxAnimated/glTF/BoxAnimate
 static constexpr char* DUCK_PATH = BASE_DIR "Duck/glTF/Duck.gltf";
 static constexpr char* TRUCK_PATH = BASE_DIR "CesiumMilkTruck/glTF/CesiumMilkTruck.gltf";
 
-static constexpr int WINDOW_WIDTH = 8;
-static constexpr int WINDOW_HEIGHT = 6;
-
 using namespace kepler;
 
 //#define DISABLE_GLTF2_LOADER_TEST
 #ifndef DISABLE_GLTF2_LOADER_TEST
-
-static GLFWwindow* setup() {
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-
-    GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "kepler3d", nullptr, nullptr);
-    glfwMakeContextCurrent(window);
-
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        std::cout << "Failed to initialize OpenGL context" << std::endl;
-        return nullptr;
-    }
-    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-    glGetError(); // clear error flag
-    return window;
-}
 
 //TEST(gltf, file_not_found) {
 //    GLTF2Loader gltf;
@@ -54,8 +32,6 @@ static GLFWwindow* setup() {
 //}
 
 TEST(gltf2, load_gltf2) {
-    setup();
-
     // load box
     {
         //GLTF2Loader gltf;
