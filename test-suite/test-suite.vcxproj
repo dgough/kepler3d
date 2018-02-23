@@ -105,7 +105,7 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <StringPooling>true</StringPooling>
-      <AdditionalIncludeDirectories>..\kepler\src;..\external-deps\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\kepler\src;..\kepler-gl\src;..\external-deps\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -145,7 +145,7 @@
       <SDLCheck>true</SDLCheck>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <StringPooling>true</StringPooling>
-      <AdditionalIncludeDirectories>..\kepler\src;..\external-deps\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\kepler\src;..\kepler-gl\src;..\external-deps\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -169,6 +169,9 @@
     <ClInclude Include="src\TextTest.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kepler-gl\kepler-gl.vcxproj">
+      <Project>{2ece3f94-195a-4d08-bb40-55a158fecb75}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\kepler\kepler.vcxproj">
       <Project>{77dc05ed-b315-44fc-8eac-c541287cec58}</Project>
     </ProjectReference>

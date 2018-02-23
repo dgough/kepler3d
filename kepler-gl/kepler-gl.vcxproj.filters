@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{1cae10cd-7d94-40c3-8c3d-e507bfac86c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Base">
+      <UniqueIdentifier>{12de6d17-6aa1-4b5e-b059-e9868dd5c74e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Utils">
+      <UniqueIdentifier>{60cf1553-a176-4d0f-8477-307ed625ef21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Texturing">
+      <UniqueIdentifier>{d8250e91-7d07-43dd-b9c9-befb78278251}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Materials">
+      <UniqueIdentifier>{cb4d78e9-5eb3-4824-8e6f-67238410f21e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Font">
+      <UniqueIdentifier>{f1d7fd60-6136-4f9e-ab4c-984fb411ff21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\glTF">
+      <UniqueIdentifier>{e17efcfc-5059-422f-b324-99c5b5d9fdd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Buffers">
+      <UniqueIdentifier>{75731d8e-12b3-47cc-8f19-b6fa103b294e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Accessors">
+      <UniqueIdentifier>{a60a9801-a1ef-47b8-aaf8-1cecde35e463}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Platform">
+      <UniqueIdentifier>{b5672efa-787c-4135-a70f-3194b419beb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Mesh">
+      <UniqueIdentifier>{4a9b48fe-f0a0-43dd-88c7-01f7b6255867}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\stdafx.h">
+      <Filter>src\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\targetver.h">
+      <Filter>src\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MeshUtils.hpp">
+      <Filter>src\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Texture.hpp">
+      <Filter>src\Texturing</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Image.hpp">
+      <Filter>src\Texturing</Filter>
+    </ClInclude>
+    <ClInclude Include="src\AttributeSemantic.hpp">
+      <Filter>src\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Effect.hpp">
+      <Filter>src\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RenderState.hpp">
+      <Filter>src\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Technique.hpp">
+      <Filter>src\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MaterialParameter.hpp">
+      <Filter>src\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MaterialBinding.hpp">
+      <Filter>src\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Material.hpp">
+      <Filter>src\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BmpFont.hpp">
+      <Filter>src\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GLTF2Loader.hpp">
+      <Filter>src\glTF</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lazy_gltf2.hpp">
+      <Filter>src\glTF</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VertexBuffer.hpp">
+      <Filter>src\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IndexBuffer.hpp">
+      <Filter>src\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VertexAttributeAccessor.hpp">
+      <Filter>src\Accessors</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IndexAccessor.hpp">
+      <Filter>src\Accessors</Filter>
+    </ClInclude>
+    <ClInclude Include="src\AxisCompass.hpp">
+      <Filter>src\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BaseGL.hpp">
+      <Filter>src\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Mesh.hpp">
+      <Filter>src\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MeshPrimitive.hpp">
+      <Filter>src\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MeshRenderer.hpp">
+      <Filter>src\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Sampler.hpp">
+      <Filter>src\Texturing</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VertexAttributeBinding.hpp">
+      <Filter>src\Materials</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\stdafx.cpp">
+      <Filter>src\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MeshUtils.cpp">
+      <Filter>src\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Texture.cpp">
+      <Filter>src\Texturing</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Image.cpp">
+      <Filter>src\Texturing</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Effect.cpp">
+      <Filter>src\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RenderState.cpp">
+      <Filter>src\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Technique.cpp">
+      <Filter>src\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MaterialBinding.cpp">
+      <Filter>src\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MaterialParameter.cpp">
+      <Filter>src\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Material.cpp">
+      <Filter>src\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BmpFont.cpp">
+      <Filter>src\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GLTF2Loader.cpp">
+      <Filter>src\glTF</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VertexBuffer.cpp">
+      <Filter>src\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IndexBuffer.cpp">
+      <Filter>src\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VertexAttributeAccessor.cpp">
+      <Filter>src\Accessors</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IndexAccessor.cpp">
+      <Filter>src\Accessors</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AxisCompass.cpp">
+      <Filter>src\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AppGLFW.cpp">
+      <Filter>src\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BaseGL.cpp">
+      <Filter>src\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glad.cpp">
+      <Filter>src\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mesh.cpp">
+      <Filter>src\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MeshPrimitive.cpp">
+      <Filter>src\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MeshRenderer.cpp">
+      <Filter>src\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Sampler.cpp">
+      <Filter>src\Texturing</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VertexAttributeBinding.cpp">
+      <Filter>src\Materials</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

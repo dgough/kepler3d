@@ -1,19 +1,19 @@
 #pragma once
 
-#include "Base.hpp"
+#include <Base.hpp>
 #include <string>
 
 namespace kepler {
 
 /// Class for loading GLTF files.
-class GLTF1Loader final {
+class GLTF2Loader final {
 public:
-    GLTF1Loader();
+    GLTF2Loader();
 
     /// Loads the GLTF file at the given path.
     /// @param[in] path The file path.
-    explicit GLTF1Loader(const char* path);
-    ~GLTF1Loader() noexcept;
+    explicit GLTF2Loader(const char* path);
+    ~GLTF2Loader() noexcept;
 
     /// True if a GLTF file was loaded successfully; false otherwise.
     explicit operator bool() const;
@@ -28,10 +28,7 @@ public:
     /// @return A reference to the newly loaded scene. Will be empty if there was an error.
     ref<Scene> loadSceneFromFile(const char* path);
 
-    ref<Material> findMaterialById(const std::string& id);
-    ref<Material> findMaterialByName(const std::string& name);
-
-    ref<Mesh> findMeshById(const std::string& id);
+    ref<Mesh> findMeshByIndex(size_t index);
 
     /// Clears all of the data held by this loader.
     void clear();
@@ -41,7 +38,7 @@ public:
 
     /// Sets if materials will be automatically loaded when loading scenes, nodes or meshes.
     /// Enabled by default.
-    /// This will not affect explicitly loading materials using methods like findMaterialById().
+    /// This will not affect explicitly loading materials using methods like findMaterialByName().
     void setAutoLoadMaterials(bool value);
 
     /// Sets the aspect ratio to use when loading cameras.
@@ -52,8 +49,8 @@ public:
     static void printTotalTime();
 
 public:
-    GLTF1Loader(const GLTF1Loader&) = delete;
-    GLTF1Loader& operator=(const GLTF1Loader&) = delete;
+    GLTF2Loader(const GLTF2Loader&) = delete;
+    GLTF2Loader& operator=(const GLTF2Loader&) = delete;
 private:
     class Impl;
     std::unique_ptr<Impl> _impl;

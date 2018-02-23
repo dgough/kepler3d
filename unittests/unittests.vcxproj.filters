@@ -27,9 +27,6 @@
     <ClCompile Include="src\test_fonts.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\test_gltf.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\test_node.cpp">
       <Filter>src</Filter>
     </ClCompile>

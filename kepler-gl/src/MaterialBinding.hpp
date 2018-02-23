@@ -1,12 +1,16 @@
 #pragma once
 
-#include "Base.hpp"
+#include <Base.hpp>
 #include "BaseMath.hpp"
 
 #include <vector>
 #include <functional>
 
 namespace kepler {
+
+class Material;
+class Effect;
+class MaterialParameter;
 
 /// Stores the uniform binding for a MeshPrimitive.
 class MaterialBinding final {

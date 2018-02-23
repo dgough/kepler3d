@@ -103,7 +103,7 @@
       <SDLCheck>true</SDLCheck>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <StringPooling>true</StringPooling>
-      <AdditionalIncludeDirectories>..\kepler\src;..\external-deps\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\kepler\src;..\kepler-gl\src;..\external-deps\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -141,7 +141,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <StringPooling>true</StringPooling>
-      <AdditionalIncludeDirectories>..\kepler\src;..\external-deps\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\kepler\src;..\kepler-gl\src;..\external-deps\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -157,7 +157,6 @@
     <ClCompile Include="src\test_BoundingBox.cpp" />
     <ClCompile Include="src\test_filesystem.cpp" />
     <ClCompile Include="src\test_fonts.cpp" />
-    <ClCompile Include="src\test_gltf.cpp" />
     <ClCompile Include="src\test_gltf2.cpp" />
     <ClCompile Include="src\test_node.cpp" />
     <ClCompile Include="src\test_node_transform.cpp" />
@@ -172,6 +171,9 @@
     <ClInclude Include="src\macros.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kepler-gl\kepler-gl.vcxproj">
+      <Project>{2ece3f94-195a-4d08-bb40-55a158fecb75}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\kepler\kepler.vcxproj">
       <Project>{77dc05ed-b315-44fc-8eac-c541287cec58}</Project>
     </ProjectReference>

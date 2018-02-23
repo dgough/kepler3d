@@ -7,9 +7,18 @@ namespace kepler {
 class Node;
 class Scene;
 class Camera;
+class Bounded;
+class DrawableComponent;
+class Button;
+class BoundingBox;
+
+class App;
+class AppDelegate;
+class FirstPersonController;
+
 class Mesh;
-class MeshPrimitive;
 class MeshRenderer;
+class MeshPrimitive;
 class VertexBuffer;
 class IndexBuffer;
 class IndexAccessor;
@@ -24,13 +33,6 @@ class Image;
 class Texture;
 class Sampler;
 class BmpFont;
-class DrawableComponent;
-class Button;
-class BoundingBox;
-
-class App;
-class AppDelegate;
-class FirstPersonController;
 class AxisCompass;
 
 template<class T>

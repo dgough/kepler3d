@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Base.hpp"
-#include "BaseGL.hpp"
+#include <Base.hpp>
+#include <BaseGL.hpp>
+#include <glm/glm.hpp>
 
 namespace kepler {
 

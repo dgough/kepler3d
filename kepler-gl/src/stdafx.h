@@ -10,7 +10,9 @@
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 
 // TODO: reference additional headers your program requires here
+#ifndef _CRT_SECURE_NO_DEPRECATE
 #define _CRT_SECURE_NO_DEPRECATE
+#endif
 #include <stdio.h>
 #include <string>
 #include <memory>
@@ -31,5 +33,9 @@
 #include <glm/gtx/rotate_vector.hpp>
 
 #ifdef _WIN32
+#ifndef APIENTRY
 #define APIENTRY __stdcall
 #endif
+#endif
+
+#include <glad/glad.h>

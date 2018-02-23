@@ -1,12 +1,15 @@
 #pragma once
 
-#include "Base.hpp"
+#include <Base.hpp>
 #include "DrawableComponent.hpp"
+#include <Bounded.hpp>
 
 namespace kepler {
 
+class Mesh;
+
 // DrawableComponent for rendering a Mesh.
-class MeshRenderer : public virtual DrawableComponent {
+class MeshRenderer : public virtual DrawableComponent, public Bounded {
 public:
     /// Use MeshRenderer::create()
     explicit MeshRenderer(ref<Mesh> mesh);
@@ -22,7 +25,7 @@ public:
     ref<Mesh> mesh() const;
 
     /// Gets the boundings box if found.
-    bool getBoundingBox(BoundingBox& box);
+    bool getBoundingBox(BoundingBox& box) override;
 
     const std::string& typeName() const override;
 

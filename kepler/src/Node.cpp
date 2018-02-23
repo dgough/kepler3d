@@ -3,8 +3,7 @@
 #include "Scene.hpp"
 #include "Camera.hpp"
 #include "DrawableComponent.hpp"
-#include "MeshRenderer.hpp"
-#include "Mesh.hpp"
+#include "Bounded.hpp"
 #include "Logging.hpp"
 #include "Performance.hpp"
 
@@ -493,9 +492,9 @@ const BoundingBox& Node::boundingBox() const {
     _dirtyBits &= ~BOUNDS_DIRTY;
     bool empty = true;
     // TODO add faster way of getting mesh
-    auto meshRenderer = component<MeshRenderer>();
-    if (meshRenderer) {
-        if (meshRenderer->getBoundingBox(_box)) {
+    auto bounded = component<Bounded>();
+    if (bounded) {
+        if (bounded->getBoundingBox(_box)) {
             empty = false;
         }
     }
