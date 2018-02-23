@@ -11,12 +11,12 @@
 
 namespace kepler {
 
-    using BufferHandle = GLuint;
-    using VertexBufferHandle = GLuint;
-    using IndexBufferHandle = GLuint;
-    using ProgramHandle = GLuint;
-    using TextureHandle = GLuint;
-    using SamplerHandle = GLuint;
+using BufferHandle = GLuint;
+using VertexBufferHandle = GLuint;
+using IndexBufferHandle = GLuint;
+using ProgramHandle = GLuint;
+using TextureHandle = GLuint;
+using SamplerHandle = GLuint;
 
-    void replace_glad_callbacks();
+void replace_glad_callbacks();
 }

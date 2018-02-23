@@ -8,24 +8,24 @@
 
 namespace kepler {
 
-    /// Stores the uniform binding for a MeshPrimitive.
-    class MaterialBinding final {
-    public:
-        MaterialBinding() = default;
-        ~MaterialBinding() = default;
+/// Stores the uniform binding for a MeshPrimitive.
+class MaterialBinding final {
+public:
+    MaterialBinding() = default;
+    ~MaterialBinding() = default;
 
-        void bind(const Node& node, const Material& material);
+    void bind(const Node& node, const Material& material);
 
-        void updateBindings(const Material& material);
+    void updateBindings(const Material& material);
 
-    public:
-        MaterialBinding(const MaterialBinding&) = delete;
-        MaterialBinding& operator=(const MaterialBinding&) = delete;
+public:
+    MaterialBinding(const MaterialBinding&) = delete;
+    MaterialBinding& operator=(const MaterialBinding&) = delete;
 
-    private:
-        void updateValues(const Material& material);
+private:
+    void updateValues(const Material& material);
 
-        std::vector<std::function<void(const Effect& effect, const Node&, const Camera*)>> _functions;
-        std::vector<ref<MaterialParameter>> _values;
-    };
+    std::vector<std::function<void(const Effect& effect, const Node&, const Camera*)>> _functions;
+    std::vector<ref<MaterialParameter>> _values;
+};
 }

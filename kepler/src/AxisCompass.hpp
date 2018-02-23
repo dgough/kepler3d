@@ -4,17 +4,17 @@
 
 namespace kepler {
 
-    /// The AxisCompass draws the xyz axis in the corner. It rotates along with the camera.
-    class AxisCompass {
-    public:
-        AxisCompass();
-        /// Creates the AxisCompass and adds its node to the given scene.
-        explicit AxisCompass(Scene* scene);
+/// The AxisCompass draws the xyz axis in the corner. It rotates along with the camera.
+class AxisCompass {
+public:
+    AxisCompass();
+    /// Creates the AxisCompass and adds its node to the given scene.
+    explicit AxisCompass(Scene* scene);
 
-        /// Returns the node so you can add it to a scene.
-        ref<Node> node() const;
+    /// Returns the node so you can add it to a scene.
+    ref<Node> node() const;
 
-    private:
-        ref<Node> _node;
-    };
+private:
+    ref<Node> _node;
+};
 }

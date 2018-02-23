@@ -4,62 +4,62 @@
 
 namespace kepler {
 
-    Mesh::Mesh() {
-    }
+Mesh::Mesh() {
+}
 
-    Mesh::Mesh(ref<MeshPrimitive> primitive) : _primitives{ primitive } {
-    }
+Mesh::Mesh(ref<MeshPrimitive> primitive) : _primitives{primitive} {
+}
 
-    Mesh::~Mesh() noexcept {
-    }
+Mesh::~Mesh() noexcept {
+}
 
-    ref<Mesh> Mesh::create() {
-        return std::make_shared<Mesh>();
-    }
+ref<Mesh> Mesh::create() {
+    return std::make_shared<Mesh>();
+}
 
-    ref<Mesh> Mesh::create(ref<MeshPrimitive> primitive) {
-        return std::make_shared<Mesh>(primitive);
-    }
+ref<Mesh> Mesh::create(ref<MeshPrimitive> primitive) {
+    return std::make_shared<Mesh>(primitive);
+}
 
-    void Mesh::addMeshPrimitive(ref<MeshPrimitive> primitive) {
-        if (_box.empty()) {
-            _box = primitive->boundingBox();
-        }
-        else {
-            _box.merge(primitive->boundingBox());
-        }
-        _primitives.push_back(std::move(primitive));
+void Mesh::addMeshPrimitive(ref<MeshPrimitive> primitive) {
+    if (_box.empty()) {
+        _box = primitive->boundingBox();
     }
-
-    void Mesh::setName(const char* name) {
-        if (name != nullptr && *name != '\0') {
-            _name = std::make_unique<std::string>(name);
-        }
+    else {
+        _box.merge(primitive->boundingBox());
     }
+    _primitives.push_back(std::move(primitive));
+}
 
-    void Mesh::setName(const std::string& name) {
+void Mesh::setName(const char* name) {
+    if (name != nullptr && *name != '\0') {
         _name = std::make_unique<std::string>(name);
     }
+}
 
-    ref<MeshPrimitive> Mesh::primitiveAt(size_t index) const {
-        return _primitives.at(index);
-    }
+void Mesh::setName(const std::string& name) {
+    _name = std::make_unique<std::string>(name);
+}
 
-    MeshPrimitive* Mesh::primitivePtr(size_t index) const {
-        return _primitives[index].get();
-    }
+ref<MeshPrimitive> Mesh::primitiveAt(size_t index) const {
+    return _primitives.at(index);
+}
 
-    size_t Mesh::primitiveCount() const {
-        return _primitives.size();
-    }
+MeshPrimitive* Mesh::primitivePtr(size_t index) const {
+    return _primitives[index].get();
+}
 
-    const BoundingBox& Mesh::boundingBox() const {
-        return _box;
-    }
+size_t Mesh::primitiveCount() const {
+    return _primitives.size();
+}
 
-    void Mesh::setNode(ref<Node> node) {
-        for (const auto& primitive : _primitives) {
-            primitive->setNode(node);
-        }
+const BoundingBox& Mesh::boundingBox() const {
+    return _box;
+}
+
+void Mesh::setNode(ref<Node> node) {
+    for (const auto& primitive : _primitives) {
+        primitive->setNode(node);
     }
+}
 }

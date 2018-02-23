@@ -31,14 +31,13 @@ static constexpr char* DUCK_TEXTURE_PATH = SAMPLES_BASE "Duck/glTF/DuckCM.png";
 static constexpr char* FLOOR_TEXTURE_PATH = "res/textures/hardwood.jpg";
 
 static std::string g_text;
-static glm::vec3 _lightColor(1);
-static bool _pause = false;
+static glm::vec3 g_lightColor(1);
 
 static ref<Node> createLamp();
 static ref<Material> createCubeMaterial();
 static ref<Material> createPointLightMaterial(const char* texture_path, ref<Node> lightNode);
 
-LightTest::LightTest() : _moveCamera(false) {
+LightTest::LightTest() {
 }
 
 void LightTest::start() {
@@ -105,7 +104,7 @@ void LightTest::render() {
         float y = 0.f;
         float lineHeight = static_cast<float>(_font->lineHeight());
         _font->drawText(g_text.c_str(), 0.f, y);
-        _font->drawText("[r,g,b,w] - change light color", 0.f, y += lineHeight, _lightColor);
+        _font->drawText("[r,g,b,w] - change light color", 0.f, y += lineHeight, g_lightColor);
         _font->drawText("[space] - pause", 0.f, y += lineHeight);
     }
 }
@@ -117,16 +116,16 @@ void LightTest::keyEvent(int key, int scancode, int action, int mods) {
     if (action == PRESS) {
         switch (key) {
         case KEY_R:
-            _lightColor = glm::vec3(1, 0, 0);
+            g_lightColor = glm::vec3(1, 0, 0);
             break;
         case KEY_G:
-            _lightColor = glm::vec3(0, 1, 0);
+            g_lightColor = glm::vec3(0, 1, 0);
             break;
         case KEY_B:
-            _lightColor = glm::vec3(0.f, 0.5f, 1.f);
+            g_lightColor = glm::vec3(0.f, 0.5f, 1.f);
             break;
         case KEY_W:
-            _lightColor = glm::vec3(1);
+            g_lightColor = glm::vec3(1);
             break;
         case KEY_SPACE:
             _pause = !_pause;
@@ -208,7 +207,7 @@ static ref<Material> createCubeMaterial() {
         auto tech = Technique::create(effect);
         tech->setAttribute("a_position", AttributeSemantic::POSITION);
         tech->setSemanticUniform("mvp", MaterialParameter::Semantic::MODELVIEWPROJECTION);
-        auto f = [](Effect& effect, const Uniform* uniform) {effect.setValue(uniform, _lightColor);};
+        auto f = [](Effect& effect, const Uniform* uniform) {effect.setValue(uniform, g_lightColor);};
         tech->setUniform("color", MaterialParameter::create("color", f));
 
         auto& state = tech->renderState();
@@ -256,7 +255,7 @@ static ref<Material> createPointLightMaterial(const char* texture_path, ref<Node
 
     auto lightColor = MaterialParameter::create("lightColor");
     lightColor->setValue([](Effect& effect, const Uniform* uniform) {
-        effect.setValue(uniform, _lightColor);
+        effect.setValue(uniform, g_lightColor);
     });
     tech->setUniform("lightColor", lightColor);
     tech->setUniform("shininess", MaterialParameter::create("shininess", 64.0f));

@@ -22,10 +22,11 @@ private:
     void loadSceneFromFile(const char* path);
 
 private:
-    bool _moveCamera;
     ref<Scene> _scene;
     ref<Node> _lightParent;
     ref<BmpFont> _font;
     AxisCompass _compass;
     OrbitCamera _orbitCamera;
+    bool _moveCamera{false};
+    bool _pause{false};
 };
