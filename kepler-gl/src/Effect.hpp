@@ -49,7 +49,7 @@ public:
     void setValue(const Uniform* uniform, const glm::vec3& value) const noexcept;
     void setValue(const Uniform* uniform, const glm::vec4& value) const noexcept;
 
-    void setTexture(const Uniform* uniform, ref<Texture> texture) const noexcept;
+    void setTexture(const Uniform* uniform, const ref<Texture>& texture) const noexcept;
 
 private:
 

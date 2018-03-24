@@ -4,11 +4,11 @@
 
 namespace kepler {
 
-IndexAccessor::IndexAccessor(ref<IndexBuffer> indexBuffer, GLsizei count, GLenum type, GLintptr offset)
+IndexAccessor::IndexAccessor(const ref<IndexBuffer>& indexBuffer, GLsizei count, GLenum type, GLintptr offset)
     : _buffer(indexBuffer), _count(count), _type(type), _offset(offset) {
 }
 
-ref<IndexAccessor> IndexAccessor::create(ref<IndexBuffer> indexBuffer, GLsizei count, GLenum type, GLintptr offset) {
+ref<IndexAccessor> IndexAccessor::create(const ref<IndexBuffer>& indexBuffer, GLsizei count, GLenum type, GLintptr offset) {
     if (indexBuffer == nullptr) {
         return nullptr;
     }

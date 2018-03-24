@@ -35,7 +35,7 @@ static glm::vec3 g_lightColor(1);
 
 static ref<Node> createLamp();
 static ref<Material> createCubeMaterial();
-static ref<Material> createPointLightMaterial(const char* texture_path, ref<Node> lightNode);
+static ref<Material> createPointLightMaterial(const char* texture_path, const ref<Node>& lightNode);
 
 LightTest::LightTest() {
 }
@@ -219,7 +219,7 @@ static ref<Material> createCubeMaterial() {
     return nullptr;
 }
 
-static ref<Material> createPointLightMaterial(const char* texture_path, ref<Node> lightNode) {
+static ref<Material> createPointLightMaterial(const char* texture_path, const ref<Node>& lightNode) {
     static constexpr char* VERT = "res/shaders/point_light.vert";
     static constexpr char* FRAG = "res/shaders/point_light.frag";
     auto effect = Effect::createFromFile(VERT, FRAG);

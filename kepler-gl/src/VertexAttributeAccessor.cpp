@@ -3,12 +3,12 @@
 #include "VertexBuffer.hpp"
 
 namespace kepler {
-VertexAttributeAccessor::VertexAttributeAccessor(ref<VertexBuffer> vbo,
+VertexAttributeAccessor::VertexAttributeAccessor(const ref<VertexBuffer>& vbo,
     GLint componentSize, GLenum type, GLboolean normalized, GLsizei stride, GLintptr offset, GLsizei count)
     : _vbo(vbo), _componentSize(componentSize), _type(type), _normalized(normalized), _stride(stride), _offset(offset), _count(count) {
 }
 
-ref<VertexAttributeAccessor> VertexAttributeAccessor::create(ref<VertexBuffer> vbo,
+ref<VertexAttributeAccessor> VertexAttributeAccessor::create(const ref<VertexBuffer>& vbo,
     GLint componentSize, GLenum type, GLboolean normalized, GLsizei stride, GLintptr offset, GLsizei count) {
     return std::make_shared<VertexAttributeAccessor>(vbo, componentSize, type, normalized, stride, offset, count);
 }

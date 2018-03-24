@@ -30,7 +30,7 @@ public:
 
     ref<Sampler> sampler() const;
 
-    void setSampler(ref<Sampler> sampler);
+    void setSampler(const ref<Sampler>& sampler);
 
     virtual ~Texture() noexcept;
 

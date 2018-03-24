@@ -126,7 +126,7 @@ void Effect::setValue(const Uniform* uniform, const glm::vec4& value) const noex
     glUniform4f(uniform->_location, value.x, value.y, value.z, value.w);
 }
 
-void Effect::setTexture(const Uniform* uniform, ref<Texture> texture) const noexcept {
+void Effect::setTexture(const Uniform* uniform, const ref<Texture>& texture) const noexcept {
     GLenum textureUnit = GL_TEXTURE0 + uniform->_index;
     glActiveTexture(textureUnit);
     texture->bind(uniform->_index);

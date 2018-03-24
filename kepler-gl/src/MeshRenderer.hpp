@@ -12,10 +12,10 @@ class Mesh;
 class MeshRenderer : public virtual DrawableComponent, public Bounded {
 public:
     /// Use MeshRenderer::create()
-    explicit MeshRenderer(ref<Mesh> mesh);
+    explicit MeshRenderer(const ref<Mesh>& mesh);
     virtual ~MeshRenderer() noexcept;
 
-    static ref<MeshRenderer> create(ref<Mesh> mesh);
+    static ref<MeshRenderer> create(const ref<Mesh>& mesh);
 
     void draw();
 

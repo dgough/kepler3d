@@ -64,7 +64,7 @@ App::~App() noexcept {
     g_app = nullptr;
 }
 
-void App::setDelegate(ref<AppDelegate> appDelegate) {
+void App::setDelegate(const ref<AppDelegate>& appDelegate) {
     auto prev = _impl->_delegate;
     _impl->_delegate = appDelegate;
     if (prev) {

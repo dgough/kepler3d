@@ -58,7 +58,7 @@ public:
     void setValue(const glm::vec3& value);
     void setValue(const glm::vec4& value);
     void setValue(const FunctionBinding& func);
-    void setValue(ref<Texture> texture);
+    void setValue(const ref<Texture>& texture);
 
     Semantic semantic() const;
     void setSemantic(Semantic semantic);

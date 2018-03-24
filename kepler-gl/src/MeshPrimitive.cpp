@@ -34,11 +34,11 @@ void MeshPrimitive::bindIndices() {
     }
 }
 
-void MeshPrimitive::setAttribute(AttributeSemantic semantic, ref<VertexAttributeAccessor> accessor) {
+void MeshPrimitive::setAttribute(AttributeSemantic semantic, const ref<VertexAttributeAccessor>& accessor) {
     _attributes[semantic] = accessor;
 }
 
-void MeshPrimitive::setIndices(ref<IndexAccessor> indices) {
+void MeshPrimitive::setIndices(const ref<IndexAccessor>& indices) {
     _indices = indices;
 }
 
@@ -46,7 +46,7 @@ ref<Material> MeshPrimitive::material() const {
     return _material;
 }
 
-void MeshPrimitive::setMaterial(ref<Material> material) {
+void MeshPrimitive::setMaterial(const ref<Material>& material) {
     if (material == nullptr) {
         // TODO clear other stuff?
         _materialBinding.release();
@@ -116,7 +116,7 @@ void MeshPrimitive::updateBindings() {
     _materialBinding->updateBindings(*_material);
 }
 
-void MeshPrimitive::setNode(ref<Node> node) {
+void MeshPrimitive::setNode(const ref<Node>& node) {
     _node = node;
     updateBindings();
 }

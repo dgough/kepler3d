@@ -68,7 +68,7 @@ using std::string;
 using std::shared_ptr;
 using std::chrono::high_resolution_clock;
 
-using ubyte = unsigned char;
+using ubyte = uint8_t;
 
 static constexpr const char* HAS_UV = "HAS_UV";
 static constexpr const char* HAS_NORMALS = "HAS_NORMALS";

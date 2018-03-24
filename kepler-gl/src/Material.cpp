@@ -8,7 +8,7 @@ ref<Material> Material::create() {
     return std::make_shared<Material>();
 }
 
-ref<Material> Material::create(ref<Technique> technique) {
+ref<Material> Material::create(const ref<Technique>& technique) {
     auto mat = create();
     mat->setTechnique(technique);
     return mat;

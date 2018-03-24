@@ -76,7 +76,7 @@ void Scene::removeChild(const ref<Node>& child) {
     }
 }
 
-void Scene::moveNodesFrom(const ref<Scene> src) {
+void Scene::moveNodesFrom(const ref<Scene>& src) {
     if (src) {
         while (!src->_children.empty()) {
             auto child = src->childAt(0);

@@ -40,15 +40,15 @@ public:
     /// Binds the indices for this mesh's primitive if they exist.
     void bindIndices();
 
-    void setAttribute(AttributeSemantic semantic, ref<VertexAttributeAccessor> accessor);
+    void setAttribute(AttributeSemantic semantic, const ref<VertexAttributeAccessor>& accessor);
     /// Sets the IndexAccessor.
-    void setIndices(ref<IndexAccessor> indices);
+    void setIndices(const ref<IndexAccessor>& indices);
 
     /// Returns the material this primitive is bound to. May return null.
     ref<Material> material() const;
 
     /// Sets the Material that will be used to draw with.
-    void setMaterial(ref<Material> material);
+    void setMaterial(const ref<Material>& material);
 
     const BoundingBox& boundingBox() const;
 
@@ -58,7 +58,7 @@ public:
 
 private:
     void updateBindings();
-    void setNode(ref<Node> node);
+    void setNode(const ref<Node>& node);
 
 private:
     // The type of primitives to render. Allowed values are 0 (POINTS), 1 (LINES), 2 (LINE_LOOP), 3 (LINE_STRIP), 4 (TRIANGLES), 5 (TRIANGLE_STRIP), and 6 (TRIANGLE_FAN).

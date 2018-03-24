@@ -15,7 +15,7 @@ ref<Technique> Technique::create() {
     return std::make_shared<Technique>();
 }
 
-ref<Technique> Technique::create(ref<Effect> effect) {
+ref<Technique> Technique::create(const ref<Effect>& effect) {
     auto tech = create();
     tech->setEffect(effect);
     return tech;
@@ -49,7 +49,7 @@ void Technique::setUniformName(const std::string& glslName, const std::string& p
     _uniforms[glslName] = paramName;
 }
 
-void Technique::setUniform(const std::string& glslName, ref<MaterialParameter> param) {
+void Technique::setUniform(const std::string& glslName, const ref<MaterialParameter>& param) {
     setUniformName(glslName, param->name());
     _values[param->name()] = param;
     updateUniform(*param, glslName);
@@ -62,11 +62,11 @@ void Technique::setSemanticUniform(const std::string& glslName, MaterialParamete
     updateUniform(*p, glslName);
 }
 
-void Technique::setEffect(ref<Effect> effect) {
+void Technique::setEffect(const ref<Effect>& effect) {
     _effect = effect;
 }
 
-void Technique::setMaterial(ref<Material> material) {
+void Technique::setMaterial(const ref<Material>& material) {
     _material = material;
 }
 

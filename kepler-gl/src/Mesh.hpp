@@ -13,18 +13,18 @@ public:
     friend MeshRenderer;
     /// Use Mesh::create() instead.
     Mesh();
-    explicit Mesh(ref<MeshPrimitive> primitive);
+    explicit Mesh(const ref<MeshPrimitive>& primitive);
     virtual ~Mesh() noexcept;
 
     /// Creates an empty Mesh.
     static ref<Mesh> create();
 
     /// Creates a Mesh and adds the given MeshPrimitive.
-    static ref<Mesh> create(ref<MeshPrimitive> primitive);
+    static ref<Mesh> create(const ref<MeshPrimitive>& primitive);
 
     /// Adds a MeshPrimitive to this mesh.
     /// @param[in] primitive The primitive to add.
-    void addMeshPrimitive(ref<MeshPrimitive> primitive);
+    void addMeshPrimitive(const ref<MeshPrimitive>& primitive);
 
     void setName(const char* name);
     void setName(const std::string& name);
@@ -45,7 +45,7 @@ public:
 
 private:
 
-    void setNode(ref<Node> node);
+    void setNode(const ref<Node>& node);
 
     std::vector<ref<MeshPrimitive>> _primitives;
     std::unique_ptr<std::string> _name;

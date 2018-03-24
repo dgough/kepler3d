@@ -7,11 +7,11 @@ namespace kepler {
 
 class VertexAttributeAccessor final {
 public:
-    VertexAttributeAccessor(ref<VertexBuffer> vbo,
+    VertexAttributeAccessor(const ref<VertexBuffer>& vbo,
         GLint componentSize, GLenum type, GLboolean normalized, GLsizei stride, GLintptr offset, GLsizei count);
 
     // TODO this class probably doesn't need to be ref counted since it is immutable.
-    static ref<VertexAttributeAccessor> create(ref<VertexBuffer> vbo,
+    static ref<VertexAttributeAccessor> create(const ref<VertexBuffer>& vbo,
         GLint componentSize, GLenum type, GLboolean normalized, GLsizei stride, GLintptr offset, GLsizei count);
 
     void bind(GLuint location) const noexcept; // TODO should this be GLint so we can detect negative numbers?

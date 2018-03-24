@@ -7,7 +7,7 @@ namespace kepler {
 Mesh::Mesh() {
 }
 
-Mesh::Mesh(ref<MeshPrimitive> primitive) : _primitives{primitive} {
+Mesh::Mesh(const ref<MeshPrimitive>& primitive) : _primitives{primitive} {
 }
 
 Mesh::~Mesh() noexcept {
@@ -17,11 +17,11 @@ ref<Mesh> Mesh::create() {
     return std::make_shared<Mesh>();
 }
 
-ref<Mesh> Mesh::create(ref<MeshPrimitive> primitive) {
+ref<Mesh> Mesh::create(const ref<MeshPrimitive>& primitive) {
     return std::make_shared<Mesh>(primitive);
 }
 
-void Mesh::addMeshPrimitive(ref<MeshPrimitive> primitive) {
+void Mesh::addMeshPrimitive(const ref<MeshPrimitive>& primitive) {
     if (_box.empty()) {
         _box = primitive->boundingBox();
     }
@@ -57,7 +57,7 @@ const BoundingBox& Mesh::boundingBox() const {
     return _box;
 }
 
-void Mesh::setNode(ref<Node> node) {
+void Mesh::setNode(const ref<Node>& node) {
     for (const auto& primitive : _primitives) {
         primitive->setNode(node);
     }

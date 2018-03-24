@@ -13,7 +13,7 @@ public:
         UNSIGNED_INT = GL_UNSIGNED_INT
     };
     // Use IndexAccessor::create()
-    IndexAccessor(ref<IndexBuffer> indexBuffer, GLsizei count, GLenum type, GLintptr offset);
+    IndexAccessor(const ref<IndexBuffer>& indexBuffer, GLsizei count, GLenum type, GLintptr offset);
 
     /// Creates a IndexAccessor.
     /// 
@@ -22,7 +22,7 @@ public:
     /// @param[in] type        The type of the values. Must be UNSIGNED_BYTE, UNSIGNED_SHORT or UNSIGNED_INT.
     /// @param[in] offset      The offset into the buffer.
     /// @return Shared pointer to newly created IndexAccessor.
-    static ref<IndexAccessor> create(ref<IndexBuffer> indexBuffer, GLsizei count, GLenum type, GLintptr offset);
+    static ref<IndexAccessor> create(const ref<IndexBuffer>& indexBuffer, GLsizei count, GLenum type, GLintptr offset);
 
     void bind();
 

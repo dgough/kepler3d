@@ -63,7 +63,7 @@ void MaterialParameter::setValue(const FunctionBinding& func) {
     _function = func;
 }
 
-void MaterialParameter::setValue(ref<Texture> texture) {
+void MaterialParameter::setValue(const ref<Texture>& texture) {
     _function = [texture](Effect& effect, const Uniform* uniform) {
         effect.setTexture(uniform, texture);
     };

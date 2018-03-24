@@ -43,7 +43,7 @@ public:
     void removeChild(const ref<Node>& child);
 
     /// Moves all of the nodes from src to this scene.
-    void moveNodesFrom(const ref<Scene> src);
+    void moveNodesFrom(const ref<Scene>& src);
 
     /// Finds the first descendant node that matches the given name.
     /// Immediate children are checked first before recursing.

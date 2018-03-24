@@ -15,7 +15,7 @@ public:
     Material() = default;
     virtual ~Material() noexcept = default;
     static ref<Material> create();
-    static ref<Material> create(ref<Technique> technique);
+    static ref<Material> create(const ref<Technique>& technique);
     Material(const Material&) = delete;
     Material& operator=(const Material&) = delete;
 

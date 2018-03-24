@@ -42,7 +42,7 @@ ref<Sampler> Texture::sampler() const {
     return _sampler;
 }
 
-void Texture::setSampler(ref<Sampler> sampler) {
+void Texture::setSampler(const ref<Sampler>& sampler) {
     _sampler = sampler;
 }
 

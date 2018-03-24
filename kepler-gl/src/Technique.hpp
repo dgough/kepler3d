@@ -15,7 +15,7 @@ public:
     Technique();
     virtual ~Technique() noexcept;
     static ref<Technique> create();
-    static ref<Technique> create(ref<Effect> effect);
+    static ref<Technique> create(const ref<Effect>& effect);
 
     ref<Effect> effect() const;
     const AttributeMap& attributes() const;
@@ -35,10 +35,10 @@ public:
     /// @param[in] paramName The name of the material parameter.
     void setUniformName(const std::string& glslName, const std::string& paramName);
 
-    void setUniform(const std::string& glslName, ref<MaterialParameter> param);
+    void setUniform(const std::string& glslName, const ref<MaterialParameter>& param);
     void setSemanticUniform(const std::string& glslName, MaterialParameter::Semantic semantic);
-    void setEffect(ref<Effect> effect);
-    void setMaterial(ref<Material> material);
+    void setEffect(const ref<Effect>& effect);
+    void setMaterial(const ref<Material>& material);
 
     void bind(); // TODO remove and use a pass?
     void findValues(std::vector<ref<MaterialParameter>>& values);
