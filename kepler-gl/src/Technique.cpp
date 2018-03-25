@@ -4,6 +4,7 @@
 #include "Material.hpp"
 
 namespace kepler {
+namespace gl {
 
 Technique::Technique() {
 }
@@ -125,5 +126,6 @@ bool Technique::updateUniform(MaterialParameter& materialParam, const std::strin
         materialParam.setUniform(uniform);
     }
     return true;
+}
 }
 }

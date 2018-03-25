@@ -1,14 +1,14 @@
 #pragma once
 
-#include <Base.hpp>
+#include <BaseGL.hpp>
 #include <AppDelegate.hpp>
 #include <Transform.hpp>
 #include <BmpFont.hpp>
 
-using namespace kepler;
+namespace kepler {
+namespace gl {
 
-class TestApp : public AppDelegate
-{
+class TestApp : public AppDelegate {
 public:
     TestApp();
 
@@ -35,3 +35,5 @@ private:
     std::unique_ptr<AxisCompass> _compass;
     ref<BmpFont> _font;
 };
+}
+}

@@ -1,9 +1,10 @@
 #pragma once
 
-#include <Base.hpp>
+#include <BaseGL.hpp>
 #include <string>
 
 namespace kepler {
+namespace gl {
 
 /// Class for loading GLTF files.
 class GLTF2Loader final {
@@ -55,4 +56,5 @@ private:
     class Impl;
     std::unique_ptr<Impl> _impl;
 };
+}
 }

@@ -1,13 +1,14 @@
 #pragma once
 
-#include <Base.hpp>
-#include "BaseGL.hpp"
+#include <BaseGL.hpp>
+#include <OpenGL.hpp>
 
 #include <string>
 #include <map>
 #include <functional>
 
 namespace kepler {
+namespace gl {
 
 /// RenderState controls the fixed-function GL states and functions when rendering a primitive.
 /// 
@@ -169,4 +170,5 @@ private:
     PolygonOffset _polygonOffset;
     Scissor _scissor;
 };
+}
 }

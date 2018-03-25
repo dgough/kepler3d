@@ -2,6 +2,7 @@
 #include "Sampler.hpp"
 
 namespace kepler {
+namespace gl {
 
 static TextureHandle __currentSamplerId = 0;
 
@@ -35,5 +36,6 @@ void Sampler::setWrapMode(Sampler::Wrap wrapS, Sampler::Wrap wrapT, Sampler::Wra
 void Sampler::setFilterMode(Sampler::MinFilter minFilter, Sampler::MagFilter magFilter) {
     glSamplerParameteri(_handle, GL_TEXTURE_MIN_FILTER, (GLint)minFilter);
     glSamplerParameteri(_handle, GL_TEXTURE_MAG_FILTER, (GLint)magFilter);
+}
 }
 }

@@ -1,12 +1,13 @@
 #pragma once
 
-#include <Base.hpp>
+#include <BaseGL.hpp>
 #include "BaseMath.hpp"
 
 #include <vector>
 #include <functional>
 
 namespace kepler {
+namespace gl {
 
 class Material;
 class Effect;
@@ -32,4 +33,5 @@ private:
     std::vector<std::function<void(const Effect& effect, const Node&, const Camera*)>> _functions;
     std::vector<ref<MaterialParameter>> _values;
 };
+}
 }

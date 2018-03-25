@@ -18,6 +18,7 @@ using std::string;
 using std::regex;
 
 namespace kepler {
+namespace gl {
 
 // Disable OpenGL code to make it easier to profile font loading
 static constexpr bool DISABLE_GL = false;
@@ -539,5 +540,6 @@ void assignWithoutQuotes(string& destination, const string& source) {
     else {
         destination.assign(source);
     }
+}
 }
 }

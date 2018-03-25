@@ -1,10 +1,13 @@
 #include "stdafx.h"
 #include "App.hpp"
-#include "BaseGL.hpp"
+#include <OpenGL.hpp>
 #include "RenderState.hpp"
 #include <GLFW/glfw3.h>
 
 namespace kepler {
+
+using namespace kepler::gl;
+//using gl::replace_glad_callbacks;
 
 static App* g_app = nullptr;
 

@@ -1,9 +1,10 @@
 #pragma once
 
-#include <Base.hpp>
+#include <BaseGL.hpp>
 #include "MaterialParameter.hpp"
 
 namespace kepler {
+namespace gl {
 
 enum class AttributeSemantic {
     POSITION,
@@ -49,4 +50,5 @@ enum class AttributeSemantic {
     TEXCOORD_30,
     TEXCOORD_31,
 };
+}
 }

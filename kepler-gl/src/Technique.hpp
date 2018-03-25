@@ -1,10 +1,11 @@
 #pragma once
 
-#include <Base.hpp>
+#include <BaseGL.hpp>
 #include "AttributeSemantic.hpp"
 #include "RenderState.hpp"
 
 namespace kepler {
+namespace gl {
 
 using AttributeMap = std::map<std::string, AttributeSemantic>;
 
@@ -71,4 +72,5 @@ private:
     // states
     RenderState _renderState;
 };
+}
 }

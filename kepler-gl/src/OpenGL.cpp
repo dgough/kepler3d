@@ -1,8 +1,10 @@
 #include "stdafx.h"
-#include "BaseGL.hpp"
+#include <OpenGL.hpp>
 #include <iostream>
 
 namespace kepler {
+namespace gl {
+
 #ifdef GLAD_DEBUG
 static void check_gl_error(const char* name, void* funcptr, int len_args, ...) {
     GLenum error_code = glad_glGetError();
@@ -17,5 +19,6 @@ void replace_glad_callbacks() {
     glad_set_pre_callback(check_gl_error);
     glad_set_post_callback(check_gl_error);
 #endif
+}
 }
 }

@@ -1,9 +1,10 @@
 #pragma once
 
-#include <Base.hpp>
-#include "BaseGL.hpp"
+#include <BaseGL.hpp>
+#include <OpenGL.hpp>
 
 namespace kepler {
+namespace gl {
 
 /// Wrapper for VAO.
 class VertexAttributeBinding final {
@@ -22,4 +23,5 @@ private:
 private:
     GLuint _handle;
 };
+}
 }

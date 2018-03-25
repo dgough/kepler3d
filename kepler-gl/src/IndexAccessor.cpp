@@ -3,6 +3,7 @@
 #include "IndexBuffer.hpp"
 
 namespace kepler {
+namespace gl {
 
 IndexAccessor::IndexAccessor(const ref<IndexBuffer>& indexBuffer, GLsizei count, GLenum type, GLintptr offset)
     : _buffer(indexBuffer), _count(count), _type(type), _offset(offset) {
@@ -29,5 +30,6 @@ GLenum IndexAccessor::type() const {
 
 GLintptr IndexAccessor::offset() const {
     return _offset;
+}
 }
 }

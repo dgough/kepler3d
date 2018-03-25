@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include "macros.hpp"
 
-#include <BaseGL.hpp>
+#include <OpenGL.hpp>
 
 #include <GLFW/glfw3.h>
 
@@ -21,6 +21,7 @@ static constexpr char* DUCK_PATH = BASE_DIR "Duck/glTF/Duck.gltf";
 static constexpr char* TRUCK_PATH = BASE_DIR "CesiumMilkTruck/glTF/CesiumMilkTruck.gltf";
 
 using namespace kepler;
+using namespace kepler::gl;
 
 //#define DISABLE_GLTF2_LOADER_TEST
 #ifndef DISABLE_GLTF2_LOADER_TEST

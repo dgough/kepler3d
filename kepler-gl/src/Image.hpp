@@ -1,8 +1,9 @@
 #pragma once
 
-#include <Base.hpp>
+#include <BaseGL.hpp>
 
 namespace kepler {
+namespace gl {
 
 /// Uncompressed image data.
 class Image {
@@ -64,4 +65,5 @@ private:
     Format _format;
     unsigned char* _data;
 };
+}
 }

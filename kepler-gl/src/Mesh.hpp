@@ -1,11 +1,12 @@
 #pragma once
 
-#include <Base.hpp>
+#include <BaseGL.hpp>
 #include "BoundingBox.hpp"
 
 #include <vector>
 
 namespace kepler {
+namespace gl {
 
 /// A Mesh is a collection of MeshPrimitives.
 class Mesh {
@@ -51,4 +52,5 @@ private:
     std::unique_ptr<std::string> _name;
     BoundingBox _box;
 };
+}
 }

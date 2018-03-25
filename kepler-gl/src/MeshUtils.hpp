@@ -1,10 +1,11 @@
 #pragma once
 
-#include <Base.hpp>
 #include <BaseGL.hpp>
+#include <OpenGL.hpp>
 #include <glm/glm.hpp>
 
 namespace kepler {
+namespace gl {
 
 /// Creates a cube MeshPrimitive with position and normal attributes.
 ref<MeshPrimitive> createLitCubePrimitive();
@@ -15,4 +16,5 @@ ref<MeshPrimitive> createTexturedLitQuadPrimitive(glm::vec2 maxTexCoords = glm::
 
 ref<MeshPrimitive> createWireframeBoxPrimitive(const BoundingBox& box);
 
+}
 }

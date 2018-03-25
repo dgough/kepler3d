@@ -1,9 +1,10 @@
 #pragma once
 
-#include <Base.hpp>
+#include <BaseGL.hpp>
 #include "Texture.hpp"
 
 namespace kepler {
+namespace gl {
 
 class Sampler {
 public:
@@ -53,4 +54,5 @@ public:
 private:
     SamplerHandle _handle;
 };
+}
 }

@@ -15,6 +15,7 @@
 #include <array>
 
 namespace kepler {
+namespace gl {
 
 static constexpr float SCALE = 0.05f;
 static constexpr float X_POS = 0.9f;
@@ -100,5 +101,6 @@ ref<Node> createNode() {
         return node;
     }
     return nullptr;
+}
 }
 }

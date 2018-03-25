@@ -1,7 +1,7 @@
 #include "LightTest.hpp"
 #include "MainMenu.hpp"
 
-#include <BaseGL.hpp>
+#include <OpenGL.hpp>
 #include <App.hpp>
 #include <GLTF2Loader.hpp>
 #include <Scene.hpp>
@@ -22,7 +22,8 @@
 
 #include <iostream>
 
-using namespace kepler;
+namespace kepler {
+namespace gl {
 
 #define SAMPLES_BASE "../../glTF-Sample-Models/2.0/"
 
@@ -35,10 +36,9 @@ static glm::vec3 g_lightColor(1);
 
 static ref<Node> createLamp();
 static ref<Material> createCubeMaterial();
-static ref<Material> createPointLightMaterial(const char* texture_path, const ref<Node>& lightNode);
+static ref<Material> createPointLightMaterial(const char* texture_path, ref<Node> lightNode);
 
-LightTest::LightTest() {
-}
+LightTest::LightTest() = default;
 
 void LightTest::start() {
     glClearColor(0.16f, 0.3f, 0.5f, 1.0f);
@@ -207,7 +207,7 @@ static ref<Material> createCubeMaterial() {
         auto tech = Technique::create(effect);
         tech->setAttribute("a_position", AttributeSemantic::POSITION);
         tech->setSemanticUniform("mvp", MaterialParameter::Semantic::MODELVIEWPROJECTION);
-        auto f = [](Effect& effect, const Uniform* uniform) {effect.setValue(uniform, g_lightColor);};
+        auto f = [](Effect& effect, const Uniform* uniform) {effect.setValue(uniform, g_lightColor); };
         tech->setUniform("color", MaterialParameter::create("color", f));
 
         auto& state = tech->renderState();
@@ -219,7 +219,7 @@ static ref<Material> createCubeMaterial() {
     return nullptr;
 }
 
-static ref<Material> createPointLightMaterial(const char* texture_path, const ref<Node>& lightNode) {
+static ref<Material> createPointLightMaterial(const char* texture_path, ref<Node> lightNode) {
     static constexpr char* VERT = "res/shaders/point_light.vert";
     static constexpr char* FRAG = "res/shaders/point_light.frag";
     auto effect = Effect::createFromFile(VERT, FRAG);
@@ -244,7 +244,7 @@ static ref<Material> createPointLightMaterial(const char* texture_path, const re
     tech->setSemanticUniform("modelView", MaterialParameter::Semantic::MODELVIEW);
     tech->setSemanticUniform("normalMatrix", MaterialParameter::Semantic::MODELVIEWINVERSETRANSPOSE);
 
-    auto lightPos = MaterialParameter::create("lightPos", 
+    auto lightPos = MaterialParameter::create("lightPos",
         [lightNode](Effect& effect, const Uniform* uniform) {
         // light position in view space
         glm::vec4 v = glm::vec4(lightNode->worldTransform().translation(), 1.0f);
@@ -271,4 +271,6 @@ static ref<Material> createPointLightMaterial(const char* texture_path, const re
     state.setDepthTest(true);
     state.setCulling(true);
     return Material::create(tech);
+}
+}
 }

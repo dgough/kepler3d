@@ -1,8 +1,9 @@
 #pragma once
 
-#include <Base.hpp>
+#include <BaseGL.hpp>
 
 namespace kepler {
+namespace gl {
 
 /// The AxisCompass draws the xyz axis in the corner. It rotates along with the camera.
 class AxisCompass {
@@ -17,4 +18,5 @@ public:
 private:
     ref<Node> _node;
 };
+}
 }

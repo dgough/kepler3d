@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Base.hpp>
+#include <BaseGL.hpp>
 #include "AttributeSemantic.hpp"
 #include "MaterialBinding.hpp"
 #include "BoundingBox.hpp"
@@ -8,6 +8,7 @@
 #include <map>
 
 namespace kepler {
+namespace gl {
 
 /// A MeshPrimitive is the data required to draw a primitive with glDrawArrays or glDrawElements.
 class MeshPrimitive : public std::enable_shared_from_this<MeshPrimitive> {
@@ -71,4 +72,5 @@ private:
     std::weak_ptr<Node> _node;
     BoundingBox _box;
 };
+}
 }

@@ -2,6 +2,8 @@
 #include "VertexBuffer.hpp"
 
 namespace kepler {
+namespace gl {
+
 VertexBuffer::VertexBuffer() : _handle(0) {
 
 }
@@ -21,5 +23,6 @@ ref<VertexBuffer> VertexBuffer::create(GLsizeiptr size, const GLvoid* data, GLen
 
 void VertexBuffer::bind() const noexcept {
     glBindBuffer(GL_ARRAY_BUFFER, _handle);
+}
 }
 }

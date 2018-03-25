@@ -1,12 +1,13 @@
 #pragma once
 
-#include <Base.hpp>
+#include <BaseGL.hpp>
 #include "MaterialParameter.hpp"
 
 #include <string>
 #include <map>
 
 namespace kepler {
+namespace gl {
 
 /// A material is defined as an instance of a shading technique along with parameterized values.
 class Material : public std::enable_shared_from_this<Material> {
@@ -39,4 +40,5 @@ private:
     ref<Technique> _technique; // TODO only 1 for now?
     std::map<std::string, ref<MaterialParameter>> _parameters;
 };
+}
 }

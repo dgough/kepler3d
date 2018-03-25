@@ -10,6 +10,7 @@
 #include <array>
 
 namespace kepler {
+namespace gl {
 
 /// Creates a cube mesh primitive
 ref<MeshPrimitive> createLitCubePrimitive() {
@@ -113,4 +114,5 @@ ref<MeshPrimitive> createWireframeBoxPrimitive(const BoundingBox& box) {
     return prim;
 }
 
+}
 }

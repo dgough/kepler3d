@@ -4,6 +4,7 @@
 #include "Sampler.hpp"
 
 namespace kepler {
+namespace gl {
 
 static TextureHandle __currentTextureId = 0;
 
@@ -68,5 +69,6 @@ ref<Texture> Texture::create2D(Image* image, int internalFormat, bool generateMi
     texture->_width = image->width();
     texture->_height = image->height();
     return texture;
+}
 }
 }

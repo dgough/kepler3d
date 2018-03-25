@@ -1,10 +1,11 @@
 #pragma once
 
-#include <Base.hpp>
+#include <BaseGL.hpp>
 #include "DrawableComponent.hpp"
 #include <Bounded.hpp>
 
 namespace kepler {
+namespace gl {
 
 class Mesh;
 
@@ -37,4 +38,5 @@ private:
     // for now, only have 1 mesh per renderer
     ref<Mesh> _mesh;
 };
+}
 }

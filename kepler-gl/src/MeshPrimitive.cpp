@@ -8,6 +8,7 @@
 #include "IndexAccessor.hpp"
 
 namespace kepler {
+namespace gl {
 
 MeshPrimitive::MeshPrimitive(Mode mode) : _mode(mode) {
 }
@@ -119,5 +120,6 @@ void MeshPrimitive::updateBindings() {
 void MeshPrimitive::setNode(const ref<Node>& node) {
     _node = node;
     updateBindings();
+}
 }
 }

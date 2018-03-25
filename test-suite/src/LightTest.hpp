@@ -1,10 +1,12 @@
 #pragma once
 
+#include <BaseGL.hpp>
 #include <AppDelegate.hpp>
 #include <OrbitCamera.hpp>
 #include <AxisCompass.hpp>
 
-using namespace kepler;
+namespace kepler {
+namespace gl {
 
 class LightTest : public kepler::AppDelegate {
 public:
@@ -30,3 +32,6 @@ private:
     bool _moveCamera{false};
     bool _pause{false};
 };
+
+}
+}

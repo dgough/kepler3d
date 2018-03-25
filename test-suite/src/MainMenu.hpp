@@ -1,11 +1,13 @@
 #pragma once
 
+#include <BaseGL.hpp>
 #include <AppDelegate.hpp>
 #include <Button.hpp>
 
 #include <vector>
 
-using namespace kepler;
+namespace kepler {
+namespace gl {
 
 /// The main menu of the test suite.
 class MainMenu : public AppDelegate {
@@ -32,3 +34,5 @@ private:
     ref<BmpFont> _font;
     std::vector<ref<Button>> _buttons;
 };
+}
+}

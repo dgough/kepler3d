@@ -1,8 +1,10 @@
 #pragma once
 
+#include <BaseGL.hpp>
 #include <AppDelegate.hpp>
 
-using namespace kepler;
+namespace kepler {
+namespace gl {
 
 /// Test loading fonts and drawing text.
 /// Dropping a font file into the window will load it.
@@ -23,3 +25,5 @@ private:
 
     ref<BmpFont> _font;
 };
+}
+}

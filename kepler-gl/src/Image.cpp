@@ -1,11 +1,12 @@
 #include "stdafx.h"
 #include "Image.hpp"
-#include "BaseGL.hpp"
+#include <OpenGL.hpp>
 
 #include <SOIL2.h>
 #include "Logging.hpp"
 
 namespace kepler {
+namespace gl {
 
 static Image::Format toImageFormat(int soilFormat);
 static int toSoilFormat(Image::Format format);
@@ -118,5 +119,6 @@ void flipImageY(unsigned char* data, int width, int height, int format) {
             ++i2;
         }
     }
+}
 }
 }

@@ -140,7 +140,6 @@
   <ItemGroup>
     <ClCompile Include="src\AppGLFW.cpp" />
     <ClCompile Include="src\AxisCompass.cpp" />
-    <ClCompile Include="src\BaseGL.cpp" />
     <ClCompile Include="src\BmpFont.cpp" />
     <ClCompile Include="src\Effect.cpp" />
     <ClCompile Include="src\glad.cpp" />
@@ -155,6 +154,7 @@
     <ClCompile Include="src\MeshPrimitive.cpp" />
     <ClCompile Include="src\MeshRenderer.cpp" />
     <ClCompile Include="src\MeshUtils.cpp" />
+    <ClCompile Include="src\OpenGL.cpp" />
     <ClCompile Include="src\RenderState.cpp" />
     <ClCompile Include="src\Sampler.cpp" />
     <ClCompile Include="src\stdafx.cpp">
@@ -185,6 +185,7 @@
     <ClInclude Include="src\MeshPrimitive.hpp" />
     <ClInclude Include="src\MeshRenderer.hpp" />
     <ClInclude Include="src\MeshUtils.hpp" />
+    <ClInclude Include="src\OpenGL.hpp" />
     <ClInclude Include="src\RenderState.hpp" />
     <ClInclude Include="src\Sampler.hpp" />
     <ClInclude Include="src\stdafx.h" />

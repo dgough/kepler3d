@@ -5,6 +5,7 @@
 #include "TestApp.hpp"
 
 using namespace kepler;
+using namespace kepler::gl;
 
 static constexpr int WINDOW_WIDTH = 1024;
 static constexpr int WINDOW_HEIGHT = 768;

@@ -1,9 +1,10 @@
 #pragma once
 
-#include <Base.hpp>
-#include "BaseGL.hpp"
+#include <BaseGL.hpp>
+#include <OpenGL.hpp>
 
 namespace kepler {
+namespace gl {
 
 class VertexAttributeAccessor final {
 public:
@@ -27,4 +28,5 @@ private:
     GLintptr _offset;
     GLsizei _count;
 };
+}
 }

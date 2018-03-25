@@ -1,11 +1,13 @@
 #pragma once
 
+#include <BaseGL.hpp>
 #include <AppDelegate.hpp>
 #include <OrbitCamera.hpp>
 #include <AxisCompass.hpp>
 #include <BoundingBox.hpp>
 
-using namespace kepler;
+namespace kepler {
+namespace gl {
 
 /// Test loading a glTF 2.0 
 /// Dropping a gltf file into the window will load it.
@@ -38,3 +40,5 @@ private:
     BoundingBox _box;
     float _zoomMag = 1.0f;
 };
+}
+}

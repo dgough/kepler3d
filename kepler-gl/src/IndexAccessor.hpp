@@ -1,9 +1,10 @@
 #pragma once
 
-#include <Base.hpp>
-#include "BaseGL.hpp"
+#include <BaseGL.hpp>
+#include <OpenGL.hpp>
 
 namespace kepler {
+namespace gl {
 
 class IndexAccessor final {
 public:
@@ -36,4 +37,5 @@ private:
     GLenum _type;
     GLintptr _offset;
 };
+}
 }

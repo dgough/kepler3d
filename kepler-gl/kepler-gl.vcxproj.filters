@@ -114,6 +114,9 @@
     <ClInclude Include="src\VertexAttributeBinding.hpp">
       <Filter>src\Materials</Filter>
     </ClInclude>
+    <ClInclude Include="src\OpenGL.hpp">
+      <Filter>src\Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
@@ -170,9 +173,6 @@
     <ClCompile Include="src\AppGLFW.cpp">
       <Filter>src\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="src\BaseGL.cpp">
-      <Filter>src\Base</Filter>
-    </ClCompile>
     <ClCompile Include="src\glad.cpp">
       <Filter>src\Base</Filter>
     </ClCompile>
@@ -190,6 +190,9 @@
     </ClCompile>
     <ClCompile Include="src\VertexAttributeBinding.cpp">
       <Filter>src\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenGL.cpp">
+      <Filter>src\Base</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

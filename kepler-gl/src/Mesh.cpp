@@ -3,6 +3,7 @@
 #include "MeshPrimitive.hpp"
 
 namespace kepler {
+namespace gl {
 
 Mesh::Mesh() {
 }
@@ -61,5 +62,6 @@ void Mesh::setNode(const ref<Node>& node) {
     for (const auto& primitive : _primitives) {
         primitive->setNode(node);
     }
+}
 }
 }

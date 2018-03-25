@@ -3,6 +3,7 @@
 #include "MaterialParameter.hpp"
 
 namespace kepler {
+namespace gl {
 
 static constexpr GLubyte RED_MASK = 1;
 static constexpr GLubyte GREEN_MASK = 1 << 1;
@@ -323,5 +324,6 @@ void RenderState::bindStateBlock() const noexcept {
             bindState(_state, STENCIL_TEST, GL_STENCIL_TEST);
         }
     }
+}
 }
 }

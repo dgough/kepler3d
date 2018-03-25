@@ -35,7 +35,8 @@
 
 #include <iostream>
 
-using namespace kepler;
+namespace kepler {
+namespace gl {
 
 #define SAMPLES_BASE "../../glTF-Sample-Models/2.0/"
 
@@ -401,4 +402,6 @@ ref<Mesh> createCubeMesh() {
     //    return mesh;
     //}
     return nullptr;
+}
+}
 }

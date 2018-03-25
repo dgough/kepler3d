@@ -2,11 +2,12 @@
 
 #include <map>
 
-#include <Base.hpp>
-#include "BaseGL.hpp"
+#include <BaseGL.hpp>
+#include <OpenGL.hpp>
 #include "BaseMath.hpp"
 
 namespace kepler {
+namespace gl {
 
 class Uniform;
 
@@ -82,4 +83,5 @@ private:
     unsigned int _index;
     std::weak_ptr<Effect> _effect;
 };
+}
 }

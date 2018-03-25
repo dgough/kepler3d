@@ -8,6 +8,7 @@
 #include "Logging.hpp"
 
 namespace kepler {
+namespace gl {
 VertexAttributeBinding::VertexAttributeBinding(GLuint handle) : _handle(handle) {
 }
 
@@ -58,5 +59,6 @@ void VertexAttributeBinding::bind() {
 
 void VertexAttributeBinding::unbind() {
     glBindVertexArray(0);
+}
 }
 }

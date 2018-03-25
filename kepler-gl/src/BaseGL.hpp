@@ -1,22 +1,29 @@
 #pragma once
 
-#ifdef _WIN32
-#define APIENTRY __stdcall
-#endif
-
-//#define GLAD_DEBUG
-
-// GLAD
-#include <glad/glad.h>
+#include <Base.hpp>
 
 namespace kepler {
+namespace gl {
 
-using BufferHandle = GLuint;
-using VertexBufferHandle = GLuint;
-using IndexBufferHandle = GLuint;
-using ProgramHandle = GLuint;
-using TextureHandle = GLuint;
-using SamplerHandle = GLuint;
+class Mesh;
+class MeshRenderer;
+class MeshPrimitive;
+class VertexBuffer;
+class IndexBuffer;
+class IndexAccessor;
+class VertexAttributeAccessor;
+class VertexAttributeBinding;
+class Effect;
+class Material;
+class MaterialParameter;
+class Technique;
+class RenderState;
+class Image;
+class Texture;
+class Sampler;
+class BmpFont;
 
-void replace_glad_callbacks();
+class AxisCompass;
+
+}
 }

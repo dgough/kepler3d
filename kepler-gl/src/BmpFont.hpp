@@ -1,9 +1,11 @@
 #pragma once
 
-#include <Base.hpp>
+#include <BaseGL.hpp>
 #include <string>
 
 namespace kepler {
+namespace gl {
+
 
 /// BmpFont represents a bitmap font that can draw byte strings.
 /// 
@@ -35,4 +37,5 @@ private:
     class Impl;
     std::unique_ptr<Impl> _impl;
 };
+}
 }

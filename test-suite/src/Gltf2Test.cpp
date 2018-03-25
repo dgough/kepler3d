@@ -1,7 +1,7 @@
 #include "Gltf2Test.hpp"
 #include "MainMenu.hpp"
 
-#include <BaseGL.hpp>
+#include <OpenGL.hpp>
 #include <App.hpp>
 #include <GLTF2Loader.hpp>
 #include <Scene.hpp>
@@ -20,7 +20,9 @@
 #include <iostream>
 #include <algorithm>
 
-using namespace kepler;
+namespace kepler {
+namespace gl {
+
 using glm::vec3;
 
 static std::vector<const char*> g_paths{
@@ -262,7 +264,7 @@ ref<Material> createBoxMaterial() {
         auto tech = Technique::create(effect);
         tech->setAttribute("a_position", AttributeSemantic::POSITION);
         tech->setSemanticUniform("mvp", MaterialParameter::Semantic::MODELVIEWPROJECTION);
-        auto f = [](Effect& effect, const Uniform* uniform) {effect.setValue(uniform, glm::vec3(1, 0, 0));};
+        auto f = [](Effect& effect, const Uniform* uniform) {effect.setValue(uniform, glm::vec3(1, 0, 0)); };
         tech->setUniform("color", MaterialParameter::create("color", f));
 
         auto& state = tech->renderState();
@@ -272,4 +274,6 @@ ref<Material> createBoxMaterial() {
         return Material::create(tech);
     }
     return nullptr;
+}
+}
 }

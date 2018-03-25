@@ -2,7 +2,7 @@
 
 #include "gtest/gtest.h"
 
-#include <BaseGL.hpp>
+#include <OpenGL.hpp>
 #include <GLFW/glfw3.h>
 
 namespace kepler {
@@ -12,10 +12,10 @@ static constexpr int WINDOW_HEIGHT = 6;
 
 class KeplerEnvironment : public ::testing::Environment {
 public:
-    virtual void SetUp() override {
+    void SetUp() override {
         _window = createWindow();
     }
-    virtual void TearDown() override {
+    void TearDown() override {
         if (_window != nullptr) {
             glfwDestroyWindow(_window);
         }

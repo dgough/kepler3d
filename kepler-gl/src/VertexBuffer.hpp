@@ -1,9 +1,11 @@
 #pragma once
 
-#include <Base.hpp>
-#include "BaseGL.hpp"
+#include <BaseGL.hpp>
+#include <OpenGL.hpp>
 
 namespace kepler {
+namespace gl {
+
 
 /// Wrapper for a Vertex Buffer Object (GL_ARRAY_BUFFER).
 class VertexBuffer {
@@ -27,4 +29,5 @@ public:
 private:
     VertexBufferHandle _handle;
 };
+}
 }

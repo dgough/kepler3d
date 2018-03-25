@@ -12,6 +12,7 @@ html
 /notes
 /unittests/test.bin
 /unittests/test.txt
+/.vscode
 
 # res directories
 /test-app/res/fonts

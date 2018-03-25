@@ -3,6 +3,7 @@
 #include "Technique.hpp"
 
 namespace kepler {
+namespace gl {
 
 ref<Material> Material::create() {
     return std::make_shared<Material>();
@@ -54,5 +55,6 @@ void Material::bind() {
     if (_technique) {
         _technique->bind();
     }
+}
 }
 }

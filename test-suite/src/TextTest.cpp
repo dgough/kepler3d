@@ -1,7 +1,7 @@
 #include "TextTest.hpp"
 #include "MainMenu.hpp"
 
-#include <BaseGL.hpp>
+#include <OpenGL.hpp>
 #include <App.hpp>
 #include <StringUtils.hpp>
 #include <BmpFont.hpp>
@@ -9,7 +9,9 @@
 #include <iostream>
 #include <chrono>
 
-using namespace kepler;
+namespace kepler {
+namespace gl {
+
 using glm::vec3;
 
 static constexpr char* FONT_EXTENSION = ".fnt";
@@ -87,4 +89,6 @@ void TextTest::dropEvent(int count, const char** paths) {
             return;
         }
     }
+}
+}
 }

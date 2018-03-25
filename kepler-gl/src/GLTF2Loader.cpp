@@ -37,6 +37,7 @@
     }
 
 namespace kepler {
+namespace gl {
 
 static constexpr GLchar* DEFAULT_VERT_SHADER = "precision highp float;\n"
     "\n"
@@ -973,5 +974,6 @@ void setState(int state, RenderState& block) {
         logw("Unknown enable state");
         break;
     }
+}
 }
 }

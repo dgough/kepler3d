@@ -2,6 +2,8 @@
 #include "IndexBuffer.hpp"
 
 namespace kepler {
+namespace gl {
+
 IndexBuffer::IndexBuffer() : _handle(0) {
 
 }
@@ -21,5 +23,6 @@ ref<IndexBuffer> IndexBuffer::create(GLsizeiptr size, const GLvoid* data, GLenum
 
 void IndexBuffer::bind() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _handle);
+}
 }
 }

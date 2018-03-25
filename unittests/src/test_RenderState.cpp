@@ -4,6 +4,7 @@
 #include <RenderState.hpp>
 
 using namespace kepler;
+using namespace kepler::gl;
 
 TEST(renderState, set_bits) {
     RenderState r;

@@ -2,6 +2,7 @@
 #include "MaterialParameter.hpp"
 
 namespace kepler {
+namespace gl {
 
 MaterialParameter::MaterialParameter(const std::string& name)
     : _name(name), _semantic(Semantic::NONE), _uniform(nullptr) {
@@ -90,5 +91,6 @@ void MaterialParameter::bind(Effect& effect) const {
         return; // TODO assert?
     }
     _function(effect, _uniform);
+}
 }
 }

@@ -1,9 +1,11 @@
 #pragma once
 
-#include <Base.hpp>
-#include "BaseGL.hpp"
+#include <BaseGL.hpp>
+#include <OpenGL.hpp>
 
 namespace kepler {
+namespace gl {
+
 
 /// Wrapper for a GL_ELEMENT_ARRAY_BUFFER.
 class IndexBuffer {
@@ -22,4 +24,5 @@ public:
 private:
     IndexBufferHandle _handle;
 };
+}
 }

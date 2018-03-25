@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Base.hpp>
+#include <BaseGL.hpp>
 #include "Effect.hpp"
 #include "Texture.hpp"
 
@@ -11,6 +11,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 namespace kepler {
+namespace gl {
 
 class Uniform;
 
@@ -93,5 +94,6 @@ inline ref<MaterialParameter> MaterialParameter::create(std::string&& name, cons
     auto param = MaterialParameter::create(std::move(name));
     param->setValue(type);
     return param;
+}
 }
 }

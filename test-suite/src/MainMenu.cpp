@@ -3,7 +3,7 @@
 #include "LightTest.hpp"
 #include "Gltf2Test.hpp"
 
-#include <BaseGL.hpp>
+#include <OpenGL.hpp>
 #include <GLFW/glfw3.h>
 
 #include <App.hpp>
@@ -11,7 +11,8 @@
 
 #include <iostream>
 
-using namespace kepler;
+namespace kepler {
+namespace gl {
 
 static constexpr int WINDOW_WIDTH = 1024;
 static constexpr int WINDOW_HEIGHT = 768;
@@ -114,8 +115,12 @@ bool MainMenu::clickButtonAt(glm::vec2 pos) {
     }
     return false;
 }
+}
+}
 
 int main() {
+    using namespace kepler;
+    using namespace kepler::gl;
     App app(WINDOW_WIDTH, WINDOW_HEIGHT, FULLSCREEN);
     MainMenu::gotoMainMenu();
     app.mainLoop();

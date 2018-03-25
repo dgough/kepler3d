@@ -10,6 +10,7 @@
 #include <functional>
 
 namespace kepler {
+namespace gl {
 
 void MaterialBinding::bind(const Node& node, const Material& material) {
     auto tech = material.technique();
@@ -126,5 +127,6 @@ void MaterialBinding::updateBindings(const Material& material) {
 
 void MaterialBinding::updateValues(const Material& material) {
     material.technique()->findValues(_values);
+}
 }
 }

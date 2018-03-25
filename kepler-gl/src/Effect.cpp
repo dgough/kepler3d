@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Effect.hpp"
-#include "BaseGL.hpp"
+#include <OpenGL.hpp>
 #include "Sampler.hpp"
 #include "FileSystem.hpp"
 #include "StringUtils.hpp"
@@ -9,6 +9,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 namespace kepler {
+namespace gl {
 
 static constexpr const char* VERSION_STR = "#version 120\n"; // TODO move this to be platform specific.
 static constexpr const char* DEFINE = "#define ";
@@ -337,4 +338,5 @@ ProgramHandle createAndLinkProgram(GLuint vertShader, GLuint fragShader) {
 //    glDeleteShader(fragShader);
 //    return program;
 //}
+}
 }

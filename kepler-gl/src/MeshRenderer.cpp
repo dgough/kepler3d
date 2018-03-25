@@ -4,6 +4,7 @@
 #include "MeshPrimitive.hpp"
 
 namespace kepler {
+namespace gl {
 
 static std::string _typeName("MeshRenderer");
 
@@ -46,5 +47,6 @@ bool MeshRenderer::getBoundingBox(BoundingBox& box) {
 
 const std::string& MeshRenderer::typeName() const {
     return _typeName;
+}
 }
 }

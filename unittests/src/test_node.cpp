@@ -6,6 +6,7 @@
 #include <MeshRenderer.hpp>
 
 using namespace kepler;
+using namespace kepler::gl;
 
 // TODO add a test for checking that all children point to their parent
 
