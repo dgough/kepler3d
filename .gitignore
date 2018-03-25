@@ -10,17 +10,15 @@ html
 *.vsp
 *.psess
 /notes
-/unittests/test.bin
-/unittests/test.txt
 /.vscode
 
 # res directories
-/test-app/res/fonts
-/test-app/res/glTF
-/test-suite/res/fonts
-/test-suite/res/glTF
-/test-suite/res/textures
-/unittests/res/fonts
+/test-gl/test-app/res/fonts
+/test-gl/test-app/res/glTF
+/test-gl/test-suite/res/fonts
+/test-gl/test-suite/res/glTF
+/test-gl/test-suite/res/textures
+/test-gl/unittests/res/fonts
 
 # Compiled Object files
 *.slo

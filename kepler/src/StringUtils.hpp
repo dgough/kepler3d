@@ -11,6 +11,8 @@ bool startsWith(const std::string& subject, const std::string& prefix, bool igno
 // Returns true if the subject ends with suffix.
 bool endsWith(const std::string& subject, const char* suffix, bool ignoreCase = false);
 
+std::string concat(const char* s1, const char* s2);
+
 // TODO equalsIgnoreCase
 
 }

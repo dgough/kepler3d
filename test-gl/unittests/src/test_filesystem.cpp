@@ -26,6 +26,16 @@ TEST(filesystem, joinPath) {
     EXPECT_EQ(joinPath(directoryName("res/box.gltf"), "image.png"), "res/image.png");
 }
 
+TEST(filesystem, fileExists) {
+    constexpr char* path = "test.txt";
+    remove(path);
+    EXPECT_FALSE(fileExists(path));
+
+    string out = "The quick brown fox";
+    writeTextFile(path, out);
+    EXPECT_TRUE(fileExists(path));
+}
+
 TEST(filesystem, read_write_binary_file) {
     // 0x1A: bad character data. Be sure to include it.
     std::vector<long> out = { 5123L, 0x1A, 458034L, 0x19L, 0x1B, 3584L, -253L, 03L, 5L, -1L, 14586L };
@@ -45,6 +55,7 @@ TEST(filesystem, read_write_binary_file_unsigned_char) {
     writeBinaryFile(TEST_PATH, out);
     readBinaryFile(TEST_PATH, in);
     EXPECT_EQ(out, in);
+    remove(TEST_PATH);
 }
 
 TEST(filesystem, read_write_text_file) {
@@ -54,4 +65,5 @@ TEST(filesystem, read_write_text_file) {
     writeTextFile(path, out);
     readTextFile(path, in);
     EXPECT_EQ(out, in);
+    remove(path);
 }

@@ -11,7 +11,7 @@
 #include <GLTF2Loader.hpp>
 #include <Material.hpp>
 
-#define BASE_DIR "../../glTF-Sample-Models/2.0/"
+#define BASE_DIR "../../../glTF-Sample-Models/2.0/"
 
 static constexpr char* BOX_PATH = BASE_DIR "Box/glTF/Box.gltf";
 static constexpr char* LANTERN_PATH = BASE_DIR "Lantern/glTF/Lantern.gltf";
@@ -135,7 +135,7 @@ TEST(gltf2, load_gltf2) {
     //    EXPECT_EQ(wheelsName, wheelsMaterial->name());
     //}
 
-    glfwTerminate();
+    //glfwTerminate();
 }
 
 #endif

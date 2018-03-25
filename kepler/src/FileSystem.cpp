@@ -54,6 +54,15 @@ string joinPath(const string& path1, const string& path2) {
     return path1 + '/' + path2;
 }
 
+bool fileExists(const char* path) {
+    struct stat s;
+    return stat(path, &s) == 0;
+}
+
+bool fileExists(const std::string& path) {
+    return fileExists(path.c_str());
+}
+
 bool readTextFile(const char* path, std::string& destination) {
     try {
         std::ifstream file;

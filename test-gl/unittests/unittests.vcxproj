@@ -103,13 +103,13 @@
       <SDLCheck>true</SDLCheck>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <StringPooling>true</StringPooling>
-      <AdditionalIncludeDirectories>..\kepler\src;..\kepler-gl\src;..\external-deps\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\kepler\src;..\..\kepler-gl\src;..\..\external-deps\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>gtest.lib;opengl32.lib;glfw3.lib;soil2-debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\external-deps\lib\windows\x64\Debug</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\external-deps\lib\windows\x64\Debug</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -141,7 +141,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <StringPooling>true</StringPooling>
-      <AdditionalIncludeDirectories>..\kepler\src;..\kepler-gl\src;..\external-deps\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\kepler\src;..\..\kepler-gl\src;..\..\external-deps\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -149,7 +149,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>gtest.lib;opengl32.lib;glfw3.lib;soil2.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\external-deps\lib\windows\x64\Release</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\external-deps\lib\windows\x64\Release</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -171,10 +171,10 @@
     <ClInclude Include="src\macros.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\kepler-gl\kepler-gl.vcxproj">
+    <ProjectReference Include="..\..\kepler-gl\kepler-gl.vcxproj">
       <Project>{2ece3f94-195a-4d08-bb40-55a158fecb75}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\kepler\kepler.vcxproj">
+    <ProjectReference Include="..\..\kepler\kepler.vcxproj">
       <Project>{77dc05ed-b315-44fc-8eac-c541287cec58}</Project>
     </ProjectReference>
   </ItemGroup>

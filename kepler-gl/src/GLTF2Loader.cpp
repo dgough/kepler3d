@@ -548,7 +548,18 @@ ref<Material> GLTF2Loader::Impl::loadMaterial(size_t index, MeshPrimitive& primi
             gPbr.baseColorFactor(glm::value_ptr(baseColorFactor));
         }
 
-        auto effect = Effect::createFromFile(BASIC_VERT_PATH, BASIC_FRAG_PATH, defines.data(), defines.size());
+        ref<Effect> effect;
+        if (fileExists(BASIC_VERT_PATH) && fileExists(BASIC_FRAG_PATH)) {
+            effect = Effect::createFromFile(BASIC_VERT_PATH, BASIC_FRAG_PATH, defines.data(), defines.size());
+        }
+        else {
+            // try one directory back
+            string vPath{concat("../", BASIC_VERT_PATH)};
+            string fPath{concat("../", BASIC_FRAG_PATH)};
+            if (fileExists(vPath.c_str()) && fileExists(fPath.c_str())) {
+                effect = Effect::createFromFile(vPath.c_str(), fPath.c_str(), defines.data(), defines.size());
+            }
+        }
         if (!effect) {
             return nullptr;
         }

@@ -26,6 +26,9 @@ std::string directoryName(const char* path);
 
 std::string joinPath(const std::string& path1, const std::string& path2);
 
+bool fileExists(const char* path);
+bool fileExists(const std::string& path);
+
 bool readTextFile(const char* path, std::string& destination);
 bool writeTextFile(const char* path, std::string& destination);
 

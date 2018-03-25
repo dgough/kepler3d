@@ -38,7 +38,7 @@
 namespace kepler {
 namespace gl {
 
-#define SAMPLES_BASE "../../glTF-Sample-Models/2.0/"
+#define SAMPLES_BASE "../../../glTF-Sample-Models/2.0/"
 
 static constexpr char* BOX_PATH = SAMPLES_BASE "Box/glTF/Box.gltf";
 static constexpr char* BOX_TEXTURED_PATH = SAMPLES_BASE "BoxTextured/glTF/BoxTextured.gltf";

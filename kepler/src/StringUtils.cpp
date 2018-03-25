@@ -70,4 +70,11 @@ bool endsWith(const std::string& subject, const char* suffix, bool ignoreCase) {
     const char* s = subject.c_str() + (subject.length() - suffixLength);
     return equalsIgnoreLength(s, suffix, ignoreCase);
 }
+
+std::string concat(const char* s1, const char* s2) {
+    std::string str(s1);
+    str.append(s2);
+    return str;
+}
+
 }
