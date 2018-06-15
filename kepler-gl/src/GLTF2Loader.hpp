@@ -10,6 +10,8 @@ namespace gl {
 class GLTF2Loader final {
 public:
     GLTF2Loader();
+    GLTF2Loader(const GLTF2Loader&) = delete;
+    GLTF2Loader& operator=(const GLTF2Loader&) = delete;
 
     /// Loads the GLTF file at the given path.
     /// @param[in] path The file path.
@@ -49,9 +51,6 @@ public:
     /// Prints the time spent loading GLTF files so far.
     static void printTotalTime();
 
-public:
-    GLTF2Loader(const GLTF2Loader&) = delete;
-    GLTF2Loader& operator=(const GLTF2Loader&) = delete;
 private:
     class Impl;
     std::unique_ptr<Impl> _impl;

@@ -93,6 +93,7 @@ public:
     bool isCursorVisible() const;
 
     static App* instance();
+    //static void onWindowResized(GLFWwindow* window, int width, int height); // TODO
 
 public:
     App(const App&) = delete;

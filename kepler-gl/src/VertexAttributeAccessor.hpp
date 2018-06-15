@@ -10,6 +10,8 @@ class VertexAttributeAccessor final {
 public:
     VertexAttributeAccessor(const ref<VertexBuffer>& vbo,
         GLint componentSize, GLenum type, GLboolean normalized, GLsizei stride, GLintptr offset, GLsizei count);
+    VertexAttributeAccessor(const VertexAttributeAccessor&) = delete;
+    VertexAttributeAccessor& operator=(const VertexAttributeAccessor&) = delete;
 
     // TODO this class probably doesn't need to be ref counted since it is immutable.
     static ref<VertexAttributeAccessor> create(const ref<VertexBuffer>& vbo,

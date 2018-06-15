@@ -15,6 +15,8 @@ public:
     };
     // Use IndexAccessor::create()
     IndexAccessor(const ref<IndexBuffer>& indexBuffer, GLsizei count, GLenum type, GLintptr offset);
+    IndexAccessor(const IndexAccessor&) = delete;
+    IndexAccessor& operator=(const IndexAccessor&) = delete;
 
     /// Creates a IndexAccessor.
     /// 

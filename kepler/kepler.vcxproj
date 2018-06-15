@@ -72,12 +72,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>src;..\external-deps\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\external-deps\lib\windows;$(LibraryPath)</LibraryPath>
-    <SourcePath>src;..\external-deps\src;$(SourcePath)</SourcePath>
+    <SourcePath>src;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>src;..\external-deps\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\external-deps\lib\windows;$(LibraryPath)</LibraryPath>
-    <SourcePath>src;..\external-deps\src;$(SourcePath)</SourcePath>
+    <SourcePath>src;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

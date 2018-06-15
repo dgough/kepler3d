@@ -20,33 +20,34 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{2ECE3F94-195A-4D08-BB40-55A158FECB75}</ProjectGuid>
+    <ProjectGuid>{D28C6C68-FDF2-4B53-97E2-5B6F6D13E50A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>keplergl</RootNamespace>
+    <RootNamespace>testapp</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <ProjectName>test-app-vk</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -71,51 +72,56 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>src;..\kepler\src;..\external-deps\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\external-deps\lib\windows;$(LibraryPath)</LibraryPath>
-    <SourcePath>src;..\kepler\src;$(SourcePath)</SourcePath>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>src;..\kepler\src;..\external-deps\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\external-deps\lib\windows;$(LibraryPath)</LibraryPath>
-    <SourcePath>src;..\kepler\src;$(SourcePath)</SourcePath>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\kepler\src;..\external-deps\include</AdditionalIncludeDirectories>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)external-deps\include;src;$(SolutionDir)kepler-vk\src;$(SolutionDir)kepler\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>$(SolutionDir)external-deps\lib\windows\$(IntDir);$(SolutionDir)external-deps\lib\windows\$(Platform)\vulkan;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;soil2-debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
@@ -123,81 +129,30 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\kepler\src;..\external-deps\include</AdditionalIncludeDirectories>
-      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;$(SolutionDir)kepler\src;$(SolutionDir)kepler-vk\src;$(SolutionDir)external-deps\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(SolutionDir)external-deps\lib\windows\$(IntDir);$(SolutionDir)external-deps\lib\windows\$(Platform)\vulkan;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;soil2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\AppGLFW.cpp" />
-    <ClCompile Include="src\AxisCompass.cpp" />
-    <ClCompile Include="src\BmpFont.cpp" />
-    <ClCompile Include="src\Effect.cpp" />
-    <ClCompile Include="src\glad.cpp" />
-    <ClCompile Include="src\GLTF2Loader.cpp" />
-    <ClCompile Include="src\Image.cpp" />
-    <ClCompile Include="src\IndexAccessor.cpp" />
-    <ClCompile Include="src\IndexBuffer.cpp" />
-    <ClCompile Include="src\Material.cpp" />
-    <ClCompile Include="src\MaterialBinding.cpp" />
-    <ClCompile Include="src\MaterialParameter.cpp" />
-    <ClCompile Include="src\Mesh.cpp" />
-    <ClCompile Include="src\MeshPrimitive.cpp" />
-    <ClCompile Include="src\MeshRenderer.cpp" />
-    <ClCompile Include="src\MeshUtils.cpp" />
-    <ClCompile Include="src\OpenGL.cpp" />
-    <ClCompile Include="src\RenderState.cpp" />
-    <ClCompile Include="src\Sampler.cpp" />
-    <ClCompile Include="src\stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Technique.cpp" />
-    <ClCompile Include="src\Texture.cpp" />
-    <ClCompile Include="src\VertexAttributeAccessor.cpp" />
-    <ClCompile Include="src\VertexAttributeBinding.cpp" />
-    <ClCompile Include="src\VertexBuffer.cpp" />
+    <ClCompile Include="src\test-app.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\AttributeSemantic.hpp" />
-    <ClInclude Include="src\AxisCompass.hpp" />
-    <ClInclude Include="src\BaseGL.hpp" />
-    <ClInclude Include="src\BmpFont.hpp" />
-    <ClInclude Include="src\Effect.hpp" />
-    <ClInclude Include="src\GLTF2Loader.hpp" />
-    <ClInclude Include="src\Image.hpp" />
-    <ClInclude Include="src\IndexAccessor.hpp" />
-    <ClInclude Include="src\IndexBuffer.hpp" />
-    <ClInclude Include="src\lazy_gltf2.hpp" />
-    <ClInclude Include="src\Material.hpp" />
-    <ClInclude Include="src\MaterialBinding.hpp" />
-    <ClInclude Include="src\MaterialParameter.hpp" />
-    <ClInclude Include="src\Mesh.hpp" />
-    <ClInclude Include="src\MeshPrimitive.hpp" />
-    <ClInclude Include="src\MeshRenderer.hpp" />
-    <ClInclude Include="src\MeshUtils.hpp" />
-    <ClInclude Include="src\OpenGL.hpp" />
-    <ClInclude Include="src\RenderState.hpp" />
-    <ClInclude Include="src\Sampler.hpp" />
-    <ClInclude Include="src\stdafx.h" />
-    <ClInclude Include="src\targetver.h" />
-    <ClInclude Include="src\Technique.hpp" />
-    <ClInclude Include="src\Texture.hpp" />
-    <ClInclude Include="src\VertexAttributeAccessor.hpp" />
-    <ClInclude Include="src\VertexAttributeBinding.hpp" />
-    <ClInclude Include="src\VertexBuffer.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\kepler\kepler.vcxproj">
+    <ProjectReference Include="..\..\kepler-vk\kepler-vk.vcxproj">
+      <Project>{c94ba192-d2f5-455c-acea-b248ca8d7772}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\kepler\kepler.vcxproj">
       <Project>{77dc05ed-b315-44fc-8eac-c541287cec58}</Project>
     </ProjectReference>
   </ItemGroup>
