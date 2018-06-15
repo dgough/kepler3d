@@ -69,7 +69,7 @@ static size_t g_pathIndex = 0;
 
 static std::string g_text;
 
-ref<Material> createBoxMaterial();
+shared_ptr<Material> createBoxMaterial();
 
 static const char* nextPath() {
     g_pathIndex = (g_pathIndex + 1) % g_paths.size();
@@ -258,7 +258,7 @@ void Gltf2Test::calcBoundingBox(Scene* scene) {
     }
 }
 
-ref<Material> createBoxMaterial() {
+shared_ptr<Material> createBoxMaterial() {
     static constexpr char* VERT_PATH = "res/shaders/lamp.vert";
     static constexpr char* FRAG_PATH = "res/shaders/lamp.frag";
     auto effect = Effect::createFromFile(VERT_PATH, FRAG_PATH);

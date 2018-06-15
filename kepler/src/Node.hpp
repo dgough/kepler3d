@@ -30,23 +30,23 @@ public:
     virtual ~Node() noexcept;
 
     /// Creates a node and returns a std::shared_ptr to it.
-    static ref<Node> create();
+    static shared_ptr<Node> create();
 
     /// Creates a node with the given name.
-    static ref<Node> create(const char* name);
+    static shared_ptr<Node> create(const char* name);
 
     /// Creates a new node with the given name.
     /// Node names are not unique.
-    static ref<Node> create(const std::string& name);
+    static shared_ptr<Node> create(const std::string& name);
 
     /// Creates a new node and adds it as a child of this node.
-    ref<Node> createChild(const std::string& name = "");
+    shared_ptr<Node> createChild(const std::string& name = "");
 
     /// Creates child nodes with the given names ands them to this node.
     void createChildren(const std::initializer_list<std::string>& names);
 
     /// Adds the node as a child of this node.
-    void addNode(const ref<Node>& child);
+    void addNode(const shared_ptr<Node>& child);
 
     /// Returns the number of direct child nodes.
     size_t childCount() const;
@@ -57,7 +57,7 @@ public:
 
     /// Removes the node from the list of children.
     /// This does not include grandchildren.
-    void removeChild(const ref<Node>& child);
+    void removeChild(const shared_ptr<Node>& child);
 
     /// Returns a pointer to the parent node. May be null.
     Node* parent() const;
@@ -66,7 +66,7 @@ public:
     bool hasParent() const;
 
     /// Sets the parent of this node to be newParent.
-    void setParent(const ref<Node>& newParent);
+    void setParent(const shared_ptr<Node>& newParent);
 
     /// Removes this node from its parent.
     void removeFromParent();
@@ -84,7 +84,7 @@ public:
     /// @param[in] name The name of the node to search for.
     /// @param[in] recursive True if the search should be recursive.
     /// @return The node if found; otherwise returns nullptr.
-    ref<Node> findFirstNodeByName(const std::string& name, bool recursive = true) const;
+    shared_ptr<Node> findFirstNodeByName(const std::string& name, bool recursive = true) const;
 
     // Node* findFirstNodeByName(const char* name, bool recursive = true);
     // unsigned int findAllNodes(const char* name, std::vector<Node*> nodes, bool recursive = true);
@@ -97,7 +97,7 @@ public:
     /// ```
     /// @param[in] recursive True if the search should be recursive.
     template <class NodeEval>
-    ref<Node> findFirstNode(const NodeEval& eval, bool recursive = true) const;
+    shared_ptr<Node> findFirstNode(const NodeEval& eval, bool recursive = true) const;
 
     // isStatic
     // isEnabled
@@ -122,13 +122,13 @@ public:
     /// throwing an out_of_range exception if it is not.
     /// Similar to std::vector::at().
     /// @throws out_of_range exception.
-    ref<Node> childAt(size_t index) const;
+    shared_ptr<Node> childAt(size_t index) const;
 
     /// Returns the Node at specified location pos. No bounds checking is performed.
-    ref<Node> operator[](size_t index);
+    shared_ptr<Node> operator[](size_t index);
 
     /// Returns the Node at specified location pos. No bounds checking is performed.
-    const ref<Node> operator[](size_t index) const;
+    const shared_ptr<Node> operator[](size_t index) const;
 
     /// Adds the component to this node.
     void addComponent(const std::shared_ptr<Component>& component);
@@ -144,7 +144,7 @@ public:
 
     /// Returns the first drawable component of this node.
     /// @return Shared ref to a DrawableComponent; may be null.
-    ref<DrawableComponent> drawable() const;
+    shared_ptr<DrawableComponent> drawable() const;
 
     /// Returns true if this node contains the component.
     /// You cannot search for abstract components because this is a simple string comparison.
@@ -295,7 +295,7 @@ private:
     static void removeChild(NodeList& children, size_t index);
 
     /// Removes the child from the list of children but doesn't update its parent or scene.
-    static void removeFromList(NodeList& children, const ref<Node>& child);
+    static void removeFromList(NodeList& children, const shared_ptr<Node>& child);
 
     void setAllChildrenScene(Scene* scene);
 
@@ -326,7 +326,7 @@ private:
 // Methods
 
 template<class NodeEval>
-ref<Node> Node::findFirstNode(const NodeEval& eval, bool recursive) const {
+shared_ptr<Node> Node::findFirstNode(const NodeEval& eval, bool recursive) const {
     for (const auto& child : _children) {
         if (eval(child.get())) {
             return child;

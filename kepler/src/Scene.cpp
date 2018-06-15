@@ -14,11 +14,11 @@ Scene::~Scene() noexcept {
     }
 }
 
-ref<Scene> Scene::create() {
+shared_ptr<Scene> Scene::create() {
     return std::make_shared<Scene>();
 }
 
-void Scene::addNode(ref<Node>& node) {
+void Scene::addNode(shared_ptr<Node>& node) {
     if (node == nullptr) return;
 
     if (auto parent = node->_parent) {
@@ -34,7 +34,7 @@ void Scene::addNode(ref<Node>& node) {
     node->parentChanged();
 }
 
-ref<Node> Scene::createChild(const std::string& name) {
+shared_ptr<Node> Scene::createChild(const std::string& name) {
     auto node = Node::create(name);
     node->_scene = this;
     _children.push_back(node);
@@ -51,11 +51,11 @@ size_t Scene::childCount() const {
     return _children.size();
 }
 
-ref<Node> Scene::childAt(size_t index) const {
+shared_ptr<Node> Scene::childAt(size_t index) const {
     return _children.at(index);
 }
 
-ref<Node> Scene::lastChild() const {
+shared_ptr<Node> Scene::lastChild() const {
     auto count = _children.size();
     if (count == 0) return nullptr;
     return _children[count - 1];
@@ -69,14 +69,14 @@ void Scene::removeChild(size_t index) {
     Node::removeChild(_children, index);
 }
 
-void Scene::removeChild(const ref<Node>& child) {
+void Scene::removeChild(const shared_ptr<Node>& child) {
     if (child) {
         Node::removeFromList(_children, child);
         child->clearParent();
     }
 }
 
-void Scene::moveNodesFrom(const ref<Scene>& src) {
+void Scene::moveNodesFrom(const shared_ptr<Scene>& src) {
     if (src) {
         while (!src->_children.empty()) {
             auto child = src->childAt(0);
@@ -85,7 +85,7 @@ void Scene::moveNodesFrom(const ref<Scene>& src) {
     }
 }
 
-ref<Node> Scene::findFirstNodeByName(const std::string& name, bool recursive) const {
+shared_ptr<Node> Scene::findFirstNodeByName(const std::string& name, bool recursive) const {
     for (const auto& child : _children) {
         if (child->name() == name) {
             return child;
@@ -102,11 +102,11 @@ ref<Node> Scene::findFirstNodeByName(const std::string& name, bool recursive) co
     return nullptr;
 }
 
-ref<Camera> Scene::activeCamera() const {
+shared_ptr<Camera> Scene::activeCamera() const {
     return _activeCamera;
 }
 
-void Scene::setActiveCamera(const ref<Camera>& camera) {
+void Scene::setActiveCamera(const shared_ptr<Camera>& camera) {
     _activeCamera = camera;
 }
 }

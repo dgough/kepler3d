@@ -39,11 +39,11 @@ int Texture::height() const {
     return _height;
 }
 
-ref<Sampler> Texture::sampler() const {
+shared_ptr<Sampler> Texture::sampler() const {
     return _sampler;
 }
 
-void Texture::setSampler(const ref<Sampler>& sampler) {
+void Texture::setSampler(const shared_ptr<Sampler>& sampler) {
     _sampler = sampler;
 }
 
@@ -53,7 +53,7 @@ Texture::~Texture() noexcept {
     }
 }
 
-ref<Texture> Texture::create2D(Image* image, int internalFormat, bool generateMipmaps) {
+shared_ptr<Texture> Texture::create2D(Image* image, int internalFormat, bool generateMipmaps) {
     if (image == nullptr) {
         return nullptr;
     }

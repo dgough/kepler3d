@@ -22,7 +22,7 @@ public:
     Image& operator=(const Image&) = delete;
 
     /// Creates an Image from a file.
-    static ref<Image> createFromFile(const char* path, bool flipY = false);
+    static shared_ptr<Image> createFromFile(const char* path, bool flipY = false);
 
     /// Creates an Image from memory that was loaded from a file.
     /// The memory is the data loaded from a compressed image, like a PNG file.
@@ -32,10 +32,10 @@ public:
     /// @param[in] bufferLength Length of the buffer.
     /// @param[in] flipY        True if the Y-axis should be flipped; false otherwise.
     /// @return shared_ptr to the image. Will be null if there was an error.
-    static ref<Image> createFromFileMemory(const unsigned char* buffer, int bufferLength, bool flipY = false);
+    static shared_ptr<Image> createFromFileMemory(const unsigned char* buffer, int bufferLength, bool flipY = false);
 
     // Creates an Image from uncompressed memory.
-    static ref<Image> createFromMemory(int width, int height, Format format, const unsigned char* data);
+    static shared_ptr<Image> createFromMemory(int width, int height, Format format, const unsigned char* data);
 
     /// Saves this image as a png file.
     static bool savePNG(const char* path, int width, int height, Format format, const unsigned char* data);

@@ -26,7 +26,7 @@ public:
     /// @param[in] aspectRatio Aspect ratio
     /// @param[in] near        Near plane distance.
     /// @param[in] far         Far plane distance.
-    static ref<Camera> createPerspective(float fov, float aspectRatio, float near, float far);
+    static shared_ptr<Camera> createPerspective(float fov, float aspectRatio, float near, float far);
 
     /// Creates a perspective camera with a FOV based on the given width and height.
     /// @param[in] fov         Field of view in degrees.
@@ -34,12 +34,12 @@ public:
     /// @param[in] height      Height of the client display area.
     /// @param[in] near        Near plane distance.
     /// @param[in] far         Far plane distance.
-    static ref<Camera> createPerspectiveFov(float fov, float width, float height, float near, float far);
+    static shared_ptr<Camera> createPerspectiveFov(float fov, float width, float height, float near, float far);
 
     // TODO ortho doesn't need aspect ratio
-    static ref<Camera> createOrthographic(float zoomX, float zoomY, float aspectRatio, float near, float far);
+    static shared_ptr<Camera> createOrthographic(float zoomX, float zoomY, float aspectRatio, float near, float far);
 
-    void onNodeChanged(const ref<Node>& oldNode, const ref<Node>& newNode) override;
+    void onNodeChanged(const shared_ptr<Node>& oldNode, const shared_ptr<Node>& newNode) override;
     const std::string& typeName() const override;
 
     Camera::Type cameraType() const;

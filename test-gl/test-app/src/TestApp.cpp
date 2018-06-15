@@ -62,7 +62,7 @@ static void renderAll(Node* node) {
     }
 }
 static void changeBoxColor(const Scene& scene);
-static ref<Mesh> createCubeMesh();
+static shared_ptr<Mesh> createCubeMesh();
 static void printCursor() {
     double x, y;
     app()->cursorPosition(&x, &y);
@@ -316,7 +316,7 @@ void TestApp::loadScenes() {
         _scene = scene;
         GLTF2Loader cyLoader;
         //cyLoader.useDefaultMaterial(true);
-        ref<Scene> cylinder = nullptr;// cyLoader.loadSceneFromFile("res/glTF/2CylinderEngine.gltf");
+        shared_ptr<Scene> cylinder = nullptr;// cyLoader.loadSceneFromFile("res/glTF/2CylinderEngine.gltf");
         if (scene && cylinder) {
             for (const auto& n : cylinder->children()) {
                 if (n->localTransform().scale().x >= 0.9f) {
@@ -355,7 +355,7 @@ void TestApp::loadScenes() {
     }
 }
 
-ref<Scene> TestApp::loadDuckScene() {
+shared_ptr<Scene> TestApp::loadDuckScene() {
     GLTF2Loader gltf;
     auto scene = gltf.loadSceneFromFile(DUCK_PATH);
     if (scene && scene->childCount() > 0) {
@@ -387,7 +387,7 @@ void changeBoxColor(const Scene& scene) {
     }
 }
 
-ref<Mesh> createCubeMesh() {
+shared_ptr<Mesh> createCubeMesh() {
     //auto prim = createLitCubePrimitive();
     //if (prim) {
     //    GLTF2Loader gltf;

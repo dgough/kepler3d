@@ -13,7 +13,7 @@ namespace kepler {
 namespace gl {
 
 /// Creates a cube mesh primitive
-ref<MeshPrimitive> createLitCubePrimitive() {
+shared_ptr<MeshPrimitive> createLitCubePrimitive() {
     static constexpr float p = 0.5f;
     static constexpr float n = -0.5f;
     static constexpr std::array<GLfloat, 144> vertices = {
@@ -73,7 +73,7 @@ ref<MeshPrimitive> createLitCubePrimitive() {
     return prim;
 }
 
-ref<MeshPrimitive> createTexturedLitQuadPrimitive(glm::vec2 maxTexCoords) {
+shared_ptr<MeshPrimitive> createTexturedLitQuadPrimitive(glm::vec2 maxTexCoords) {
     static constexpr float p = 0.5f;
     static constexpr float n = -0.5f;
     static constexpr float z = 0.0f;
@@ -95,7 +95,7 @@ ref<MeshPrimitive> createTexturedLitQuadPrimitive(glm::vec2 maxTexCoords) {
     return prim;
 }
 
-ref<MeshPrimitive> createWireframeBoxPrimitive(const BoundingBox& box) {
+shared_ptr<MeshPrimitive> createWireframeBoxPrimitive(const BoundingBox& box) {
     glm::vec3 corners[8];
     box.corners(corners);
     auto vbo = VertexBuffer::create(sizeof(corners), corners);

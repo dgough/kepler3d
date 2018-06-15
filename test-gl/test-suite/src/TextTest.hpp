@@ -23,7 +23,7 @@ public:
 
 private:
 
-    ref<BmpFont> _font;
+    shared_ptr<BmpFont> _font;
 };
 }
 }

@@ -27,13 +27,13 @@ private:
 
     void loadGLTF(const char* path);
     void loadScenes();
-    ref<Scene> loadDuckScene();
+    shared_ptr<Scene> loadDuckScene();
 
 private:
-    ref<Scene> _scene;
+    shared_ptr<Scene> _scene;
     std::unique_ptr<FirstPersonController> _firstPerson;
     std::unique_ptr<AxisCompass> _compass;
-    ref<BmpFont> _font;
+    shared_ptr<BmpFont> _font;
 };
 }
 }

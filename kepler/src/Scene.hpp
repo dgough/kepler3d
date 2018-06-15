@@ -13,12 +13,12 @@ public:
     virtual ~Scene() noexcept;
 
     /// Creates a new scene object.
-    static ref<Scene> create();
+    static shared_ptr<Scene> create();
 
     /// Adds the node to the scene's top level list of nodes.
     /// The node will be removed from its previous parent.
-    void addNode(ref<Node>& node);
-    ref<Node> createChild(const std::string& name = "");
+    void addNode(shared_ptr<Node>& node);
+    shared_ptr<Node> createChild(const std::string& name = "");
 
     /// Creates nodes with the given names and adds them to this scene.
     void createChildren(const std::initializer_list<std::string>& names);
@@ -27,10 +27,10 @@ public:
     size_t childCount() const;
 
     // Similar to std::vector::at()
-    ref<Node> childAt(size_t index) const;
+    shared_ptr<Node> childAt(size_t index) const;
 
     /// Returns the last child or nullptr if there are no children.
-    ref<Node> lastChild() const;
+    shared_ptr<Node> lastChild() const;
 
     const NodeList& children() const;
 
@@ -40,20 +40,20 @@ public:
 
     /// Removes the node from the list of children.
     /// This does not include grandchildren.
-    void removeChild(const ref<Node>& child);
+    void removeChild(const shared_ptr<Node>& child);
 
     /// Moves all of the nodes from src to this scene.
-    void moveNodesFrom(const ref<Scene>& src);
+    void moveNodesFrom(const shared_ptr<Scene>& src);
 
     /// Finds the first descendant node that matches the given name.
     /// Immediate children are checked first before recursing.
-    ref<Node> findFirstNodeByName(const std::string& name, bool recursive = true) const;
+    shared_ptr<Node> findFirstNodeByName(const std::string& name, bool recursive = true) const;
 
     template <class NodeEval>
-    ref<Node> findFirstNode(const NodeEval& eval, bool recursive = true) const;
+    shared_ptr<Node> findFirstNode(const NodeEval& eval, bool recursive = true) const;
 
-    ref<Camera> activeCamera() const;
-    void setActiveCamera(const ref<Camera>& camera);
+    shared_ptr<Camera> activeCamera() const;
+    void setActiveCamera(const shared_ptr<Camera>& camera);
 
     /// Visits each node and calls the given function that is passed a pointer to the current node.
     /// The expected signature is <code>void func(Node*);</code>
@@ -65,11 +65,11 @@ private:
     void visitNode(const Func& func, Node* node) const;
 
     NodeList _children;
-    ref<Camera> _activeCamera;
+    shared_ptr<Camera> _activeCamera;
 };
 
 template<class NodeEval>
-ref<Node> Scene::findFirstNode(const NodeEval& eval, bool recursive) const {
+shared_ptr<Node> Scene::findFirstNode(const NodeEval& eval, bool recursive) const {
     for (const auto& child : _children) {
         if (eval(child.get())) {
             return child;

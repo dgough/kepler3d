@@ -21,7 +21,7 @@ public:
     /// @param[in] size Size of the data.
     /// @param[in] data Pointer to the vertex data.
     /// @param[in] usage GL_STATIC_DRAW, GL_DYNAMIC_DRAW...
-    static ref<VertexBuffer> create(GLsizeiptr size, const GLvoid* data, GLenum usage = GL_STATIC_DRAW);
+    static shared_ptr<VertexBuffer> create(GLsizeiptr size, const GLvoid* data, GLenum usage = GL_STATIC_DRAW);
 
     /// Binds this buffer.
     void bind() const noexcept;

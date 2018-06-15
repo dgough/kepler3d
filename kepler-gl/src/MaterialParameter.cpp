@@ -12,11 +12,11 @@ MaterialParameter::MaterialParameter(std::string&& name)
     : _name(std::move(name)), _semantic(Semantic::NONE), _uniform(nullptr) {
 }
 
-ref<MaterialParameter> MaterialParameter::create(const std::string& name) {
+shared_ptr<MaterialParameter> MaterialParameter::create(const std::string& name) {
     return std::make_shared<MaterialParameter>(name);
 }
 
-ref<MaterialParameter> MaterialParameter::create(std::string&& name) {
+shared_ptr<MaterialParameter> MaterialParameter::create(std::string&& name) {
     return std::make_shared<MaterialParameter>(std::move(name));
 }
 
@@ -64,7 +64,7 @@ void MaterialParameter::setValue(const FunctionBinding& func) {
     _function = func;
 }
 
-void MaterialParameter::setValue(const ref<Texture>& texture) {
+void MaterialParameter::setValue(const shared_ptr<Texture>& texture) {
     _function = [texture](Effect& effect, const Uniform* uniform) {
         effect.setTexture(uniform, texture);
     };

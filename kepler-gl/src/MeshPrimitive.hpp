@@ -30,10 +30,10 @@ public:
     MeshPrimitive(const MeshPrimitive&) = delete;
     MeshPrimitive& operator=(const MeshPrimitive&) = delete;
 
-    static ref<MeshPrimitive> create(Mode mode);
+    static shared_ptr<MeshPrimitive> create(Mode mode);
 
     /// Returns the attribute with the given semantic. May be null.
-    ref<VertexAttributeAccessor> attribute(AttributeSemantic semantic) const;
+    shared_ptr<VertexAttributeAccessor> attribute(AttributeSemantic semantic) const;
 
     /// Returns true if this primitive contains this semantic.
     bool hasAttribute(AttributeSemantic semantic) const;
@@ -41,15 +41,15 @@ public:
     /// Binds the indices for this mesh's primitive if they exist.
     void bindIndices();
 
-    void setAttribute(AttributeSemantic semantic, const ref<VertexAttributeAccessor>& accessor);
+    void setAttribute(AttributeSemantic semantic, const shared_ptr<VertexAttributeAccessor>& accessor);
     /// Sets the IndexAccessor.
-    void setIndices(const ref<IndexAccessor>& indices);
+    void setIndices(const shared_ptr<IndexAccessor>& indices);
 
     /// Returns the material this primitive is bound to. May return null.
-    ref<Material> material() const;
+    shared_ptr<Material> material() const;
 
     /// Sets the Material that will be used to draw with.
-    void setMaterial(const ref<Material>& material);
+    void setMaterial(const shared_ptr<Material>& material);
 
     const BoundingBox& boundingBox() const;
 
@@ -59,14 +59,14 @@ public:
 
 private:
     void updateBindings();
-    void setNode(const ref<Node>& node);
+    void setNode(const shared_ptr<Node>& node);
 
 private:
     // The type of primitives to render. Allowed values are 0 (POINTS), 1 (LINES), 2 (LINE_LOOP), 3 (LINE_STRIP), 4 (TRIANGLES), 5 (TRIANGLE_STRIP), and 6 (TRIANGLE_FAN).
     Mode _mode;
-    ref<IndexAccessor> _indices;
-    std::map<AttributeSemantic, ref<VertexAttributeAccessor>> _attributes;
-    ref<Material> _material;
+    shared_ptr<IndexAccessor> _indices;
+    std::map<AttributeSemantic, shared_ptr<VertexAttributeAccessor>> _attributes;
+    shared_ptr<Material> _material;
     std::unique_ptr<MaterialBinding> _materialBinding;
     std::unique_ptr<VertexAttributeBinding> _vertexBinding;
     std::weak_ptr<Node> _node;

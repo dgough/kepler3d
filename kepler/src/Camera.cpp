@@ -29,19 +29,19 @@ Camera::Camera(float zoomX, float zoomY, float aspectRatio, float near, float fa
 Camera::~Camera() noexcept {
 }
 
-ref<Camera> Camera::createPerspective(float fov, float aspectRatio, float near, float far) {
+shared_ptr<Camera> Camera::createPerspective(float fov, float aspectRatio, float near, float far) {
     return std::make_shared<Camera>(fov, aspectRatio, near, far);
 }
 
-ref<Camera> Camera::createPerspectiveFov(float fov, float width, float height, float near, float far) {
+shared_ptr<Camera> Camera::createPerspectiveFov(float fov, float width, float height, float near, float far) {
     return createPerspective(fov, width / height, near, far);
 }
 
-ref<Camera> Camera::createOrthographic(float zoomX, float zoomY, float aspectRatio, float near, float far) {
+shared_ptr<Camera> Camera::createOrthographic(float zoomX, float zoomY, float aspectRatio, float near, float far) {
     return std::make_shared<Camera>(zoomX, zoomY, aspectRatio, near, far);
 }
 
-void Camera::onNodeChanged(const ref<Node>& oldNode, const ref<Node>& newNode) {
+void Camera::onNodeChanged(const shared_ptr<Node>& oldNode, const shared_ptr<Node>& newNode) {
     if (oldNode) {
         oldNode->removeListener(this);
     }

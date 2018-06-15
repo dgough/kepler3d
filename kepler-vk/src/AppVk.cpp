@@ -60,7 +60,7 @@ private:
 
     std::string _title;
 
-    ref<AppDelegate> _delegate;
+    shared_ptr<AppDelegate> _delegate;
     size_t _frameCount;
 
     GLFWwindow* _window;
@@ -82,7 +82,7 @@ App::~App() noexcept {
     g_app = nullptr;
 }
 
-void App::setDelegate(const ref<AppDelegate>& appDelegate) {
+void App::setDelegate(const shared_ptr<AppDelegate>& appDelegate) {
     auto prev = _impl->_delegate;
     _impl->_delegate = appDelegate;
     if (prev) {

@@ -15,7 +15,7 @@ public:
     virtual ~App() noexcept;
 
     /// Sets the delegate that will receive callbacks.
-    void setDelegate(const ref<AppDelegate>& appDelegate);
+    void setDelegate(const shared_ptr<AppDelegate>& appDelegate);
 
     /// Starts the main loop.
     void mainLoop();

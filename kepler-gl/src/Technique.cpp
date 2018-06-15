@@ -12,17 +12,17 @@ Technique::Technique() {
 Technique::~Technique() noexcept {
 }
 
-ref<Technique> Technique::create() {
+shared_ptr<Technique> Technique::create() {
     return std::make_shared<Technique>();
 }
 
-ref<Technique> Technique::create(const ref<Effect>& effect) {
+shared_ptr<Technique> Technique::create(const shared_ptr<Effect>& effect) {
     auto tech = create();
     tech->setEffect(effect);
     return tech;
 }
 
-ref<Effect> Technique::effect() const {
+shared_ptr<Effect> Technique::effect() const {
     return _effect;
 }
 
@@ -34,7 +34,7 @@ const std::map<std::string, std::string>& Technique::uniforms() const {
     return _uniforms;
 }
 
-const std::map<std::string, ref<MaterialParameter>>& Technique::semantics() const {
+const std::map<std::string, shared_ptr<MaterialParameter>>& Technique::semantics() const {
     return _semantics;
 }
 
@@ -50,7 +50,7 @@ void Technique::setUniformName(const std::string& glslName, const std::string& p
     _uniforms[glslName] = paramName;
 }
 
-void Technique::setUniform(const std::string& glslName, const ref<MaterialParameter>& param) {
+void Technique::setUniform(const std::string& glslName, const shared_ptr<MaterialParameter>& param) {
     setUniformName(glslName, param->name());
     _values[param->name()] = param;
     updateUniform(*param, glslName);
@@ -63,11 +63,11 @@ void Technique::setSemanticUniform(const std::string& glslName, MaterialParamete
     updateUniform(*p, glslName);
 }
 
-void Technique::setEffect(const ref<Effect>& effect) {
+void Technique::setEffect(const shared_ptr<Effect>& effect) {
     _effect = effect;
 }
 
-void Technique::setMaterial(const ref<Material>& material) {
+void Technique::setMaterial(const shared_ptr<Material>& material) {
     _material = material;
 }
 
@@ -78,7 +78,7 @@ void Technique::bind() {
     }
 }
 
-void Technique::findValues(std::vector<ref<MaterialParameter>>& values) {
+void Technique::findValues(std::vector<shared_ptr<MaterialParameter>>& values) {
     values.clear();
     if (_effect) {
         auto material = _material.lock();
@@ -90,7 +90,7 @@ void Technique::findValues(std::vector<ref<MaterialParameter>>& values) {
 
             // TODO This is a mess. Needs to be improved.
 
-            ref<MaterialParameter> materialParam = findValueParameter(paramName);
+            shared_ptr<MaterialParameter> materialParam = findValueParameter(paramName);
 
             if (materialParam == nullptr && material) {
                 auto param = material->param(paramName);
@@ -108,7 +108,7 @@ void Technique::findValues(std::vector<ref<MaterialParameter>>& values) {
     }
 }
 
-ref<MaterialParameter> Technique::findValueParameter(const std::string& paramName) {
+shared_ptr<MaterialParameter> Technique::findValueParameter(const std::string& paramName) {
     auto p = _values.find(paramName);
     if (p != _values.end()) {
         return p->second;

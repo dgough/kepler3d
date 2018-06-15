@@ -15,7 +15,7 @@ Button::Button(const std::string& text, const Rectangle& rect) : _text(text), _r
 Button::~Button() noexcept {
 }
 
-ref<Button> Button::create() {
+shared_ptr<Button> Button::create() {
     return std::make_shared<Button>();
 }
 

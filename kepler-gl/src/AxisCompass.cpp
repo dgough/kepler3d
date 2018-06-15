@@ -24,9 +24,9 @@ static constexpr float Y_POS = 0.85f;
 static const char* VERT_PATH = "../../kepler/res/shaders/axis.vert";
 static const char* FRAG_PATH = "../../kepler/res/shaders/axis.frag";
 
-static ref<MeshPrimitive> createPrimitive();
-static ref<Mesh> createMesh();
-static ref<Node> createNode();
+static shared_ptr<MeshPrimitive> createPrimitive();
+static shared_ptr<Mesh> createMesh();
+static shared_ptr<Node> createNode();
 
 AxisCompass::AxisCompass() {
     _node = createNode();
@@ -38,11 +38,11 @@ AxisCompass::AxisCompass(Scene* scene) : AxisCompass() {
     }
 }
 
-ref<Node> AxisCompass::node() const {
+shared_ptr<Node> AxisCompass::node() const {
     return _node;
 }
 
-ref<MeshPrimitive> createPrimitive() {
+shared_ptr<MeshPrimitive> createPrimitive() {
     // x, y, z, r, g, b
     static constexpr std::array<GLubyte, 36> vertices = {
         0, 0, 0, 0, 1, 0, // y-axis
@@ -61,7 +61,7 @@ ref<MeshPrimitive> createPrimitive() {
     return prim;
 }
 
-ref<Mesh> createMesh() {
+shared_ptr<Mesh> createMesh() {
     auto prim = createPrimitive();
     if (prim) {
         auto mesh = Mesh::create(prim);
@@ -91,7 +91,7 @@ ref<Mesh> createMesh() {
     return nullptr;
 }
 
-ref<Node> createNode() {
+shared_ptr<Node> createNode() {
     auto mesh = createMesh();
     if (mesh) {
         auto node = Node::create("compass");

@@ -17,11 +17,11 @@ FirstPersonController::FirstPersonController(float fov, float width, float heigh
     _pitchNode->addComponent(camera);
 }
 
-ref<Node> FirstPersonController::rootNode() const {
+shared_ptr<Node> FirstPersonController::rootNode() const {
     return _root;
 }
 
-ref<Camera> FirstPersonController::camera() const {
+shared_ptr<Camera> FirstPersonController::camera() const {
     return _pitchNode->component<Camera>();
 }
 

@@ -8,21 +8,21 @@ namespace gl {
 Mesh::Mesh() {
 }
 
-Mesh::Mesh(const ref<MeshPrimitive>& primitive) : _primitives{primitive} {
+Mesh::Mesh(const shared_ptr<MeshPrimitive>& primitive) : _primitives{primitive} {
 }
 
 Mesh::~Mesh() noexcept {
 }
 
-ref<Mesh> Mesh::create() {
+shared_ptr<Mesh> Mesh::create() {
     return std::make_shared<Mesh>();
 }
 
-ref<Mesh> Mesh::create(const ref<MeshPrimitive>& primitive) {
+shared_ptr<Mesh> Mesh::create(const shared_ptr<MeshPrimitive>& primitive) {
     return std::make_shared<Mesh>(primitive);
 }
 
-void Mesh::addMeshPrimitive(const ref<MeshPrimitive>& primitive) {
+void Mesh::addMeshPrimitive(const shared_ptr<MeshPrimitive>& primitive) {
     if (_box.empty()) {
         _box = primitive->boundingBox();
     }
@@ -42,7 +42,7 @@ void Mesh::setName(const std::string& name) {
     _name = std::make_unique<std::string>(name);
 }
 
-ref<MeshPrimitive> Mesh::primitiveAt(size_t index) const {
+shared_ptr<MeshPrimitive> Mesh::primitiveAt(size_t index) const {
     return _primitives.at(index);
 }
 
@@ -58,7 +58,7 @@ const BoundingBox& Mesh::boundingBox() const {
     return _box;
 }
 
-void Mesh::setNode(const ref<Node>& node) {
+void Mesh::setNode(const shared_ptr<Node>& node) {
     for (const auto& primitive : _primitives) {
         primitive->setNode(node);
     }

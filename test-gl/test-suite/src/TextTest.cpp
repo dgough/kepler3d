@@ -19,7 +19,7 @@ static const char* FONT_PATH = "res/fonts/arial-32.fnt";
 
 static std::string g_text;
 
-static ref<BmpFont> loadFont(const char* path) {
+static shared_ptr<BmpFont> loadFont(const char* path) {
     auto start = std::chrono::high_resolution_clock::now();
 
     auto font = BmpFont::createFromFile(path);

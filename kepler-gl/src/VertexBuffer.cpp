@@ -13,7 +13,7 @@ VertexBuffer::~VertexBuffer() noexcept {
     }
 }
 
-ref<VertexBuffer> VertexBuffer::create(GLsizeiptr size, const GLvoid* data, GLenum usage) {
+shared_ptr<VertexBuffer> VertexBuffer::create(GLsizeiptr size, const GLvoid* data, GLenum usage) {
     auto buffer = std::make_shared<VertexBuffer>();
     glGenBuffers(1, &buffer->_handle);
     glBindBuffer(GL_ARRAY_BUFFER, buffer->_handle);

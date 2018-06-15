@@ -12,7 +12,7 @@ public:
     explicit VertexAttributeBinding(GLuint handle);
     ~VertexAttributeBinding() noexcept;
 
-    static std::unique_ptr<VertexAttributeBinding> createUnique(const ref<MeshPrimitive>& meshPrim, const ref<Technique>& technique);
+    static std::unique_ptr<VertexAttributeBinding> createUnique(const shared_ptr<MeshPrimitive>& meshPrim, const shared_ptr<Technique>& technique);
 
     void bind();
     void unbind();

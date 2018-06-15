@@ -38,7 +38,7 @@ public:
     virtual ~Sampler() noexcept;
 
     /// Creates a Texture Sampler and returns a shared pointer to it.
-    static ref<Sampler> create();
+    static shared_ptr<Sampler> create();
 
     void bind(GLenum textureUnit) const noexcept;
 

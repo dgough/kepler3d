@@ -110,36 +110,36 @@ public:
 
     bool loadJson(const char* path);
 
-    ref<Scene> loadSceneFromFile(const char* path);
+    shared_ptr<Scene> loadSceneFromFile(const char* path);
 
-    ref<Scene> loadDefaultScene();
+    shared_ptr<Scene> loadDefaultScene();
 
-    ref<Scene> loadScene(size_t index);
+    shared_ptr<Scene> loadScene(size_t index);
 
-    ref<Node> loadNode(size_t index);
-    ref<Node> loadNode(const gltf2::Node& gNode);
+    shared_ptr<Node> loadNode(size_t index);
+    shared_ptr<Node> loadNode(const gltf2::Node& gNode);
 
-    ref<Mesh> loadMesh(size_t index);
-    ref<MeshPrimitive> loadPrimitive(const gltf2::Primitive& gPrim);
+    shared_ptr<Mesh> loadMesh(size_t index);
+    shared_ptr<MeshPrimitive> loadPrimitive(const gltf2::Primitive& gPrim);
 
-    ref<Camera> loadCamera(size_t index);
+    shared_ptr<Camera> loadCamera(size_t index);
 
     shared_ptr<std::vector<ubyte>> loadBuffer(size_t index);
 
-    ref<VertexBuffer> loadVertexBuffer(size_t index);
-    ref<IndexBuffer> loadIndexBuffer(size_t index);
-    ref<IndexAccessor> loadIndexAccessor(size_t index);
-    ref<VertexAttributeAccessor> loadVertexAttributeAccessor(size_t index);
+    shared_ptr<VertexBuffer> loadVertexBuffer(size_t index);
+    shared_ptr<IndexBuffer> loadIndexBuffer(size_t index);
+    shared_ptr<IndexAccessor> loadIndexAccessor(size_t index);
+    shared_ptr<VertexAttributeAccessor> loadVertexAttributeAccessor(size_t index);
 
-    ref<Material> loadMaterial(size_t index, MeshPrimitive& primitive);
+    shared_ptr<Material> loadMaterial(size_t index, MeshPrimitive& primitive);
 
-    ref<Texture> loadTexture(size_t index);
-    ref<Sampler> loadSampler(size_t index);
-    ref<Image> loadImage(size_t index);
+    shared_ptr<Texture> loadTexture(size_t index);
+    shared_ptr<Sampler> loadSampler(size_t index);
+    shared_ptr<Image> loadImage(size_t index);
 
-    ref<Material> loadDefaultMaterial();
-    ref<Technique> loadDefaultTechnique();
-    ref<Sampler> loadDefaultSampler();
+    shared_ptr<Material> loadDefaultMaterial();
+    shared_ptr<Technique> loadDefaultTechnique();
+    shared_ptr<Sampler> loadDefaultSampler();
 
     string uriToPath(const string& uri) const;
 
@@ -147,29 +147,29 @@ public:
     void setAutoLoadMaterials(bool value);
 
 private:
-    void loadTransform(const gltf2::Node& gNode, const ref<Node>& node);
+    void loadTransform(const gltf2::Node& gNode, const shared_ptr<Node>& node);
 
 private:
     gltf2::Gltf _gltf;
 
     std::map <size_t, std::shared_ptr<std::vector<ubyte>>> _buffers;
 
-    std::map<size_t, ref<Node>> _nodes;
-    std::map<size_t, ref<VertexBuffer>> _vbos;
-    std::map<size_t, ref<IndexBuffer>> _indexBuffers;
-    std::map<size_t, ref<IndexAccessor>> _indexAccessors;
-    std::map<size_t, ref<VertexAttributeAccessor>> _vertexAttributeAccessors;
+    std::map<size_t, shared_ptr<Node>> _nodes;
+    std::map<size_t, shared_ptr<VertexBuffer>> _vbos;
+    std::map<size_t, shared_ptr<IndexBuffer>> _indexBuffers;
+    std::map<size_t, shared_ptr<IndexAccessor>> _indexAccessors;
+    std::map<size_t, shared_ptr<VertexAttributeAccessor>> _vertexAttributeAccessors;
 
-    std::map<size_t, ref<Material>> _materials;
-    std::map<size_t, ref<Technique>> _techniques;
-    std::map<size_t, ref<Effect>> _effects;
-    std::map<size_t, ref<Texture>> _textures;
-    std::map<size_t, ref<Sampler>> _samplers;
-    std::map<size_t, ref<Image>> _images;
+    std::map<size_t, shared_ptr<Material>> _materials;
+    std::map<size_t, shared_ptr<Technique>> _techniques;
+    std::map<size_t, shared_ptr<Effect>> _effects;
+    std::map<size_t, shared_ptr<Texture>> _textures;
+    std::map<size_t, shared_ptr<Sampler>> _samplers;
+    std::map<size_t, shared_ptr<Image>> _images;
 
-    ref<Material> _defaultMaterial;
-    ref<Technique> _defaultTechnique;
-    ref<Sampler> _defaultSampler;
+    shared_ptr<Material> _defaultMaterial;
+    shared_ptr<Technique> _defaultTechnique;
+    shared_ptr<Sampler> _defaultSampler;
 
     string _baseDir;
 
@@ -201,11 +201,11 @@ bool GLTF2Loader::load(const char* path) {
     return _impl->loadJson(path);
 }
 
-ref<Scene> GLTF2Loader::loadSceneFromFile(const char* path) {
+shared_ptr<Scene> GLTF2Loader::loadSceneFromFile(const char* path) {
     return _impl->loadSceneFromFile(path);
 }
 
-ref<Mesh> GLTF2Loader::findMeshByIndex(size_t index) {
+shared_ptr<Mesh> GLTF2Loader::findMeshByIndex(size_t index) {
     return _impl->loadMesh(index);
 }
 
@@ -252,7 +252,7 @@ bool GLTF2Loader::Impl::loadJson(const char* path) {
     return _loaded;
 }
 
-ref<Scene> GLTF2Loader::Impl::loadSceneFromFile(const char* path) {
+shared_ptr<Scene> GLTF2Loader::Impl::loadSceneFromFile(const char* path) {
     // TODO call clear() first?
     auto start = high_resolution_clock::now();
 
@@ -283,7 +283,7 @@ ref<Scene> GLTF2Loader::Impl::loadSceneFromFile(const char* path) {
     return scene;
 }
 
-ref<Scene> GLTF2Loader::Impl::loadDefaultScene() {
+shared_ptr<Scene> GLTF2Loader::Impl::loadDefaultScene() {
     size_t index;
     if (_gltf.defaultScene(index)) {
         return loadScene(index);
@@ -295,7 +295,7 @@ ref<Scene> GLTF2Loader::Impl::loadDefaultScene() {
     return nullptr;
 }
 
-ref<Scene> GLTF2Loader::Impl::loadScene(size_t index) {
+shared_ptr<Scene> GLTF2Loader::Impl::loadScene(size_t index) {
     if (auto gScene = _gltf.scene(index)) {
         auto scene = Scene::create();
         for (const auto& index : gScene.nodes()) {
@@ -307,7 +307,7 @@ ref<Scene> GLTF2Loader::Impl::loadScene(size_t index) {
     return nullptr;
 }
 
-ref<Node> GLTF2Loader::Impl::loadNode(size_t index) {
+shared_ptr<Node> GLTF2Loader::Impl::loadNode(size_t index) {
     RETURN_IF_FOUND(_nodes, index);
     if (auto gNode = _gltf.node(index)) {
         auto node = loadNode(gNode);
@@ -317,7 +317,7 @@ ref<Node> GLTF2Loader::Impl::loadNode(size_t index) {
     return nullptr;
 }
 
-ref<Node> GLTF2Loader::Impl::loadNode(const gltf2::Node& gNode) {
+shared_ptr<Node> GLTF2Loader::Impl::loadNode(const gltf2::Node& gNode) {
     auto node = Node::create(gNode.name());
 
     loadTransform(gNode, node);
@@ -343,7 +343,7 @@ ref<Node> GLTF2Loader::Impl::loadNode(const gltf2::Node& gNode) {
     return node;
 }
 
-ref<Mesh> GLTF2Loader::Impl::loadMesh(size_t index) {
+shared_ptr<Mesh> GLTF2Loader::Impl::loadMesh(size_t index) {
     if (auto gMesh = _gltf.mesh(index)) {
         auto mesh = Mesh::create();
         mesh->setName(gMesh.name());
@@ -364,7 +364,7 @@ ref<Mesh> GLTF2Loader::Impl::loadMesh(size_t index) {
     return nullptr;
 }
 
-ref<MeshPrimitive> GLTF2Loader::Impl::loadPrimitive(const gltf2::Primitive& gPrim) {
+shared_ptr<MeshPrimitive> GLTF2Loader::Impl::loadPrimitive(const gltf2::Primitive& gPrim) {
     auto prim = MeshPrimitive::create(toMode(gPrim.mode()));
     for (const auto& attrib : gPrim.attributes()) {
         auto vertexAttributeAccessor = loadVertexAttributeAccessor(attrib.second);
@@ -391,7 +391,7 @@ ref<MeshPrimitive> GLTF2Loader::Impl::loadPrimitive(const gltf2::Primitive& gPri
     }
     if (_autoLoadMaterials) {
         // load material
-        ref<Material> material = nullptr;
+        shared_ptr<Material> material = nullptr;
         size_t materialIndex;
         if (gPrim.material(materialIndex)) {
             if (material = loadMaterial(materialIndex, *prim)) {
@@ -405,7 +405,7 @@ ref<MeshPrimitive> GLTF2Loader::Impl::loadPrimitive(const gltf2::Primitive& gPri
     return prim;
 }
 
-ref<Camera> GLTF2Loader::Impl::loadCamera(size_t index) {
+shared_ptr<Camera> GLTF2Loader::Impl::loadCamera(size_t index) {
     if (auto gCamera = _gltf.camera(index)) {
         switch (gCamera.type()) {
         case gltf2::Camera::Type::PERSPECTIVE:
@@ -438,7 +438,7 @@ shared_ptr<std::vector<ubyte>> GLTF2Loader::Impl::loadBuffer(size_t index) {
     return nullptr;
 }
 
-ref<VertexBuffer> GLTF2Loader::Impl::loadVertexBuffer(size_t index) {
+shared_ptr<VertexBuffer> GLTF2Loader::Impl::loadVertexBuffer(size_t index) {
     RETURN_IF_FOUND(_vbos, index);
     if (auto gBufferView = _gltf.bufferView(index)) {
         size_t bufferIndex;
@@ -456,7 +456,7 @@ ref<VertexBuffer> GLTF2Loader::Impl::loadVertexBuffer(size_t index) {
     return nullptr;
 }
 
-ref<IndexBuffer> GLTF2Loader::Impl::loadIndexBuffer(size_t index) {
+shared_ptr<IndexBuffer> GLTF2Loader::Impl::loadIndexBuffer(size_t index) {
     // TODO is it possible to have more than 1 of the same index buffer?
     RETURN_IF_FOUND(_indexBuffers, index);
 
@@ -478,7 +478,7 @@ ref<IndexBuffer> GLTF2Loader::Impl::loadIndexBuffer(size_t index) {
     return nullptr;
 }
 
-ref<IndexAccessor> GLTF2Loader::Impl::loadIndexAccessor(size_t index) {
+shared_ptr<IndexAccessor> GLTF2Loader::Impl::loadIndexAccessor(size_t index) {
     RETURN_IF_FOUND(_indexAccessors, index);
     if (auto gAccessor = _gltf.accessor(index)) {
         size_t bufferViewIndex;
@@ -496,7 +496,7 @@ ref<IndexAccessor> GLTF2Loader::Impl::loadIndexAccessor(size_t index) {
     return nullptr;
 }
 
-ref<VertexAttributeAccessor> GLTF2Loader::Impl::loadVertexAttributeAccessor(size_t index) {
+shared_ptr<VertexAttributeAccessor> GLTF2Loader::Impl::loadVertexAttributeAccessor(size_t index) {
     RETURN_IF_FOUND(_vertexAttributeAccessors, index);
     if (auto gAccessor = _gltf.accessor(index)) {
         size_t bufferViewIndex;
@@ -518,7 +518,7 @@ ref<VertexAttributeAccessor> GLTF2Loader::Impl::loadVertexAttributeAccessor(size
     return nullptr;
 }
 
-ref<Material> GLTF2Loader::Impl::loadMaterial(size_t index, MeshPrimitive& primitive) {
+shared_ptr<Material> GLTF2Loader::Impl::loadMaterial(size_t index, MeshPrimitive& primitive) {
     RETURN_IF_FOUND(_materials, index);
     if (_useDefaultMaterial) {
         return loadDefaultMaterial();
@@ -535,7 +535,7 @@ ref<Material> GLTF2Loader::Impl::loadMaterial(size_t index, MeshPrimitive& primi
             defines.push_back(HAS_UV);
         }
 
-        ref<Texture> baseMapTexture;
+        shared_ptr<Texture> baseMapTexture;
         glm::vec4 baseColorFactor(1);
         auto gPbr = gMaterial.pbrMetallicRoughness();
         if (gPbr) {
@@ -548,7 +548,7 @@ ref<Material> GLTF2Loader::Impl::loadMaterial(size_t index, MeshPrimitive& primi
             gPbr.baseColorFactor(glm::value_ptr(baseColorFactor));
         }
 
-        ref<Effect> effect;
+        shared_ptr<Effect> effect;
         if (fileExists(BASIC_VERT_PATH) && fileExists(BASIC_FRAG_PATH)) {
             effect = Effect::createFromFile(BASIC_VERT_PATH, BASIC_FRAG_PATH, defines.data(), defines.size());
         }
@@ -601,14 +601,14 @@ ref<Material> GLTF2Loader::Impl::loadMaterial(size_t index, MeshPrimitive& primi
     return nullptr;
 }
 
-ref<Texture> GLTF2Loader::Impl::loadTexture(size_t index) {
+shared_ptr<Texture> GLTF2Loader::Impl::loadTexture(size_t index) {
     RETURN_IF_FOUND(_textures, index);
     if (auto gTexture = _gltf.texture(index)) {
         size_t imageIndex;
         if (gTexture.source(imageIndex)) {
             if (auto image = loadImage(imageIndex)) {
                 auto texture = Texture::create2D(image.get(), DEFAULT_FORMAT, true);
-                ref<Sampler> sampler;
+                shared_ptr<Sampler> sampler;
                 size_t samplerIndex;
                 if (gTexture.sampler(samplerIndex)) {
                     if (sampler = loadSampler(samplerIndex)) {
@@ -627,7 +627,7 @@ ref<Texture> GLTF2Loader::Impl::loadTexture(size_t index) {
     return nullptr;
 }
 
-ref<Sampler> GLTF2Loader::Impl::loadSampler(size_t index) {
+shared_ptr<Sampler> GLTF2Loader::Impl::loadSampler(size_t index) {
     RETURN_IF_FOUND(_samplers, index);
     if (auto gSampler = _gltf.sampler(index)) {
         auto magFilter = toMagFilterMode(gSampler.magFilter());
@@ -648,9 +648,9 @@ ref<Sampler> GLTF2Loader::Impl::loadSampler(size_t index) {
     return nullptr;
 }
 
-ref<Image> GLTF2Loader::Impl::loadImage(size_t index) {
+shared_ptr<Image> GLTF2Loader::Impl::loadImage(size_t index) {
     RETURN_IF_FOUND(_images, index);
-    ref<Image> image = nullptr;
+    shared_ptr<Image> image = nullptr;
 
     auto start = high_resolution_clock::now();
 
@@ -686,7 +686,7 @@ ref<Image> GLTF2Loader::Impl::loadImage(size_t index) {
     return image;
 }
 
-ref<Material> GLTF2Loader::Impl::loadDefaultMaterial() {
+shared_ptr<Material> GLTF2Loader::Impl::loadDefaultMaterial() {
     if (_defaultMaterial) {
         return _defaultMaterial;
     }
@@ -701,7 +701,7 @@ ref<Material> GLTF2Loader::Impl::loadDefaultMaterial() {
     return material;
 }
 
-ref<Technique> GLTF2Loader::Impl::loadDefaultTechnique() {
+shared_ptr<Technique> GLTF2Loader::Impl::loadDefaultTechnique() {
     if (_defaultTechnique) {
         return _defaultTechnique;
     }
@@ -731,7 +731,7 @@ ref<Technique> GLTF2Loader::Impl::loadDefaultTechnique() {
     return _defaultTechnique;
 }
 
-ref<Sampler> GLTF2Loader::Impl::loadDefaultSampler() {
+shared_ptr<Sampler> GLTF2Loader::Impl::loadDefaultSampler() {
     if (_defaultSampler) {
         return _defaultSampler;
     }
@@ -754,7 +754,7 @@ void GLTF2Loader::Impl::setAutoLoadMaterials(bool value) {
     _autoLoadMaterials = value;
 }
 
-void GLTF2Loader::Impl::loadTransform(const gltf2::Node& gNode, const ref<Node>& node) {
+void GLTF2Loader::Impl::loadTransform(const gltf2::Node& gNode, const shared_ptr<Node>& node) {
     std::array<float, 16> matrix;
     if (gNode.matrix(matrix.data())) {
         node->setLocalTransform(glm::make_mat4(matrix.data()));

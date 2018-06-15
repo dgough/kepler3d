@@ -19,7 +19,7 @@ public:
     BmpFont& operator=(const BmpFont&) = delete;
 
     /// Creates a BmpFont from an Angel Code font file.
-    static ref<BmpFont> createFromFile(const char* path);
+    static shared_ptr<BmpFont> createFromFile(const char* path);
 
     void drawText(const char* text, float x, float y, const glm::vec3& color = glm::vec3(1, 1, 1));
 

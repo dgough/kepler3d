@@ -18,7 +18,7 @@ VertexAttributeBinding::~VertexAttributeBinding() noexcept {
     }
 }
 
-std::unique_ptr<VertexAttributeBinding> VertexAttributeBinding::createUnique(const ref<MeshPrimitive>& meshPrim, const ref<Technique>& technique) {
+std::unique_ptr<VertexAttributeBinding> VertexAttributeBinding::createUnique(const shared_ptr<MeshPrimitive>& meshPrim, const shared_ptr<Technique>& technique) {
     if (meshPrim == nullptr || technique == nullptr) {
         return nullptr;
     }

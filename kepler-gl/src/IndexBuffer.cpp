@@ -13,7 +13,7 @@ IndexBuffer::~IndexBuffer() noexcept {
     }
 }
 
-ref<IndexBuffer> IndexBuffer::create(GLsizeiptr size, const GLvoid* data, GLenum usage) {
+shared_ptr<IndexBuffer> IndexBuffer::create(GLsizeiptr size, const GLvoid* data, GLenum usage) {
     auto buffer = std::make_shared<IndexBuffer>();
     glGenBuffers(1, &buffer->_handle);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer->_handle);

@@ -31,7 +31,7 @@ private:
     void updateValues(const Material& material);
 
     std::vector<std::function<void(const Effect& effect, const Node&, const Camera*)>> _functions;
-    std::vector<ref<MaterialParameter>> _values;
+    std::vector<shared_ptr<MaterialParameter>> _values;
 };
 }
 }

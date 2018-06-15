@@ -31,8 +31,8 @@ private:
     void drawButton(const Button& button);
     bool clickButtonAt(glm::vec2 pos);
 
-    ref<BmpFont> _font;
-    std::vector<ref<Button>> _buttons;
+    shared_ptr<BmpFont> _font;
+    std::vector<shared_ptr<Button>> _buttons;
 };
 }
 }

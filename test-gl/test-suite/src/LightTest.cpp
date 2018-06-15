@@ -34,9 +34,9 @@ static constexpr char* FLOOR_TEXTURE_PATH = "res/textures/hardwood.jpg";
 static std::string g_text;
 static glm::vec3 g_lightColor(1);
 
-static ref<Node> createLamp();
-static ref<Material> createCubeMaterial();
-static ref<Material> createPointLightMaterial(const char* texture_path, ref<Node> lightNode);
+static shared_ptr<Node> createLamp();
+static shared_ptr<Material> createCubeMaterial();
+static shared_ptr<Material> createPointLightMaterial(const char* texture_path, shared_ptr<Node> lightNode);
 
 LightTest::LightTest() = default;
 
@@ -185,7 +185,7 @@ void LightTest::loadSceneFromFile(const char* path) {
     g_text.assign(path);
 }
 
-static ref<Node> createLamp() {
+static shared_ptr<Node> createLamp() {
     auto prim = createLitCubePrimitive();
     auto material = createCubeMaterial();
     if (prim && material) {
@@ -199,7 +199,7 @@ static ref<Node> createLamp() {
     return nullptr;
 }
 
-static ref<Material> createCubeMaterial() {
+static shared_ptr<Material> createCubeMaterial() {
     static constexpr char* VERT_PATH = "res/shaders/lamp.vert";
     static constexpr char* FRAG_PATH = "res/shaders/lamp.frag";
     auto effect = Effect::createFromFile(VERT_PATH, FRAG_PATH);
@@ -219,7 +219,7 @@ static ref<Material> createCubeMaterial() {
     return nullptr;
 }
 
-static ref<Material> createPointLightMaterial(const char* texture_path, ref<Node> lightNode) {
+static shared_ptr<Material> createPointLightMaterial(const char* texture_path, shared_ptr<Node> lightNode) {
     static constexpr char* VERT = "res/shaders/point_light.vert";
     static constexpr char* FRAG = "res/shaders/point_light.frag";
     auto effect = Effect::createFromFile(VERT, FRAG);

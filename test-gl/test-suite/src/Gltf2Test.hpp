@@ -33,8 +33,8 @@ private:
 
 private:
     bool _moveCamera;
-    ref<Scene> _scene;
-    ref<BmpFont> _font;
+    shared_ptr<Scene> _scene;
+    shared_ptr<BmpFont> _font;
     AxisCompass _compass;
     OrbitCamera _orbitCamera;
     BoundingBox _box;

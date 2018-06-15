@@ -8,13 +8,13 @@ namespace gl {
 
 static std::string _typeName("MeshRenderer");
 
-MeshRenderer::MeshRenderer(const ref<Mesh>& mesh) : _mesh(mesh) {
+MeshRenderer::MeshRenderer(const shared_ptr<Mesh>& mesh) : _mesh(mesh) {
 }
 
 MeshRenderer::~MeshRenderer() noexcept {
 }
 
-ref<MeshRenderer> MeshRenderer::create(const ref<Mesh>& mesh) {
+shared_ptr<MeshRenderer> MeshRenderer::create(const shared_ptr<Mesh>& mesh) {
     return std::make_shared<MeshRenderer>(mesh);
 }
 
@@ -27,13 +27,13 @@ void MeshRenderer::draw() {
     }
 }
 
-void MeshRenderer::onNodeChanged(const ref<Node>&, const ref<Node>&) {
+void MeshRenderer::onNodeChanged(const shared_ptr<Node>&, const shared_ptr<Node>&) {
     if (_mesh) {
         _mesh->setNode(node());
     }
 }
 
-ref<Mesh> MeshRenderer::mesh() const {
+shared_ptr<Mesh> MeshRenderer::mesh() const {
     return _mesh;
 }
 

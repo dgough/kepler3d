@@ -13,11 +13,11 @@ namespace gl {
 MeshPrimitive::MeshPrimitive(Mode mode) : _mode(mode) {
 }
 
-ref<MeshPrimitive> MeshPrimitive::create(Mode mode) {
+shared_ptr<MeshPrimitive> MeshPrimitive::create(Mode mode) {
     return std::make_shared<MeshPrimitive>(mode);
 }
 
-ref<VertexAttributeAccessor> MeshPrimitive::attribute(AttributeSemantic semantic) const {
+shared_ptr<VertexAttributeAccessor> MeshPrimitive::attribute(AttributeSemantic semantic) const {
     auto it = _attributes.find(semantic);
     if (it != _attributes.end()) {
         return it->second;
@@ -35,19 +35,19 @@ void MeshPrimitive::bindIndices() {
     }
 }
 
-void MeshPrimitive::setAttribute(AttributeSemantic semantic, const ref<VertexAttributeAccessor>& accessor) {
+void MeshPrimitive::setAttribute(AttributeSemantic semantic, const shared_ptr<VertexAttributeAccessor>& accessor) {
     _attributes[semantic] = accessor;
 }
 
-void MeshPrimitive::setIndices(const ref<IndexAccessor>& indices) {
+void MeshPrimitive::setIndices(const shared_ptr<IndexAccessor>& indices) {
     _indices = indices;
 }
 
-ref<Material> MeshPrimitive::material() const {
+shared_ptr<Material> MeshPrimitive::material() const {
     return _material;
 }
 
-void MeshPrimitive::setMaterial(const ref<Material>& material) {
+void MeshPrimitive::setMaterial(const shared_ptr<Material>& material) {
     if (material == nullptr) {
         // TODO clear other stuff?
         _materialBinding.release();
@@ -117,7 +117,7 @@ void MeshPrimitive::updateBindings() {
     _materialBinding->updateBindings(*_material);
 }
 
-void MeshPrimitive::setNode(const ref<Node>& node) {
+void MeshPrimitive::setNode(const shared_ptr<Node>& node) {
     _node = node;
     updateBindings();
 }

@@ -28,7 +28,7 @@ Effect::~Effect() noexcept {
     }
 }
 
-ref<Effect> Effect::createFromFile(const char* vertexShaderPath, const char* fragmentShaderPath, const char* defines[], size_t defineCount) {
+shared_ptr<Effect> Effect::createFromFile(const char* vertexShaderPath, const char* fragmentShaderPath, const char* defines[], size_t defineCount) {
     if (vertexShaderPath == nullptr || fragmentShaderPath == nullptr) {
         return nullptr;
     }
@@ -127,14 +127,14 @@ void Effect::setValue(const Uniform* uniform, const glm::vec4& value) const noex
     glUniform4f(uniform->_location, value.x, value.y, value.z, value.w);
 }
 
-void Effect::setTexture(const Uniform* uniform, const ref<Texture>& texture) const noexcept {
+void Effect::setTexture(const Uniform* uniform, const shared_ptr<Texture>& texture) const noexcept {
     GLenum textureUnit = GL_TEXTURE0 + uniform->_index;
     glActiveTexture(textureUnit);
     texture->bind(uniform->_index);
     glUniform1i(uniform->_location, (GLint)uniform->_index);
 }
 
-ref<Effect> Effect::createFromSource(const std::string& vertSource, const std::string& fragSource, const char* defines[], size_t defineCount) {
+shared_ptr<Effect> Effect::createFromSource(const std::string& vertSource, const std::string& fragSource, const char* defines[], size_t defineCount) {
     GLuint vertShader = loadShaderFromSource(vertSource, GL_VERTEX_SHADER, defines, defineCount);
     GLuint fragShader = loadShaderFromSource(fragSource, GL_FRAGMENT_SHADER, defines, defineCount);
     ProgramHandle program = createAndLinkProgram(vertShader, fragShader);
@@ -143,7 +143,7 @@ ref<Effect> Effect::createFromSource(const std::string& vertSource, const std::s
     if (program == 0) {
         return nullptr;
     }
-    ref<Effect> effect = std::make_shared<Effect>(program);
+    shared_ptr<Effect> effect = std::make_shared<Effect>(program);
     effect->queryAttributes();
     effect->queryUniforms();
     return effect;
@@ -232,7 +232,7 @@ Uniform::~Uniform() noexcept {
 
 }
 
-ref<Effect> Uniform::effect() const {
+shared_ptr<Effect> Uniform::effect() const {
     return _effect.lock();
 }
 

@@ -160,7 +160,7 @@ private:
     std::shared_ptr<BmpFontRenderer> _renderer;
 
     // Assume there is only one texture for now.
-    ref<Texture> _texture;
+    shared_ptr<Texture> _texture;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -181,8 +181,8 @@ public:
     GLuint _vao;
     GLuint _vbo;
     RenderState _state;
-    ref<Effect> _effect;
-    ref<Sampler> _sampler;
+    shared_ptr<Effect> _effect;
+    shared_ptr<Sampler> _sampler;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -473,7 +473,7 @@ BmpFont::BmpFont() : _impl(std::make_unique<Impl>()) {
 BmpFont::~BmpFont() noexcept {
 }
 
-ref<BmpFont> BmpFont::createFromFile(const char* path) {
+shared_ptr<BmpFont> BmpFont::createFromFile(const char* path) {
     if (path == nullptr || *path == '\0') {
         return nullptr;
     }

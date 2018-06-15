@@ -36,21 +36,21 @@ Node::~Node() noexcept {
     }
 }
 
-ref<Node> Node::create() {
+shared_ptr<Node> Node::create() {
     return std::make_shared<Node>();
 }
 
-ref<Node> Node::create(const char* name) {
+shared_ptr<Node> Node::create(const char* name) {
     return std::make_shared<Node>(name);
 }
 
-ref<Node> Node::create(const std::string& name) {
+shared_ptr<Node> Node::create(const std::string& name) {
     return std::make_shared<Node>(name);
 }
 
-ref<Node> Node::createChild(const std::string& name) {
+shared_ptr<Node> Node::createChild(const std::string& name) {
     std::unique_ptr<Node> p = nullptr;
-    ref<Node> node = create(name);
+    shared_ptr<Node> node = create(name);
     _children.push_back(node);
     node->_parent = this;
     node->_scene = _scene;
@@ -63,7 +63,7 @@ void Node::createChildren(const std::initializer_list<std::string>& names) {
     }
 }
 
-void Node::addNode(const ref<Node>& child) {
+void Node::addNode(const shared_ptr<Node>& child) {
     if (child == nullptr) return;
 
     if (auto parent = child->_parent) {
@@ -87,7 +87,7 @@ void Node::removeChild(size_t index) {
     removeChild(_children, index);
 }
 
-void Node::removeChild(const ref<Node>& child) {
+void Node::removeChild(const shared_ptr<Node>& child) {
     if (child) {
         removeFromList(_children, child);
         child->clearParent();
@@ -102,7 +102,7 @@ bool Node::hasParent() const {
     return _parent != nullptr;
 }
 
-void Node::setParent(const ref<Node>& newParent) { // TODO change this to Node*?
+void Node::setParent(const shared_ptr<Node>& newParent) { // TODO change this to Node*?
     removeFromParent();
     if (newParent) {
         newParent->_children.push_back(shared_from_this());
@@ -130,7 +130,7 @@ Scene* Node::scene() const {
     return _scene;
 }
 
-ref<Node> Node::findFirstNodeByName(const std::string& name, bool recursive) const {
+shared_ptr<Node> Node::findFirstNodeByName(const std::string& name, bool recursive) const {
     for (const auto& child : _children) {
         if (child->name() == name) {
             return child;
@@ -164,15 +164,15 @@ void Node::setName(const std::string& name) {
     }
 }
 
-ref<Node> Node::childAt(size_t index) const {
+shared_ptr<Node> Node::childAt(size_t index) const {
     return _children.at(index);
 }
 
-ref<Node> Node::operator[](size_t index) {
+shared_ptr<Node> Node::operator[](size_t index) {
     return _children[index];
 }
 
-const ref<Node> Node::operator[](size_t index) const {
+const shared_ptr<Node> Node::operator[](size_t index) const {
     return _children[index];
 }
 
@@ -195,7 +195,7 @@ void Node::removeComponent(const Component* component) {
     _components.erase(it, _components.end());
 }
 
-ref<DrawableComponent> Node::drawable() const {
+shared_ptr<DrawableComponent> Node::drawable() const {
     // TODO make this faster
     return component<DrawableComponent>();
 }
@@ -537,13 +537,13 @@ void Node::removeListener(Listener* listener) {
 
 void Node::removeChild(NodeList& children, size_t index) {
     if (index < children.size()) {
-        ref<Node> child = children[index];
+        shared_ptr<Node> child = children[index];
         child->clearParent();
         children.erase(children.begin() + index);
     }
 }
 
-void Node::removeFromList(NodeList& children, const ref<Node>& child) {
+void Node::removeFromList(NodeList& children, const shared_ptr<Node>& child) {
     children.erase(std::remove(children.begin(), children.end(), child), children.end());
 }
 

@@ -24,9 +24,9 @@ private:
     void loadSceneFromFile(const char* path);
 
 private:
-    ref<Scene> _scene;
-    ref<Node> _lightParent;
-    ref<BmpFont> _font;
+    shared_ptr<Scene> _scene;
+    shared_ptr<Node> _lightParent;
+    shared_ptr<BmpFont> _font;
     AxisCompass _compass;
     OrbitCamera _orbitCamera;
     bool _moveCamera{false};

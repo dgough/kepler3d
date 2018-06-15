@@ -13,10 +13,10 @@ public:
     explicit AxisCompass(Scene* scene);
 
     /// Returns the node so you can add it to a scene.
-    ref<Node> node() const;
+    shared_ptr<Node> node() const;
 
 private:
-    ref<Node> _node;
+    shared_ptr<Node> _node;
 };
 }
 }

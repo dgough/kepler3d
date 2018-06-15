@@ -19,7 +19,7 @@ void MaterialBinding::bind(const Node& node, const Material& material) {
 
     // Most MaterialBindings will have at least one binding that uses the camera so get it here
     // instead of having the Node search for it.
-    ref<Camera> camera = nullptr;
+    shared_ptr<Camera> camera = nullptr;
     Camera* cameraPtr = nullptr;
     if (auto scene = node.scene()) {
         camera = scene->activeCamera();
@@ -41,7 +41,7 @@ void MaterialBinding::updateBindings(const Material& material) {
     auto tech = material.technique();
     auto effect = tech->effect();
     for (const auto& semantic : tech->semantics()) {
-        const ref<MaterialParameter>& materialParam = semantic.second;
+        const shared_ptr<MaterialParameter>& materialParam = semantic.second;
         if (materialParam->uniform() == nullptr) {
             // assert?
             continue;

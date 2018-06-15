@@ -16,7 +16,7 @@ Sampler::~Sampler() noexcept {
     }
 }
 
-ref<Sampler> Sampler::create() {
+shared_ptr<Sampler> Sampler::create() {
     return std::make_shared<Sampler>();
 }
 

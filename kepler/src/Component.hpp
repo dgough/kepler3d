@@ -17,14 +17,14 @@ public:
 
     /// Returns the Node that this component belongs to.
     /// Will return nullptr if the component is not attached to a node or the node was cleaned up.
-    ref<Node> node() const;
+    shared_ptr<Node> node() const;
 
     virtual bool isDrawable() const;
 
     // TODO remove from node
 
     // TODO add methods for when the component is added or removed from a node?
-    virtual void onNodeChanged(const ref<Node>& oldNode, const ref<Node>& newNode);
+    virtual void onNodeChanged(const shared_ptr<Node>& oldNode, const shared_ptr<Node>& newNode);
 
     /// Returns the name of the component.
     /// For example, Camera should return "Camera".
@@ -34,7 +34,7 @@ public:
     Component& operator=(const Component&) = delete;
 protected:
     /// Sets the Node that this component belongs to but does not add it to that Node.
-    void setNode(const ref<Node>& node);
+    void setNode(const shared_ptr<Node>& node);
 
 protected:
     std::weak_ptr<Node> _node;

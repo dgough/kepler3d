@@ -22,7 +22,7 @@ Image::~Image() noexcept {
     }
 }
 
-ref<Image> Image::createFromFile(const char* path, bool flipY) {
+shared_ptr<Image> Image::createFromFile(const char* path, bool flipY) {
     int width, height, format;
     unsigned char* data = SOIL_load_image(path, &width, &height, &format, SOIL_LOAD_AUTO);
     if (data == nullptr) {
@@ -35,7 +35,7 @@ ref<Image> Image::createFromFile(const char* path, bool flipY) {
     return std::make_shared<Image>(width, height, toImageFormat(format), data);
 }
 
-ref<Image> Image::createFromFileMemory(const unsigned char* buffer, int bufferLength, bool flipY) {
+shared_ptr<Image> Image::createFromFileMemory(const unsigned char* buffer, int bufferLength, bool flipY) {
     int width, height, format;
     unsigned char* data = SOIL_load_image_from_memory(buffer, bufferLength, &width, &height, &format, SOIL_LOAD_AUTO);
     if (data == nullptr) {
@@ -48,7 +48,7 @@ ref<Image> Image::createFromFileMemory(const unsigned char* buffer, int bufferLe
     return std::make_shared<Image>(width, height, toImageFormat(format), data);
 }
 
-ref<Image> Image::createFromMemory(int width, int height, Format format, const unsigned char* data) {
+shared_ptr<Image> Image::createFromMemory(int width, int height, Format format, const unsigned char* data) {
     int soilFormat = toSoilFormat(format);
     size_t size = width * height * soilFormat;
     unsigned char* d = (unsigned char*)malloc(size);

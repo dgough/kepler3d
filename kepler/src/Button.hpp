@@ -15,7 +15,7 @@ public:
 
     virtual ~Button() noexcept;
 
-    static ref<Button> create();
+    static shared_ptr<Button> create();
 
 
     void setOnClick(const std::function<void()>& callback);

@@ -6,7 +6,7 @@
 using namespace kepler;
 using std::vector;
 
-static void expectAllChildrenInScene(ref<Node>& node, ref<Scene>& scene) {
+static void expectAllChildrenInScene(shared_ptr<Node>& node, shared_ptr<Scene>& scene) {
     for (size_t i = 0; i < node->childCount(); ++i) {
         auto& child = node->childAt(i);
         EXPECT_EQ(child->scene(), scene.get());
@@ -207,7 +207,7 @@ TEST(scene, delete_scene) {
     scene->childAt(2)->createChildren({ "D1" });
     scene->childAt(2)->childAt(0)->createChildren({"W1", "W2", "W3"});
 
-    vector<ref<Node>> nodes;
+    vector<shared_ptr<Node>> nodes;
     for (size_t i = 0; i < scene->childCount(); ++i) {
         nodes.emplace_back(scene->childAt(i));
     }

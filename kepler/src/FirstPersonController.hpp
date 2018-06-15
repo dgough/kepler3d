@@ -18,10 +18,10 @@ public:
     FirstPersonController(float fov, float width, float height, float near, float far);
 
     /// Returns the root camera Node.
-    ref<Node> rootNode() const;
+    shared_ptr<Node> rootNode() const;
 
     /// Returns the Camera.
-    ref<Camera> camera() const;
+    shared_ptr<Camera> camera() const;
 
     /// Sets the position of the camera.
     /// @param[in] position The position to move to.
@@ -69,8 +69,8 @@ private:
     FirstPersonController(const FirstPersonController&) = delete;
     FirstPersonController& operator=(const FirstPersonController&) = delete;
 
-    ref<Node> _root;
-    ref<Node> _pitchNode;
+    shared_ptr<Node> _root;
+    shared_ptr<Node> _pitchNode;
     float _invertY;
     float _pitch;
 };

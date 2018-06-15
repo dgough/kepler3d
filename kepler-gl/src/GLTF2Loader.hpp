@@ -29,9 +29,9 @@ public:
     /// Loads the default scene from the given GLTF file.
     /// @param[in] path The file path.
     /// @return A reference to the newly loaded scene. Will be empty if there was an error.
-    ref<Scene> loadSceneFromFile(const char* path);
+    shared_ptr<Scene> loadSceneFromFile(const char* path);
 
-    ref<Mesh> findMeshByIndex(size_t index);
+    shared_ptr<Mesh> findMeshByIndex(size_t index);
 
     /// Clears all of the data held by this loader.
     void clear();

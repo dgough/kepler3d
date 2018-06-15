@@ -10,7 +10,7 @@ using namespace kepler::gl;
 
 // TODO add a test for checking that all children point to their parent
 
-ref<Camera> createCamera() {
+shared_ptr<Camera> createCamera() {
     return Camera::createPerspectiveFov(45.0f, 800.0f, 600.0f, 0.1f, 100.0f);
 }
 
@@ -41,7 +41,7 @@ TEST(node, node_create_and_remove) {
 
 TEST(node, add_nullptr) {
     auto n = Node::create();
-    n->addNode(ref<Node>(nullptr));
+    n->addNode(shared_ptr<Node>(nullptr));
     EXPECT_EQ(n->childCount(), 0);
 }
 
@@ -49,7 +49,7 @@ TEST(node, get_root_node) {
     auto root = Node::create("Root");
 
     auto node = root;
-    ref<Node> mid = nullptr;
+    shared_ptr<Node> mid = nullptr;
     constexpr size_t len = 10;
     for (size_t i = 0; i < len; ++i) {
         node = node->createChild();
@@ -67,7 +67,7 @@ TEST(node, get_root_node) {
             node = parent->shared_from_this();
         }
         else {
-            node = ref<Node>();
+            node = shared_ptr<Node>();
         }
     }
     mid->removeFromParent();
@@ -79,8 +79,8 @@ TEST(node, get_root_node) {
 }
 
 TEST(node, get_root_node_2) {
-    ref<Node> root = Node::create("root");
-    ref<Node> n = root->createChild("A")->createChild("B")->createChild("C");
+    shared_ptr<Node> root = Node::create("root");
+    shared_ptr<Node> n = root->createChild("A")->createChild("B")->createChild("C");
 
     std::weak_ptr<Node> b = root->findFirstNodeByName("B");
 
@@ -195,7 +195,7 @@ TEST(node, weak_ptr_list) {
 }
 
 TEST(node, contains_component) {
-    ref<Node> root = Node::create("root");
+    shared_ptr<Node> root = Node::create("root");
     auto camera = createCamera();
     
     EXPECT_FALSE(root->containsComponent(camera->typeName()));
@@ -210,7 +210,7 @@ TEST(node, contains_component) {
 }
 
 TEST(node, get_drawable) {
-    ref<Node> node = Node::create();
+    shared_ptr<Node> node = Node::create();
     EXPECT_TRUE(node->drawable() == nullptr);
     
     auto camera = createCamera();
@@ -300,7 +300,7 @@ std::clog << orphan->getNamePtr() << std::endl;
 */
 
 /*
-ref<Node> root = std::make_shared<Node>("root");
+shared_ptr<Node> root = std::make_shared<Node>("root");
 {
 auto node = std::make_shared<Node>("child 01");
 root->addChild(node);
@@ -311,5 +311,5 @@ root->removeChild(node);
 std::clog << root->getNamePtr() << std::endl;
 std::clog << (*root)[0]->getNamePtr() << std::endl;
 std::clog << (*root)[1]->getNamePtr() << std::endl;
-ref<Node> other(new Node("other"));
+shared_ptr<Node> other(new Node("other"));
 */

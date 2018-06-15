@@ -20,8 +20,8 @@ public:
     Effect(const Effect&) = delete;
     Effect& operator=(const Effect&) = delete;
 
-    static ref<Effect> createFromFile(const char* vertexShaderPath, const char* fragmentShaderPath, const char* defines[] = nullptr, size_t defineCount = 0);
-    static ref<Effect> createFromSource(const std::string& vertSource, const std::string& fragSource, const char* defines[] = nullptr, size_t defineCount = 0);
+    static shared_ptr<Effect> createFromFile(const char* vertexShaderPath, const char* fragmentShaderPath, const char* defines[] = nullptr, size_t defineCount = 0);
+    static shared_ptr<Effect> createFromSource(const std::string& vertSource, const std::string& fragSource, const char* defines[] = nullptr, size_t defineCount = 0);
 
     void bind() const noexcept;
     void unbind() const noexcept;
@@ -50,7 +50,7 @@ public:
     void setValue(const Uniform* uniform, const glm::vec3& value) const noexcept;
     void setValue(const Uniform* uniform, const glm::vec4& value) const noexcept;
 
-    void setTexture(const Uniform* uniform, const ref<Texture>& texture) const noexcept;
+    void setTexture(const Uniform* uniform, const shared_ptr<Texture>& texture) const noexcept;
 
 private:
 
@@ -70,7 +70,7 @@ class Uniform {
 public:
     ~Uniform() noexcept;
 
-    ref<Effect> effect() const;
+    shared_ptr<Effect> effect() const;
 
     Uniform(const Uniform&) = delete;
     Uniform& operator=(const Uniform&) = delete;
