@@ -7,15 +7,15 @@
 
 namespace kepler {
 
-namespace vk {
+namespace vulkan {
 static VulkanState* g_vk;
 VulkanState& vulkanState() {
     return *g_vk;
 }
 }
 
-using vk::VulkanState;
-using vk::g_vk;
+using vulkan::VulkanState;
+using vulkan::g_vk;
 
 static App* g_app = nullptr;
 

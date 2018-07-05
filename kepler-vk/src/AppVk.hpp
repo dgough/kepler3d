@@ -4,7 +4,7 @@
 #include <VulkanState.hpp>
 
 namespace kepler {
-namespace vk {
+namespace vulkan {
 VulkanState& vulkanState();
 }
 }

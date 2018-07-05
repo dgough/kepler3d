@@ -3,7 +3,7 @@
 #include <Base.hpp>
 
 namespace kepler {
-namespace vk {
+namespace vulkan {
 
 class VulkanState;
 
