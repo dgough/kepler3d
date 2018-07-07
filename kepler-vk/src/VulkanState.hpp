@@ -22,47 +22,9 @@ struct QueueFamilyIndices {
 };
 
 struct SwapChainSupportDetails {
-    VkSurfaceCapabilitiesKHR capabilities;
-    std::vector<VkSurfaceFormatKHR> formats;
-    std::vector<VkPresentModeKHR> presentModes;
-};
-
-// TODO remove
-struct Vertex {
-    glm::vec2 pos;
-    glm::vec3 color;
-
-    static vk::VertexInputBindingDescription getBindingDescription() {
-        vk::VertexInputBindingDescription bindingDescription;
-        bindingDescription.binding = 0;
-        bindingDescription.stride = sizeof(Vertex);
-        bindingDescription.inputRate = vk::VertexInputRate::eVertex;
-
-        return bindingDescription;
-    }
-
-    static std::array<vk::VertexInputAttributeDescription, 2> getAttributeDescriptions() {
-        std::array<vk::VertexInputAttributeDescription, 2> attributeDescriptions = {};
-
-        attributeDescriptions[0].binding = 0;
-        attributeDescriptions[0].location = 0;
-        attributeDescriptions[0].format = vk::Format::eR32G32Sfloat;
-        attributeDescriptions[0].offset = offsetof(Vertex, pos);
-
-        attributeDescriptions[1].binding = 0;
-        attributeDescriptions[1].location = 1;
-        attributeDescriptions[1].format = vk::Format::eR32G32B32Sfloat;
-        attributeDescriptions[1].offset = offsetof(Vertex, color);
-
-        return attributeDescriptions;
-    }
-};
-
-// TODO remove
-struct UniformBufferObject {
-    glm::mat4 model;
-    glm::mat4 view;
-    glm::mat4 proj;
+    vk::SurfaceCapabilitiesKHR capabilities;
+    std::vector<vk::SurfaceFormatKHR> formats;
+    std::vector<vk::PresentModeKHR> presentModes;
 };
 
 class VulkanState {
@@ -95,21 +57,22 @@ public:
     void createUniformBuffer();
     void createDescriptorPool();
     void createDescriptorSet();
-    void createBuffer(VkDeviceSize size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties, vk::Buffer& buffer, vk::DeviceMemory& bufferMemory);
-    void copyBuffer(vk::Buffer srcBuffer, vk::Buffer dstBuffer, VkDeviceSize size);
+    void createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties, vk::Buffer& buffer, vk::DeviceMemory& bufferMemory);
+    void createVmaBuffer(vk::DeviceSize size, vk::BufferUsageFlags bufferUsage, VmaMemoryUsage vmaMemoryUsage, vk::Buffer& buffer, VmaAllocation& allocation);
+    void copyBuffer(vk::Buffer srcBuffer, vk::Buffer dstBuffer, vk::DeviceSize size);
     uint32_t findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties);
     void createCommandBuffers();
-    void createSemaphores();
+    void createSyncObjects();
     void updateUniformBuffer();
     void drawFrame();
     vk::ShaderModule createShaderModule(const std::vector<char>& code);
-    VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
-    VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes);
-    VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
-    SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
-    bool isDeviceSuitable(VkPhysicalDevice device);
-    bool checkDeviceExtensionSupport(VkPhysicalDevice device);
-    QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+    vk::SurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& availableFormats);
+    vk::PresentModeKHR chooseSwapPresentMode(const std::vector<vk::PresentModeKHR> availablePresentModes);
+    vk::Extent2D chooseSwapExtent(const vk::SurfaceCapabilitiesKHR& capabilities);
+    SwapChainSupportDetails querySwapChainSupport(vk::PhysicalDevice device);
+    bool isDeviceSuitable(vk::PhysicalDevice device);
+    bool checkDeviceExtensionSupport(vk::PhysicalDevice device);
+    QueueFamilyIndices findQueueFamilies(vk::PhysicalDevice device);
     std::vector<const char*> getRequiredExtensions();
     bool checkValidationLayerSupport();
 
@@ -120,8 +83,9 @@ private:
     GLFWwindow* _window;
 
     vk::Instance _instance;
-    VkDebugReportCallbackEXT _callback;
-    VkSurfaceKHR _surface;
+    vk::DispatchLoaderDynamic _instanceDispatchLoader;
+    vk::DebugReportCallbackEXT _callback;
+    vk::SurfaceKHR _surface;
 
     vk::PhysicalDevice _physicalDevice;
     vk::Device _device;
@@ -129,17 +93,17 @@ private:
     vk::Queue _graphicsQueue;
     vk::Queue _presentQueue;
 
-    VkSwapchainKHR _swapChain;
-    std::vector<VkImage> _swapChainImages;
+    vk::SwapchainKHR _swapChain;
+    std::vector<vk::Image> _swapChainImages;
     vk::Format _swapChainImageFormat;
-    VkExtent2D _swapChainExtent;
-    std::vector<VkImageView> _swapChainImageViews;
-    std::vector<VkFramebuffer> _swapChainFramebuffers;
+    vk::Extent2D _swapChainExtent;
+    std::vector<vk::ImageView> _swapChainImageViews;
+    std::vector<vk::Framebuffer> _swapChainFramebuffers;
 
-    VkRenderPass _renderPass;
-    VkDescriptorSetLayout _descriptorSetLayout;
-    VkPipelineLayout _pipelineLayout;
-    VkPipeline _graphicsPipeline;
+    vk::RenderPass _renderPass;
+    vk::DescriptorSetLayout _descriptorSetLayout;
+    vk::PipelineLayout _pipelineLayout;
+    vk::Pipeline _graphicsPipeline;
 
     vk::CommandPool _commandPool;
 
@@ -151,15 +115,18 @@ private:
     vk::Buffer _uniformBuffer;
     vk::DeviceMemory _uniformBufferMemory;
 
-    VkDescriptorPool _descriptorPool;
-    VkDescriptorSet _descriptorSet;
+    vk::DescriptorPool _descriptorPool;
+    vk::DescriptorSet _descriptorSet;
 
     std::vector<vk::CommandBuffer> _commandBuffers;
 
-    vk::Semaphore _imageAvailableSemaphore;
-    vk::Semaphore _renderFinishedSemaphore;
+    std::vector<vk::Semaphore> _imageAvailableSemaphores;
+    std::vector<vk::Semaphore> _renderFinishedSemaphores;
+    std::vector<vk::Fence> _inFlightFences;
 
-    VmaAllocator _allocator;
+    size_t _currentFrame = 0;
+
+    VmaAllocator _allocator = {};
 };
 
 }
