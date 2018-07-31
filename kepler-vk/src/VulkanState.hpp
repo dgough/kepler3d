@@ -5,9 +5,9 @@
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-#include <vulkan/vulkan.hpp>
 
-#include "vk_mem_alloc.h"
+#include <BaseVk.hpp>
+#include <Buffer.hpp>
 
 namespace kepler {
 namespace vulkan {
@@ -31,7 +31,6 @@ class VulkanState {
 public:
 
     VulkanState(GLFWwindow* window);
-    const vk::Device& device() const;
     void deviceWaitIdle();
 
 
@@ -58,8 +57,7 @@ public:
     void createDescriptorPool();
     void createDescriptorSet();
     void createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties, vk::Buffer& buffer, vk::DeviceMemory& bufferMemory);
-    void createVmaBuffer(vk::DeviceSize size, vk::BufferUsageFlags bufferUsage, VmaMemoryUsage vmaMemoryUsage, vk::Buffer& buffer, VmaAllocation& allocation);
-    void copyBuffer(vk::Buffer srcBuffer, vk::Buffer dstBuffer, vk::DeviceSize size);
+    void copyBuffer(Buffer& srcBuffer, Buffer& dstBuffer, vk::DeviceSize size);
     uint32_t findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties);
     void createCommandBuffers();
     void createSyncObjects();
@@ -82,13 +80,11 @@ private:
 
     GLFWwindow* _window;
 
-    vk::Instance _instance;
     vk::DispatchLoaderDynamic _instanceDispatchLoader;
     vk::DebugReportCallbackEXT _callback;
     vk::SurfaceKHR _surface;
 
     vk::PhysicalDevice _physicalDevice;
-    vk::Device _device;
 
     vk::Queue _graphicsQueue;
     vk::Queue _presentQueue;
@@ -107,13 +103,9 @@ private:
 
     vk::CommandPool _commandPool;
 
-    vk::Buffer _vertexBuffer;
-    vk::DeviceMemory _vertexBufferMemory;
-    vk::Buffer _indexBuffer;
-    vk::DeviceMemory _indexBufferMemory;
-
-    vk::Buffer _uniformBuffer;
-    vk::DeviceMemory _uniformBufferMemory;
+    Buffer::SharedPtr _vertexBuffer;
+    Buffer::SharedPtr _indexBuffer;
+    Buffer::SharedPtr _uniformBuffer;
 
     vk::DescriptorPool _descriptorPool;
     vk::DescriptorSet _descriptorSet;
@@ -125,8 +117,6 @@ private:
     std::vector<vk::Fence> _inFlightFences;
 
     size_t _currentFrame = 0;
-
-    VmaAllocator _allocator = {};
 };
 
 }

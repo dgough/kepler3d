@@ -27,6 +27,9 @@
     <ClCompile Include="src\VulkanState.cpp">
       <Filter>src\Vulkan</Filter>
     </ClCompile>
+    <ClCompile Include="src\Buffer.cpp">
+      <Filter>src\Vulkan</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">
@@ -42,6 +45,12 @@
       <Filter>src\Platform</Filter>
     </ClInclude>
     <ClInclude Include="src\VulkanState.hpp">
+      <Filter>src\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VulkanUtils.hpp">
+      <Filter>src\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Buffer.hpp">
       <Filter>src\Vulkan</Filter>
     </ClInclude>
   </ItemGroup>

@@ -9,7 +9,11 @@
 namespace kepler {
 namespace vulkan {
 
-constexpr int MAX_FRAMES_IN_FLIGHT = 2;
+static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
+
+vk::Instance g_instance;
+vk::Device g_device;
+VmaAllocator g_allocator = {};
 
 // TODO remove
 struct UniformBufferObject {
@@ -118,12 +122,8 @@ VulkanState::VulkanState(GLFWwindow* window) : _window(window) {
     initVulkan();
 }
 
-const vk::Device& VulkanState::device() const{
-    return _device;
-}
-
 void VulkanState::deviceWaitIdle() {
-    _device.waitIdle();
+    g_device.waitIdle();
 }
 
 void VulkanState::initVulkan() {
@@ -157,55 +157,50 @@ void VulkanState::mainLoop() {
         drawFrame();
     }
 
-    _device.waitIdle();
+    g_device.waitIdle();
 }
 
 void VulkanState::cleanupSwapChain() {
     for (size_t i = 0; i < _swapChainFramebuffers.size(); i++) {
-        _device.destroyFramebuffer(_swapChainFramebuffers[i]);
+        g_device.destroyFramebuffer(_swapChainFramebuffers[i]);
     }
 
-    _device.freeCommandBuffers(_commandPool, _commandBuffers);
+    g_device.freeCommandBuffers(_commandPool, _commandBuffers);
 
-    _device.destroyPipeline(_graphicsPipeline);
-    _device.destroyPipelineLayout(_pipelineLayout);
-    _device.destroyRenderPass(_renderPass);
+    g_device.destroyPipeline(_graphicsPipeline);
+    g_device.destroyPipelineLayout(_pipelineLayout);
+    g_device.destroyRenderPass(_renderPass);
 
     for (size_t i = 0; i < _swapChainImageViews.size(); i++) {
-        _device.destroyImageView(_swapChainImageViews[i]);
+        g_device.destroyImageView(_swapChainImageViews[i]);
     }
-    _device.destroySwapchainKHR(_swapChain);
+    g_device.destroySwapchainKHR(_swapChain);
 }
 
 void VulkanState::cleanup() {
     cleanupSwapChain();
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        _device.destroySemaphore(_renderFinishedSemaphores[i]);
-        _device.destroySemaphore(_imageAvailableSemaphores[i]);
-        _device.destroyFence(_inFlightFences[i]);
+        g_device.destroySemaphore(_renderFinishedSemaphores[i]);
+        g_device.destroySemaphore(_imageAvailableSemaphores[i]);
+        g_device.destroyFence(_inFlightFences[i]);
     }
 
-    _device.destroyDescriptorPool(_descriptorPool);
+    g_device.destroyDescriptorPool(_descriptorPool);
 
-    _device.destroyDescriptorSetLayout(_descriptorSetLayout);
-    _device.destroyBuffer(_uniformBuffer);
-    _device.freeMemory(_uniformBufferMemory);
+    g_device.destroyDescriptorSetLayout(_descriptorSetLayout);
+    _uniformBuffer = nullptr;
+    _indexBuffer = nullptr;
+    _vertexBuffer = nullptr;
 
-    _device.destroyBuffer(_indexBuffer);
-    _device.freeMemory(_indexBufferMemory);
+    g_device.destroyCommandPool(_commandPool);
 
-    _device.destroyBuffer(_vertexBuffer);
-    _device.freeMemory(_vertexBufferMemory);
+    vmaDestroyAllocator(g_allocator);
 
-    _device.destroyCommandPool(_commandPool);
-
-    vmaDestroyAllocator(_allocator);
-
-    _device.destroy();
-    _instance.destroyDebugReportCallbackEXT(_callback, nullptr, _instanceDispatchLoader);
-    _instance.destroySurfaceKHR(_surface);
-    _instance.destroy();
+    g_device.destroy();
+    g_instance.destroyDebugReportCallbackEXT(_callback, nullptr, _instanceDispatchLoader);
+    g_instance.destroySurfaceKHR(_surface);
+    g_instance.destroy();
 
     glfwDestroyWindow(_window);
 
@@ -213,7 +208,7 @@ void VulkanState::cleanup() {
 }
 
 void VulkanState::recreateSwapChain() {
-    _device.waitIdle();
+    g_device.waitIdle();
 
     cleanupSwapChain();
 
@@ -248,7 +243,7 @@ void VulkanState::createInstance() {
     else {
         createInfo.enabledLayerCount = 0;
     }
-    _instance = vk::createInstance(createInfo);
+    g_instance = vk::createInstance(createInfo);
 }
 
 void VulkanState::setupDebugCallback() {
@@ -258,19 +253,19 @@ void VulkanState::setupDebugCallback() {
     createInfo.flags = vk::DebugReportFlagBitsEXT::eError | vk::DebugReportFlagBitsEXT::eWarning;
     createInfo.pfnCallback = debugCallback;
 
-    _callback = _instance.createDebugReportCallbackEXT(createInfo, nullptr, _instanceDispatchLoader);
+    _callback = g_instance.createDebugReportCallbackEXT(createInfo, nullptr, _instanceDispatchLoader);
 }
 
 void VulkanState::createSurface() {
     VkSurfaceKHR surface;
-    if (glfwCreateWindowSurface(_instance, _window, nullptr, &surface) != VK_SUCCESS) {
+    if (glfwCreateWindowSurface(g_instance, _window, nullptr, &surface) != VK_SUCCESS) {
         throw std::runtime_error("failed to create window surface!");
     }
     _surface = surface;
 }
 
 void VulkanState::pickPhysicalDevice() {
-    auto physicalDevices = _instance.enumeratePhysicalDevices();
+    auto physicalDevices = g_instance.enumeratePhysicalDevices();
     if (physicalDevices.empty()) {
         throw std::runtime_error("failed to find GPUs with Vulkan support!");
     }
@@ -320,10 +315,10 @@ void VulkanState::createLogicalDevice() {
         createInfo.enabledLayerCount = 0;
     }
 
-    _device = _physicalDevice.createDevice(createInfo);
-    _instanceDispatchLoader = {_instance, _device};
-    _graphicsQueue = _device.getQueue(indices.graphicsFamily, 0);
-    _presentQueue = _device.getQueue(indices.presentFamily, 0);
+    g_device = _physicalDevice.createDevice(createInfo);
+    _instanceDispatchLoader = {g_instance, g_device};
+    _graphicsQueue = g_device.getQueue(indices.graphicsFamily, 0);
+    _presentQueue = g_device.getQueue(indices.presentFamily, 0);
 }
 
 void VulkanState::createSwapChain() {
@@ -365,8 +360,8 @@ void VulkanState::createSwapChain() {
     createInfo.presentMode = presentMode;
     createInfo.clipped = VK_TRUE;
 
-    _swapChain = _device.createSwapchainKHR(createInfo);
-    _swapChainImages = _device.getSwapchainImagesKHR(_swapChain);
+    _swapChain = g_device.createSwapchainKHR(createInfo);
+    _swapChainImages = g_device.getSwapchainImagesKHR(_swapChain);
 
     _swapChainImageFormat = static_cast<vk::Format>(surfaceFormat.format);
     _swapChainExtent = extent;
@@ -390,7 +385,7 @@ void VulkanState::createImageViews() {
         createInfo.subresourceRange.baseArrayLayer = 0;
         createInfo.subresourceRange.layerCount = 1;
 
-        _swapChainImageViews[i] = _device.createImageView(createInfo);
+        _swapChainImageViews[i] = g_device.createImageView(createInfo);
     }
 }
 
@@ -430,7 +425,7 @@ void VulkanState::createRenderPass() {
     renderPassInfo.dependencyCount = 1;
     renderPassInfo.pDependencies = &dependency;
 
-    _renderPass = _device.createRenderPass(renderPassInfo);
+    _renderPass = g_device.createRenderPass(renderPassInfo);
 }
 
 void VulkanState::createDescriptorSetLayout() {
@@ -445,7 +440,7 @@ void VulkanState::createDescriptorSetLayout() {
     layoutInfo.bindingCount = 1;
     layoutInfo.pBindings = &uboLayoutBinding;
 
-    _descriptorSetLayout = _device.createDescriptorSetLayout(layoutInfo);
+    _descriptorSetLayout = g_device.createDescriptorSetLayout(layoutInfo);
 }
 
 void VulkanState::createGraphicsPipeline() {
@@ -530,7 +525,7 @@ void VulkanState::createGraphicsPipeline() {
     pipelineLayoutInfo.setLayoutCount = 1;
     pipelineLayoutInfo.pSetLayouts = &_descriptorSetLayout;
 
-    _pipelineLayout = _device.createPipelineLayout(pipelineLayoutInfo);
+    _pipelineLayout = g_device.createPipelineLayout(pipelineLayoutInfo);
 
     vk::GraphicsPipelineCreateInfo pipelineInfo;
     pipelineInfo.stageCount = 2;
@@ -546,9 +541,9 @@ void VulkanState::createGraphicsPipeline() {
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = nullptr;
 
-    _graphicsPipeline = _device.createGraphicsPipelines(nullptr, pipelineInfo).at(0);
-    _device.destroyShaderModule(fragShaderModule);
-    _device.destroyShaderModule(vertShaderModule);
+    _graphicsPipeline = g_device.createGraphicsPipelines(nullptr, pipelineInfo).at(0);
+    g_device.destroyShaderModule(fragShaderModule);
+    g_device.destroyShaderModule(vertShaderModule);
 }
 
 void VulkanState::createFramebuffers() {
@@ -567,7 +562,7 @@ void VulkanState::createFramebuffers() {
         framebufferInfo.height = _swapChainExtent.height;
         framebufferInfo.layers = 1;
 
-        _swapChainFramebuffers[i] = _device.createFramebuffer(framebufferInfo);
+        _swapChainFramebuffers[i] = g_device.createFramebuffer(framebufferInfo);
     }
 }
 
@@ -577,52 +572,37 @@ void VulkanState::createCommandPool() {
     vk::CommandPoolCreateInfo poolInfo;
     poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily;
 
-    _commandPool = _device.createCommandPool(poolInfo);
+    _commandPool = g_device.createCommandPool(poolInfo);
 }
 
 void VulkanState::createVertexBuffer() {
     vk::DeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 
-    vk::Buffer stagingBuffer;
-    vk::DeviceMemory stagingBufferMemory;
-    createBuffer(bufferSize, vk::BufferUsageFlagBits::eTransferSrc, HOST_VISIBLE_AND_HOST_COHERENT, stagingBuffer, stagingBufferMemory);
+    auto stagingBuffer = Buffer::create(bufferSize, vk::BufferUsageFlagBits::eTransferSrc, VMA_MEMORY_USAGE_CPU_ONLY);
 
-    void* data;
-    data = _device.mapMemory(stagingBufferMemory, 0, bufferSize, vk::MemoryMapFlags{});
-    memcpy(data, vertices.data(), (size_t)bufferSize);
-    _device.unmapMemory(stagingBufferMemory);
+    void* data = stagingBuffer->map();
+    memcpy(data, vertices.data(), static_cast<size_t>(bufferSize));
+    stagingBuffer->unmap();
 
-    createBuffer(bufferSize, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer, vk::MemoryPropertyFlagBits::eDeviceLocal, _vertexBuffer, _vertexBufferMemory);
-
-    copyBuffer(stagingBuffer, _vertexBuffer, bufferSize);
-
-    _device.destroyBuffer(stagingBuffer);
-    _device.freeMemory(stagingBufferMemory);
+    _vertexBuffer = Buffer::create(bufferSize, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer, VMA_MEMORY_USAGE_GPU_ONLY);
+    copyBuffer(*stagingBuffer, *_vertexBuffer, bufferSize);
 }
 
 void VulkanState::createIndexBuffer() {
     vk::DeviceSize bufferSize = sizeof(indices[0]) * indices.size();
 
-    vk::Buffer stagingBuffer;
-    vk::DeviceMemory stagingBufferMemory;
-    createBuffer(bufferSize, vk::BufferUsageFlagBits::eTransferSrc, HOST_VISIBLE_AND_HOST_COHERENT, stagingBuffer, stagingBufferMemory);
+    auto stagingBuffer = Buffer::create(bufferSize, vk::BufferUsageFlagBits::eTransferSrc, VMA_MEMORY_USAGE_CPU_ONLY);
 
-    void* data;
-    data = _device.mapMemory(stagingBufferMemory, 0, bufferSize, {});
-    memcpy(data, indices.data(), (size_t)bufferSize);
-    _device.unmapMemory(stagingBufferMemory);
+    void* data = stagingBuffer->map();
+    memcpy(data, indices.data(), static_cast<size_t>(bufferSize));
+    stagingBuffer->unmap();
 
-    createBuffer(bufferSize, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer, vk::MemoryPropertyFlagBits::eDeviceLocal, _indexBuffer, _indexBufferMemory);
-
-    copyBuffer(stagingBuffer, _indexBuffer, bufferSize);
-
-    _device.destroyBuffer(stagingBuffer);
-    _device.freeMemory(stagingBufferMemory);
+    _indexBuffer = Buffer::create(bufferSize, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer, VMA_MEMORY_USAGE_GPU_ONLY);
+    copyBuffer(*stagingBuffer, *_indexBuffer, bufferSize);
 }
 
 void VulkanState::createUniformBuffer() {
-    vk::DeviceSize bufferSize = sizeof(UniformBufferObject);
-    createBuffer(bufferSize, vk::BufferUsageFlagBits::eUniformBuffer, HOST_VISIBLE_AND_HOST_COHERENT, _uniformBuffer, _uniformBufferMemory);
+    _uniformBuffer = Buffer::create(sizeof(UniformBufferObject), vk::BufferUsageFlagBits::eUniformBuffer, VMA_MEMORY_USAGE_CPU_ONLY);
 }
 
 void VulkanState::createDescriptorPool() {
@@ -634,7 +614,7 @@ void VulkanState::createDescriptorPool() {
     poolInfo.poolSizeCount = 1;
     poolInfo.pPoolSizes = &poolSize;
     poolInfo.maxSets = 1;
-    _descriptorPool = _device.createDescriptorPool(poolInfo);
+    _descriptorPool = g_device.createDescriptorPool(poolInfo);
 }
 
 void VulkanState::createDescriptorSet() {
@@ -644,12 +624,12 @@ void VulkanState::createDescriptorSet() {
     allocInfo.descriptorSetCount = 1;
     allocInfo.pSetLayouts = layouts;
 
-    if (_device.allocateDescriptorSets(&allocInfo, &_descriptorSet) != vk::Result::eSuccess) {
+    if (g_device.allocateDescriptorSets(&allocInfo, &_descriptorSet) != vk::Result::eSuccess) {
         throw std::runtime_error("failed to allocate descriptor set!");
     }
 
     vk::DescriptorBufferInfo bufferInfo;
-    bufferInfo.buffer = _uniformBuffer;
+    bufferInfo.buffer = *_uniformBuffer;
     bufferInfo.offset = 0;
     bufferInfo.range = sizeof(UniformBufferObject);
 
@@ -661,7 +641,7 @@ void VulkanState::createDescriptorSet() {
     descriptorWrite.descriptorCount = 1;
     descriptorWrite.pBufferInfo = &bufferInfo;
 
-    _device.updateDescriptorSets(descriptorWrite, nullptr);
+    g_device.updateDescriptorSets(descriptorWrite, nullptr);
 }
 
 void VulkanState::createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties, vk::Buffer& buffer, vk::DeviceMemory& bufferMemory) {
@@ -670,41 +650,26 @@ void VulkanState::createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage, 
     bufferInfo.usage = usage;
     bufferInfo.sharingMode = vk::SharingMode::eExclusive;
 
-    buffer = _device.createBuffer(bufferInfo);
+    buffer = g_device.createBuffer(bufferInfo);
 
-    vk::MemoryRequirements memRequirements = _device.getBufferMemoryRequirements(buffer);
+    vk::MemoryRequirements memRequirements = g_device.getBufferMemoryRequirements(buffer);
 
     vk::MemoryAllocateInfo allocInfo;
     allocInfo.allocationSize = memRequirements.size;
     allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
 
-    bufferMemory = _device.allocateMemory(allocInfo);
+    bufferMemory = g_device.allocateMemory(allocInfo);
 
-    _device.bindBufferMemory(buffer, bufferMemory, 0);
+    g_device.bindBufferMemory(buffer, bufferMemory, 0);
 }
 
-void VulkanState::createVmaBuffer(vk::DeviceSize size, vk::BufferUsageFlags bufferUsage, VmaMemoryUsage vmaMemoryUsage, vk::Buffer& buffer, VmaAllocation& allocation) {
-    vk::BufferCreateInfo bufferInfo;
-    bufferInfo.size = size;
-    bufferInfo.usage = bufferUsage;
-
-    VmaAllocationCreateInfo allocInfo = {};
-    allocInfo.usage = vmaMemoryUsage;
-    VkBuffer vkBuffer;
-    VkResult result = vmaCreateBuffer(_allocator, &VkBufferCreateInfo(bufferInfo), &allocInfo, &vkBuffer, &allocation, nullptr);
-    if (result != VK_SUCCESS) {
-        throw std::runtime_error("Failed vmaCreateBuffer");
-    }
-    buffer = vkBuffer;
-}
-
-void VulkanState::copyBuffer(vk::Buffer srcBuffer, vk::Buffer dstBuffer, vk::DeviceSize size) {
+void VulkanState::copyBuffer(Buffer& srcBuffer, Buffer& dstBuffer, vk::DeviceSize size) {
     vk::CommandBufferAllocateInfo allocInfo;
     allocInfo.level = vk::CommandBufferLevel::ePrimary;
     allocInfo.commandPool = _commandPool;
     allocInfo.commandBufferCount = 1;
 
-    auto commandBuffers = _device.allocateCommandBuffers(allocInfo);
+    auto commandBuffers = g_device.allocateCommandBuffers(allocInfo);
     vk::CommandBuffer& commandBuffer = commandBuffers.front();
 
     vk::CommandBufferBeginInfo beginInfo;
@@ -725,7 +690,7 @@ void VulkanState::copyBuffer(vk::Buffer srcBuffer, vk::Buffer dstBuffer, vk::Dev
     _graphicsQueue.submit(submitInfo, nullptr);
     _graphicsQueue.waitIdle();
 
-    _device.freeCommandBuffers(_commandPool, commandBuffers);
+    g_device.freeCommandBuffers(_commandPool, commandBuffers);
 }
 
 uint32_t VulkanState::findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties) {
@@ -749,7 +714,7 @@ void VulkanState::createCommandBuffers() {
     allocInfo.level = vk::CommandBufferLevel::ePrimary;
     allocInfo.commandBufferCount = static_cast<uint32_t>(_commandBuffers.size());
 
-    _commandBuffers = _device.allocateCommandBuffers(allocInfo);
+    _commandBuffers = g_device.allocateCommandBuffers(allocInfo);
 
     for (size_t i = 0; i < _commandBuffers.size(); i++) {
         vk::CommandBufferBeginInfo beginInfo;
@@ -773,11 +738,11 @@ void VulkanState::createCommandBuffers() {
 
         commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, _graphicsPipeline);
 
-        vk::Buffer vertexBuffers[] = {_vertexBuffer};
+        vk::Buffer vertexBuffers[] = {*_vertexBuffer};
         vk::DeviceSize offsets[] = {0};
         commandBuffer.bindVertexBuffers(0, 1, vertexBuffers, offsets);
 
-        commandBuffer.bindIndexBuffer(_indexBuffer, 0, vk::IndexType::eUint16);
+        commandBuffer.bindIndexBuffer(*_indexBuffer, 0, vk::IndexType::eUint16);
         commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, _pipelineLayout, 0, _descriptorSet, nullptr);
         commandBuffer.drawIndexed(static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 
@@ -795,9 +760,9 @@ void VulkanState::createSyncObjects() {
     vk::FenceCreateInfo fenceInfo;
     fenceInfo.flags = vk::FenceCreateFlagBits::eSignaled;
     for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i) {
-        _imageAvailableSemaphores[i] = _device.createSemaphore(semaphoreInfo);
-        _renderFinishedSemaphores[i] = _device.createSemaphore(semaphoreInfo);
-        _inFlightFences[i] = _device.createFence(fenceInfo);
+        _imageAvailableSemaphores[i] = g_device.createSemaphore(semaphoreInfo);
+        _renderFinishedSemaphores[i] = g_device.createSemaphore(semaphoreInfo);
+        _inFlightFences[i] = g_device.createFence(fenceInfo);
     }
 }
 
@@ -813,17 +778,17 @@ void VulkanState::updateUniformBuffer() {
     ubo.proj = glm::perspective(glm::radians(45.0f), _swapChainExtent.width / (float)_swapChainExtent.height, 0.1f, 10.0f);
     ubo.proj[1][1] *= -1;
 
-    void* data = _device.mapMemory(_uniformBufferMemory, 0, sizeof(ubo), vk::MemoryMapFlags{});
+    void * data = _uniformBuffer->map();
     memcpy(data, &ubo, sizeof(ubo));
-    _device.unmapMemory(_uniformBufferMemory);
+    _uniformBuffer->unmap();
 }
 
 void VulkanState::drawFrame() {
-    _device.waitForFences(_inFlightFences[_currentFrame], VK_TRUE, std::numeric_limits<uint64_t>::max());
-    _device.resetFences(_inFlightFences[_currentFrame]);
+    g_device.waitForFences(_inFlightFences[_currentFrame], VK_TRUE, std::numeric_limits<uint64_t>::max());
+    g_device.resetFences(_inFlightFences[_currentFrame]);
 
     uint32_t imageIndex;
-    auto result = _device.acquireNextImageKHR(_swapChain, std::numeric_limits<uint64_t>::max(), _imageAvailableSemaphores[_currentFrame], nullptr, &imageIndex);
+    auto result = g_device.acquireNextImageKHR(_swapChain, std::numeric_limits<uint64_t>::max(), _imageAvailableSemaphores[_currentFrame], nullptr, &imageIndex);
     if (result == vk::Result::eErrorOutOfDateKHR) {
         recreateSwapChain();
         return;
@@ -878,7 +843,7 @@ vk::ShaderModule VulkanState::createShaderModule(const std::vector<char>& code) 
     createInfo.codeSize = code.size();
     createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
 
-    return _device.createShaderModule(createInfo);
+    return g_device.createShaderModule(createInfo);
 }
 
 vk::SurfaceFormatKHR VulkanState::chooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& availableFormats) {
@@ -1016,9 +981,9 @@ bool VulkanState::checkValidationLayerSupport() {
 void VulkanState::createVma() {
     VmaAllocatorCreateInfo allocatorInfo = {};
     allocatorInfo.physicalDevice = _physicalDevice;
-    allocatorInfo.device = _device;
+    allocatorInfo.device = g_device;
 
-    vmaCreateAllocator(&allocatorInfo, &_allocator);
+    vmaCreateAllocator(&allocatorInfo, &g_allocator);
 }
 
 }
