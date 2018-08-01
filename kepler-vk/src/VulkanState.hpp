@@ -7,25 +7,11 @@
 #include <GLFW/glfw3.h>
 
 #include <BaseVk.hpp>
+#include <SwapChain.hpp>
 #include <Buffer.hpp>
 
 namespace kepler {
 namespace vulkan {
-
-struct QueueFamilyIndices {
-    int graphicsFamily = -1;
-    int presentFamily = -1;
-
-    bool isComplete() {
-        return graphicsFamily >= 0 && presentFamily >= 0;
-    }
-};
-
-struct SwapChainSupportDetails {
-    vk::SurfaceCapabilitiesKHR capabilities;
-    std::vector<vk::SurfaceFormatKHR> formats;
-    std::vector<vk::PresentModeKHR> presentModes;
-};
 
 class VulkanState {
 public:
@@ -33,9 +19,7 @@ public:
     VulkanState(GLFWwindow* window);
     void deviceWaitIdle();
 
-
     void initVulkan();
-    void mainLoop();
     void cleanupSwapChain();
     void cleanup();
     void recreateSwapChain();
@@ -45,7 +29,6 @@ public:
     void pickPhysicalDevice();
     void createLogicalDevice();
     void createSwapChain();
-    void createImageViews();
     void createRenderPass();
     void createDescriptorSetLayout();
     void createGraphicsPipeline();
@@ -67,7 +50,6 @@ public:
     vk::SurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& availableFormats);
     vk::PresentModeKHR chooseSwapPresentMode(const std::vector<vk::PresentModeKHR> availablePresentModes);
     vk::Extent2D chooseSwapExtent(const vk::SurfaceCapabilitiesKHR& capabilities);
-    SwapChainSupportDetails querySwapChainSupport(vk::PhysicalDevice device);
     bool isDeviceSuitable(vk::PhysicalDevice device);
     bool checkDeviceExtensionSupport(vk::PhysicalDevice device);
     QueueFamilyIndices findQueueFamilies(vk::PhysicalDevice device);
@@ -82,20 +64,13 @@ private:
 
     vk::DispatchLoaderDynamic _instanceDispatchLoader;
     vk::DebugReportCallbackEXT _callback;
-    vk::SurfaceKHR _surface;
-
-    vk::PhysicalDevice _physicalDevice;
 
     vk::Queue _graphicsQueue;
     vk::Queue _presentQueue;
 
-    vk::SwapchainKHR _swapChain;
-    std::vector<vk::Image> _swapChainImages;
-    vk::Format _swapChainImageFormat;
-    vk::Extent2D _swapChainExtent;
-    std::vector<vk::ImageView> _swapChainImageViews;
-    std::vector<vk::Framebuffer> _swapChainFramebuffers;
+    SwapChain::SharedPtr _swapChain;
 
+    std::vector<vk::Framebuffer> _swapChainFramebuffers;
     vk::RenderPass _renderPass;
     vk::DescriptorSetLayout _descriptorSetLayout;
     vk::PipelineLayout _pipelineLayout;

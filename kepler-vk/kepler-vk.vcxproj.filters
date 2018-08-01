@@ -30,6 +30,12 @@
     <ClCompile Include="src\Buffer.cpp">
       <Filter>src\Vulkan</Filter>
     </ClCompile>
+    <ClCompile Include="src\SwapChain.cpp">
+      <Filter>src\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VulkanUtils.cpp">
+      <Filter>src\Vulkan</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">
@@ -51,6 +57,9 @@
       <Filter>src\Vulkan</Filter>
     </ClInclude>
     <ClInclude Include="src\Buffer.hpp">
+      <Filter>src\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SwapChain.hpp">
       <Filter>src\Vulkan</Filter>
     </ClInclude>
   </ItemGroup>

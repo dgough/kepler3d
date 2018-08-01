@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Buffer.hpp"
+#include <VulkanUtils.hpp>
 
 namespace kepler {
 namespace vulkan {

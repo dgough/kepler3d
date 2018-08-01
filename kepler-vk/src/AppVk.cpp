@@ -155,6 +155,10 @@ float App::heightAsFloat() const {
     return static_cast<float>(_impl->_height);
 }
 
+void App::windowSize(int& width, int& height) {
+    glfwGetWindowSize(_impl->_window, &width, &height);
+}
+
 float App::aspectRatio() const {
     if (_impl->_height == 0.0f) {
         return 0.0f;

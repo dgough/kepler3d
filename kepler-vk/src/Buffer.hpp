@@ -16,6 +16,9 @@ public:
     void* map();
     void unmap();
 
+    size_t size() const {
+        return _size;
+    }
 
     operator vk::Buffer() const {
         return _buffer;

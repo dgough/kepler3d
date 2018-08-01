@@ -170,9 +170,6 @@
     <ClCompile Include="src\AxisCompass.cpp">
       <Filter>src\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="src\AppGLFW.cpp">
-      <Filter>src\Platform</Filter>
-    </ClCompile>
     <ClCompile Include="src\glad.cpp">
       <Filter>src\Base</Filter>
     </ClCompile>
@@ -193,6 +190,9 @@
     </ClCompile>
     <ClCompile Include="src\OpenGL.cpp">
       <Filter>src\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AppGlfwOpenGL.cpp">
+      <Filter>src\Platform</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

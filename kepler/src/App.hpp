@@ -71,6 +71,9 @@ public:
     int height() const;
     float heightAsFloat() const;
 
+    /// Gets the width and height of the window.
+    void windowSize(int& width, int& height);
+
     /// Returns the aspect ratio of the client area (width/height).
     float aspectRatio() const;
 

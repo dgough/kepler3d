@@ -138,7 +138,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\AppGLFW.cpp" />
+    <ClCompile Include="src\AppGlfwOpenGL.cpp" />
     <ClCompile Include="src\AxisCompass.cpp" />
     <ClCompile Include="src\BmpFont.cpp" />
     <ClCompile Include="src\Effect.cpp" />

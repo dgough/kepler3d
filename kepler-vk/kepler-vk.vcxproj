@@ -141,14 +141,17 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\SwapChain.cpp" />
     <ClCompile Include="src\VmaAllocator.cpp" />
     <ClCompile Include="src\VulkanState.cpp" />
+    <ClCompile Include="src\VulkanUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AppVk.hpp" />
     <ClInclude Include="src\BaseVk.hpp" />
     <ClInclude Include="src\Buffer.hpp" />
     <ClInclude Include="src\stdafx.h" />
+    <ClInclude Include="src\SwapChain.hpp" />
     <ClInclude Include="src\targetver.h" />
     <ClInclude Include="src\VulkanState.hpp" />
     <ClInclude Include="src\VulkanUtils.hpp" />
