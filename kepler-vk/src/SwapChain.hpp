@@ -35,9 +35,9 @@ private:
     void cleanupSwapChain();
 
     vk::SwapchainKHR _swapChain;
-    std::vector<vk::Image> _swapChainImages;
     vk::Format _swapChainImageFormat;
     vk::Extent2D _swapChainExtent;
+    std::vector<vk::Image> _swapChainImages;
     std::vector<vk::ImageView> _swapChainImageViews;
 };
 }

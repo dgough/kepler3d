@@ -38,7 +38,7 @@ bool writeTextFile(const char* path, std::string& destination);
 /// @return True if the file was read successfully; otherwise.
 template<class T>
 bool readBinaryFile(const char* path, std::vector<T>& data) {
-    std::ifstream is(path, std::ios::binary);
+    std::ifstream is(path, std::ios::ate | std::ios::binary);
 
     if (!is) {
         std::clog << "ERROR::READ_FILE " << path << std::endl;
@@ -46,7 +46,6 @@ bool readBinaryFile(const char* path, std::vector<T>& data) {
     }
 
     // find file size
-    is.seekg(0, std::ios_base::end);
     std::size_t size = is.tellg();
     is.seekg(0, std::ios_base::beg);
 

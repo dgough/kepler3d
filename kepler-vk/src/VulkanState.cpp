@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "VulkanState.hpp"
+#include "Shader.hpp"
 
 #include <VulkanUtils.hpp>
 
@@ -101,24 +102,6 @@ static VkResult CreateDebugReportCallbackEXT(VkInstance instance, const VkDebugR
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objType, uint64_t obj, size_t location, int32_t code, const char* layerPrefix, const char* msg, void* userData) {
     std::cerr << "validation layer: " << msg << std::endl;
     return VK_FALSE;
-}
-
-static std::vector<char> readFile(const std::string& filename) {
-    std::ifstream file(filename, std::ios::ate | std::ios::binary);
-
-    if (!file.is_open()) {
-        throw std::runtime_error("failed to open file!");
-    }
-
-    size_t fileSize = (size_t)file.tellg();
-    std::vector<char> buffer(fileSize);
-
-    file.seekg(0);
-    file.read(buffer.data(), fileSize);
-
-    file.close();
-
-    return buffer;
 }
 
 /////////////////
@@ -364,23 +347,10 @@ void VulkanState::createDescriptorSetLayout() {
 }
 
 void VulkanState::createGraphicsPipeline() {
-    auto vertShaderCode = readFile("shaders/vert.spv");
-    auto fragShaderCode = readFile("shaders/frag.spv");
+    auto vertShader = Shader::createFromFile(ShaderType::Vertex, "shaders/vert.spv");
+    auto fragShader = Shader::createFromFile(ShaderType::Fragment, "shaders/frag.spv");
 
-    vk::ShaderModule vertShaderModule = createShaderModule(vertShaderCode);
-    vk::ShaderModule fragShaderModule = createShaderModule(fragShaderCode);
-
-    vk::PipelineShaderStageCreateInfo vertShaderStageInfo;
-    vertShaderStageInfo.stage = vk::ShaderStageFlagBits::eVertex;
-    vertShaderStageInfo.module = vertShaderModule;
-    vertShaderStageInfo.pName = "main";
-
-    vk::PipelineShaderStageCreateInfo fragShaderStageInfo;
-    fragShaderStageInfo.stage = vk::ShaderStageFlagBits::eFragment;
-    fragShaderStageInfo.module = fragShaderModule;
-    fragShaderStageInfo.pName = "main";
-
-    vk::PipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
+    vk::PipelineShaderStageCreateInfo shaderStages[] = {vertShader->pipelineCreateInfo("main"), fragShader->pipelineCreateInfo("main")};
 
     vk::PipelineVertexInputStateCreateInfo vertexInputInfo;
 
@@ -462,8 +432,6 @@ void VulkanState::createGraphicsPipeline() {
     pipelineInfo.basePipelineHandle = nullptr;
 
     _graphicsPipeline = g_device.createGraphicsPipelines(nullptr, pipelineInfo).at(0);
-    g_device.destroyShaderModule(fragShaderModule);
-    g_device.destroyShaderModule(vertShaderModule);
 }
 
 void VulkanState::createFramebuffers() {
