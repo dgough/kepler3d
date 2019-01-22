@@ -4,9 +4,6 @@
 #ifndef LAZY_GLTF2_HPP
 #define LAZY_GLTF2_HPP
 
-// suppress warning about fopen_s
-#define _CRT_SECURE_NO_WARNINGS
-
 #include "lib64.hpp"
 
 #include <string>
@@ -69,6 +66,15 @@ struct FileCloser {
 using JsonDocument = ::rapidjson::Document;
 using JsonValue = ::rapidjson::Document::GenericValue;
 using unique_file_ptr = ::std::unique_ptr<FILE, FileCloser>;
+
+
+static unique_file_ptr openFile(const char* path, const char* mode) {
+    FILE* f = nullptr;
+    if (fopen_s(&f, path, mode)) {
+        return nullptr;
+    }
+    return unique_file_ptr(f);
+}
 
 /// Animation target path.
 enum class TargetPath {
@@ -639,7 +645,7 @@ bool readBase64(const char* text, size_t byteLength, std::vector<T>&data) {
 /// @retrun True if the file was loaded successfully; false otherwise.
 template<typename T>
 bool readBinaryFile(const char* path, size_t byteLength, std::vector<T>& data) {
-    unique_file_ptr file(fopen(path, "rb"));
+    unique_file_ptr file = openFile(path, "rb");
     FILE* fp = file.get();
     if (!fp) {
         return false;
@@ -1848,7 +1854,7 @@ inline bool Gltf::load(const char* path) noexcept {
     if (lowercase(path[len - 1]) == 'b') { // .glb
         return loadGlbMetaData(path);
     }
-    unique_file_ptr file(fopen(path, "rb"));
+    unique_file_ptr file = openFile(path, "rb");
     FILE* fp = file.get();
     if (!fp) {
         return false;
@@ -2020,7 +2026,7 @@ inline std::vector<const char*> Gltf::extensionsUsed() const noexcept {
 }
 
 inline bool Gltf::loadGlbMetaData(const char* path) {
-    unique_file_ptr file(fopen(path, "rb"));
+    unique_file_ptr file = openFile(path, "rb");
     FILE* fp = file.get();
     if (!fp) {
         return false;
@@ -2070,7 +2076,7 @@ bool Gltf::loadGlbData(std::vector<T>& data) const noexcept {
     static_assert(sizeof(T) == 1, "vector type size must be 1");
     if (m_glb) {
         const auto& chunkLength = m_glb->chunkLength;
-        unique_file_ptr file(fopen(m_glb->path.c_str(), "rb"));
+        unique_file_ptr file = openFile(m_glb->path.c_str(), "rb");
         FILE* fp = file.get();
         if (!fp) {
             return false;

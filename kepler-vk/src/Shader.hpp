@@ -6,8 +6,8 @@ namespace kepler {
 namespace vulkan {
 
 enum class ShaderType {
-    Vertex,
-    Fragment,
+    VERTEX,
+    FRAGMENT,
 };
 
 class Shader {

@@ -79,8 +79,6 @@ const bool enableValidationLayers = false;
 const bool enableValidationLayers = true;
 #endif
 
-static const auto HOST_VISIBLE_AND_HOST_COHERENT = vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent;
-
 const std::vector<const char*> validationLayers = {
     "VK_LAYER_LUNARG_standard_validation"
 };
@@ -347,8 +345,8 @@ void VulkanState::createDescriptorSetLayout() {
 }
 
 void VulkanState::createGraphicsPipeline() {
-    auto vertShader = Shader::createFromFile(ShaderType::Vertex, "shaders/vert.spv");
-    auto fragShader = Shader::createFromFile(ShaderType::Fragment, "shaders/frag.spv");
+    auto vertShader = Shader::createFromFile(ShaderType::VERTEX, "shaders/vert.spv");
+    auto fragShader = Shader::createFromFile(ShaderType::FRAGMENT, "shaders/frag.spv");
 
     vk::PipelineShaderStageCreateInfo shaderStages[] = {vertShader->pipelineCreateInfo("main"), fragShader->pipelineCreateInfo("main")};
 
@@ -358,8 +356,8 @@ void VulkanState::createGraphicsPipeline() {
     auto attributeDescriptions = Vertex::getAttributeDescriptions();
 
     vertexInputInfo.vertexBindingDescriptionCount = 1;
-    vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
     vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+    vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
     vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
     vk::PipelineInputAssemblyStateCreateInfo inputAssembly;

@@ -20,6 +20,8 @@
 #include <App.hpp>
 #include <AppVk.hpp>
 #include <VulkanState.hpp>
+#include <GLTF2Loader.hpp>
+#include <FileSystem.hpp>
 
 using namespace kepler;
 using namespace kepler::vulkan;
@@ -27,6 +29,8 @@ using namespace kepler::vulkan;
 static constexpr int WINDOW_WIDTH = 1024;
 static constexpr int WINDOW_HEIGHT = 768;
 static constexpr bool FULLSCREEN = false;
+
+static const char* const BOX_PATH = "../../../glTF-Sample-Models/2.0/Box/glTF/Box.gltf";
 
 class HelloTriangleApplication : public AppDelegate {
 public:
@@ -39,6 +43,11 @@ public:
     }
 
     void start() override {
+        GLTF2Loader gltf;
+        auto scene = gltf.loadSceneFromFile(BOX_PATH);
+        if (scene) {
+            std::cout << "scene" << std::endl;
+        }
     }
 
     void update() override {

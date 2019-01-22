@@ -13,6 +13,12 @@
     <Filter Include="src\Vulkan">
       <UniqueIdentifier>{6c601c69-e63c-43e9-b161-be1cad5150e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Mesh">
+      <UniqueIdentifier>{d95c8b40-4f54-4997-97f4-1cd410eefd17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\glTF">
+      <UniqueIdentifier>{8bab7d75-d0b9-443a-b3b9-cee2d4a557d5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
@@ -38,6 +44,24 @@
     </ClCompile>
     <ClCompile Include="src\Shader.cpp">
       <Filter>src\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MeshPrimitive.cpp">
+      <Filter>src\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mesh.cpp">
+      <Filter>src\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GLTF2Loader.cpp">
+      <Filter>src\glTF</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MeshRenderer.cpp">
+      <Filter>src\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Vao.cpp">
+      <Filter>src\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VertexLayout.cpp">
+      <Filter>src\Mesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -67,6 +91,27 @@
     </ClInclude>
     <ClInclude Include="src\Shader.hpp">
       <Filter>src\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VertexAttrib.hpp">
+      <Filter>src\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MeshPrimitive.hpp">
+      <Filter>src\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Mesh.hpp">
+      <Filter>src\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GLTF2Loader.hpp">
+      <Filter>src\glTF</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MeshRenderer.hpp">
+      <Filter>src\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Vao.hpp">
+      <Filter>src\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VertexLayout.hpp">
+      <Filter>src\Mesh</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

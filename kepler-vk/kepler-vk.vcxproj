@@ -137,12 +137,18 @@
   <ItemGroup>
     <ClCompile Include="src\AppVk.cpp" />
     <ClCompile Include="src\Buffer.cpp" />
+    <ClCompile Include="src\GLTF2Loader.cpp" />
+    <ClCompile Include="src\Mesh.cpp" />
+    <ClCompile Include="src\MeshPrimitive.cpp" />
+    <ClCompile Include="src\MeshRenderer.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\SwapChain.cpp" />
+    <ClCompile Include="src\Vao.cpp" />
+    <ClCompile Include="src\VertexLayout.cpp" />
     <ClCompile Include="src\VmaAllocator.cpp" />
     <ClCompile Include="src\VulkanState.cpp" />
     <ClCompile Include="src\VulkanUtils.cpp" />
@@ -151,10 +157,17 @@
     <ClInclude Include="src\AppVk.hpp" />
     <ClInclude Include="src\BaseVk.hpp" />
     <ClInclude Include="src\Buffer.hpp" />
+    <ClInclude Include="src\GLTF2Loader.hpp" />
+    <ClInclude Include="src\Mesh.hpp" />
+    <ClInclude Include="src\MeshPrimitive.hpp" />
+    <ClInclude Include="src\MeshRenderer.hpp" />
     <ClInclude Include="src\Shader.hpp" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\SwapChain.hpp" />
     <ClInclude Include="src\targetver.h" />
+    <ClInclude Include="src\Vao.hpp" />
+    <ClInclude Include="src\VertexAttrib.hpp" />
+    <ClInclude Include="src\VertexLayout.hpp" />
     <ClInclude Include="src\VulkanState.hpp" />
     <ClInclude Include="src\VulkanUtils.hpp" />
   </ItemGroup>

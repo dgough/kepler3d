@@ -33,9 +33,9 @@ ShaderType Shader::type() const {
 
 vk::ShaderStageFlagBits Shader::stage() const {
     switch (_type) {
-    case ShaderType::Vertex:
+    case ShaderType::VERTEX:
         return vk::ShaderStageFlagBits::eVertex;
-    case ShaderType::Fragment:
+    case ShaderType::FRAGMENT:
     default:
         return vk::ShaderStageFlagBits::eFragment;
     }
