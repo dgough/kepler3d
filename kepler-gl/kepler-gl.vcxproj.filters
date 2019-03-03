@@ -81,12 +81,6 @@
     <ClInclude Include="src\lazy_gltf2.hpp">
       <Filter>src\glTF</Filter>
     </ClInclude>
-    <ClInclude Include="src\VertexBuffer.hpp">
-      <Filter>src\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\IndexBuffer.hpp">
-      <Filter>src\Buffers</Filter>
-    </ClInclude>
     <ClInclude Include="src\VertexAttributeAccessor.hpp">
       <Filter>src\Accessors</Filter>
     </ClInclude>
@@ -116,6 +110,15 @@
     </ClInclude>
     <ClInclude Include="src\OpenGL.hpp">
       <Filter>src\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Buffer.hpp">
+      <Filter>src\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VertexBuffer.hpp">
+      <Filter>src\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IndexBuffer.hpp">
+      <Filter>src\Buffers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -154,12 +157,6 @@
     </ClCompile>
     <ClCompile Include="src\GLTF2Loader.cpp">
       <Filter>src\glTF</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VertexBuffer.cpp">
-      <Filter>src\Buffers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\IndexBuffer.cpp">
-      <Filter>src\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="src\VertexAttributeAccessor.cpp">
       <Filter>src\Accessors</Filter>

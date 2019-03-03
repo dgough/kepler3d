@@ -14,12 +14,11 @@ namespace gl {
 
 
 using BufferHandle = GLuint;
-using VertexBufferHandle = GLuint;
-using IndexBufferHandle = GLuint;
 using ProgramHandle = GLuint;
 using TextureHandle = GLuint;
 using SamplerHandle = GLuint;
 
 void replace_glad_callbacks();
-}
-}
+
+} // namespace gl
+} // namespace kepler

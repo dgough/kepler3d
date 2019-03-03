@@ -156,6 +156,7 @@
   <ItemGroup>
     <ClCompile Include="src\main_tests.cpp" />
     <ClCompile Include="src\test_BoundingBox.cpp" />
+    <ClCompile Include="src\test_buffer.cpp" />
     <ClCompile Include="src\test_ColorMath.cpp" />
     <ClCompile Include="src\test_filesystem.cpp" />
     <ClCompile Include="src\test_fonts.cpp" />

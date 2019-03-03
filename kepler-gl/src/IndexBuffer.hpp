@@ -1,28 +1,23 @@
 #pragma once
 
-#include <BaseGL.hpp>
-#include <OpenGL.hpp>
+#include <Buffer.hpp>
 
 namespace kepler {
 namespace gl {
 
-
-/// Wrapper for a GL_ELEMENT_ARRAY_BUFFER.
-class IndexBuffer {
+class IndexBuffer : public Buffer<GL_ELEMENT_ARRAY_BUFFER> {
 public:
     /// Use IndexBuffer::create() instead.
-    IndexBuffer();
-    virtual ~IndexBuffer() noexcept;
-    IndexBuffer(const IndexBuffer&) = delete;
-    IndexBuffer& operator=(const IndexBuffer&) = delete;
+    IndexBuffer() = default;
+    IndexBuffer(GLsizeiptr size, const GLvoid* data, GLenum usage = GL_STATIC_DRAW) : Buffer<GL_ELEMENT_ARRAY_BUFFER>(size, data, usage) {}
 
-    static shared_ptr<IndexBuffer> create(GLsizeiptr size, const GLvoid* data, GLenum usage = GL_STATIC_DRAW);
-
-    /// Binds this buffer.
-    void bind();
-
-private:
-    IndexBufferHandle _handle;
+    // Creates a shared_ptr to a new IndexBuffer
+    static shared_ptr<IndexBuffer> create(GLsizeiptr size, const GLvoid* data, GLenum usage = GL_STATIC_DRAW) {
+        return std::make_shared<IndexBuffer>(size, data, usage);
+    }
 };
-}
-}
+
+static_assert(sizeof(IndexBuffer) == sizeof(BufferHandle), "Ensure no vtable");
+
+} // namespace gl
+} // namespace kepler

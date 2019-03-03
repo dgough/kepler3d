@@ -1,33 +1,23 @@
 #pragma once
 
-#include <BaseGL.hpp>
-#include <OpenGL.hpp>
+#include <Buffer.hpp>
 
 namespace kepler {
 namespace gl {
 
-
-/// Wrapper for a Vertex Buffer Object (GL_ARRAY_BUFFER).
-class VertexBuffer {
+class VertexBuffer : public Buffer<GL_ARRAY_BUFFER> {
 public:
     /// Use VertexBuffer::create() instead.
-    VertexBuffer();
-    virtual ~VertexBuffer() noexcept;
-    VertexBuffer(const VertexBuffer&) = delete;
-    VertexBuffer& operator=(const VertexBuffer&) = delete;
+    VertexBuffer() = default;
+    VertexBuffer(GLsizeiptr size, const GLvoid* data, GLenum usage = GL_STATIC_DRAW) : Buffer<GL_ARRAY_BUFFER>(size, data, usage) {}
 
-    /// Creates a VertexBuffer.
-    /// 
-    /// @param[in] size Size of the data.
-    /// @param[in] data Pointer to the vertex data.
-    /// @param[in] usage GL_STATIC_DRAW, GL_DYNAMIC_DRAW...
-    static shared_ptr<VertexBuffer> create(GLsizeiptr size, const GLvoid* data, GLenum usage = GL_STATIC_DRAW);
-
-    /// Binds this buffer.
-    void bind() const noexcept;
-
-private:
-    VertexBufferHandle _handle;
+    // Creates a shared_ptr to a new VertexBuffer
+    static shared_ptr<VertexBuffer> create(GLsizeiptr size, const GLvoid* data, GLenum usage = GL_STATIC_DRAW) {
+        return std::make_shared<VertexBuffer>(size, data, usage);
+    }
 };
-}
-}
+
+static_assert(sizeof(VertexBuffer) == sizeof(BufferHandle), "Ensure no vtable");
+
+} // namespace gl
+} // namespace kepler

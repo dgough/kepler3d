@@ -146,7 +146,6 @@
     <ClCompile Include="src\GLTF2Loader.cpp" />
     <ClCompile Include="src\Image.cpp" />
     <ClCompile Include="src\IndexAccessor.cpp" />
-    <ClCompile Include="src\IndexBuffer.cpp" />
     <ClCompile Include="src\Material.cpp" />
     <ClCompile Include="src\MaterialBinding.cpp" />
     <ClCompile Include="src\MaterialParameter.cpp" />
@@ -165,13 +164,13 @@
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\VertexAttributeAccessor.cpp" />
     <ClCompile Include="src\VertexAttributeBinding.cpp" />
-    <ClCompile Include="src\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AttributeSemantic.hpp" />
     <ClInclude Include="src\AxisCompass.hpp" />
     <ClInclude Include="src\BaseGL.hpp" />
     <ClInclude Include="src\BmpFont.hpp" />
+    <ClInclude Include="src\Buffer.hpp" />
     <ClInclude Include="src\Effect.hpp" />
     <ClInclude Include="src\GLTF2Loader.hpp" />
     <ClInclude Include="src\Image.hpp" />
