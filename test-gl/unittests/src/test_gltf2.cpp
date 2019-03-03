@@ -1,5 +1,4 @@
-#include "gtest/gtest.h"
-#include "macros.hpp"
+#include "common_test.hpp"
 
 #include <OpenGL.hpp>
 
@@ -79,10 +78,10 @@ TEST(gltf2, load_gltf2) {
         auto expectedRot = glm::quat(0.92375f, -0.383f, 0.0f, 0.0f); // w is first
         EXPECT_QUAT_EQ(rot, expectedRot);
         // node translation
-        EXPECT_VE3_EQ(scene->childAt(1)->localTransform().translation(), glm::vec3(0.5f, 0.5f, 3.0f));
+        EXPECT_VE3_EQ(scene->childAt(1)->localTransform().translation(), vec3(0.5f, 0.5f, 3.0f));
     }
 
-    //// load_box    
+    //// load_box
     //{
     //    GLTF2Loader gltf;
     //    auto scene = gltf.loadSceneFromFile(BOX_PATH);

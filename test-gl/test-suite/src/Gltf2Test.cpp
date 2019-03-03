@@ -23,8 +23,6 @@
 namespace kepler {
 namespace gl {
 
-using glm::vec3;
-
 #define SAMPLES_BASE "../../../glTF-Sample-Models/2.0/"
 
 static std::vector<const char*> g_paths{
@@ -266,7 +264,7 @@ shared_ptr<Material> createBoxMaterial() {
         auto tech = Technique::create(effect);
         tech->setAttribute("a_position", AttributeSemantic::POSITION);
         tech->setSemanticUniform("mvp", MaterialParameter::Semantic::MODELVIEWPROJECTION);
-        auto f = [](Effect& effect, const Uniform* uniform) {effect.setValue(uniform, glm::vec3(1, 0, 0)); };
+        auto f = [](Effect& effect, const Uniform* uniform) {effect.setValue(uniform, vec3(1, 0, 0)); };
         tech->setUniform("color", MaterialParameter::create("color", f));
 
         auto& state = tech->renderState();

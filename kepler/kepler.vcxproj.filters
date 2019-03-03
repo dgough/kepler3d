@@ -81,6 +81,9 @@
     <ClCompile Include="src\BoundingBox.cpp">
       <Filter>src\Geometry</Filter>
     </ClCompile>
+    <ClCompile Include="src\ColorMath.cpp">
+      <Filter>src\Base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\App.hpp">
@@ -154,6 +157,9 @@
     </ClInclude>
     <ClInclude Include="src\Bounded.hpp">
       <Filter>src\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ColorMath.hpp">
+      <Filter>src\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

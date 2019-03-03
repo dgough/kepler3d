@@ -32,7 +32,7 @@ static constexpr char* DUCK_TEXTURE_PATH = SAMPLES_BASE "Duck/glTF/DuckCM.png";
 static constexpr char* FLOOR_TEXTURE_PATH = "res/textures/hardwood.jpg";
 
 static std::string g_text;
-static glm::vec3 g_lightColor(1);
+static vec3 g_lightColor(1);
 
 static shared_ptr<Node> createLamp();
 static shared_ptr<Material> createCubeMaterial();
@@ -69,7 +69,7 @@ void LightTest::start() {
         _lightParent->addNode(lamp);
         _scene->addNode(_lightParent);
 
-        auto floorPrim = createTexturedLitQuadPrimitive(glm::vec2(4.f));
+        auto floorPrim = createTexturedLitQuadPrimitive(vec2(4.f));
         floorPrim->setMaterial(createPointLightMaterial(FLOOR_TEXTURE_PATH, lamp));
         auto floor = _scene->createChild("floor");
         floor->addComponent(MeshRenderer::create(Mesh::create(floorPrim)));
@@ -116,16 +116,16 @@ void LightTest::keyEvent(int key, int scancode, int action, int mods) {
     if (action == PRESS) {
         switch (key) {
         case KEY_R:
-            g_lightColor = glm::vec3(1, 0, 0);
+            g_lightColor = vec3(1, 0, 0);
             break;
         case KEY_G:
-            g_lightColor = glm::vec3(0, 1, 0);
+            g_lightColor = vec3(0, 1, 0);
             break;
         case KEY_B:
-            g_lightColor = glm::vec3(0.f, 0.5f, 1.f);
+            g_lightColor = vec3(0.f, 0.5f, 1.f);
             break;
         case KEY_W:
-            g_lightColor = glm::vec3(1);
+            g_lightColor = vec3(1);
             break;
         case KEY_SPACE:
             _pause = !_pause;
@@ -247,9 +247,9 @@ static shared_ptr<Material> createPointLightMaterial(const char* texture_path, s
     auto lightPos = MaterialParameter::create("lightPos",
         [lightNode](Effect& effect, const Uniform* uniform) {
         // light position in view space
-        glm::vec4 v = glm::vec4(lightNode->worldTransform().translation(), 1.0f);
+        vec4 v = vec4(lightNode->worldTransform().translation(), 1.0f);
         v = lightNode->viewMatrix() * v;
-        effect.setValue(uniform, glm::vec3(v));
+        effect.setValue(uniform, vec3(v));
     });
     tech->setUniform("lightPos", lightPos);
 
@@ -260,7 +260,7 @@ static shared_ptr<Material> createPointLightMaterial(const char* texture_path, s
     tech->setUniform("lightColor", lightColor);
     tech->setUniform("shininess", MaterialParameter::create("shininess", 64.0f));
     tech->setUniform("specularStrength", MaterialParameter::create("specularStrength", 0.2f));
-    tech->setUniform("ambient", MaterialParameter::create("ambient", glm::vec3(0.2f)));
+    tech->setUniform("ambient", MaterialParameter::create("ambient", vec3(0.2f)));
     tech->setUniform("s_baseMap", MaterialParameter::create("base_texture", texture));
 
     tech->setUniform("constantAttenuation", MaterialParameter::create("constantAttenuation", 1.f));

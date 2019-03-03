@@ -75,7 +75,7 @@ void OrbitCamera::move(float x, float y) {
     }
     auto deltaX = x - _start.x;
     auto deltaY = y - _start.y;
-    _start = glm::vec2(x, y);
+    _start = vec2(x, y);
     _pitch = _pitch - static_cast<float>(glm::radians(deltaY * 0.5f));
     _yaw = _yaw - static_cast<float>(glm::radians(deltaX * 0.5f));
 

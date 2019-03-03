@@ -1,13 +1,10 @@
-#include "gtest/gtest.h"
-#include "macros.hpp"
+#include "common_test.hpp"
 
 #include <BoundingBox.hpp>
 #include <Transform.hpp>
 
 using namespace kepler;
-using glm::vec3;
 using glm::quat;
-using glm::mat4;
 using glm::radians;
 
 static const vec3 origin;
@@ -24,7 +21,7 @@ TEST(boundingBox, empty) {
     EXPECT_FALSE(a.empty());
 }
 
-TEST(boundingBox, center) {    
+TEST(boundingBox, center) {
     EXPECT_VE3_EQ(origin, BoundingBox().center());
     BoundingBox a(vec3(-1, -1, -1), vec3(1, 1, 1));
     EXPECT_VE3_EQ(origin, a.center());
@@ -72,7 +69,7 @@ TEST(boundingBox, scaleTranslate) {
         expected.min[i] = actual.min[i] * s[i] + t[i];
         expected.max[i] = actual.max[i] * s[i] + t[i];
     }
-    Transform transform;    
+    Transform transform;
     transform.translate(t);
     transform.scale(s);
     actual.transform(transform.matrix());

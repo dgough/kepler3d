@@ -32,6 +32,7 @@
 #include <StringUtils.hpp>
 #include <MeshUtils.hpp>
 #include <Performance.hpp>
+#include <ColorMath.hpp>
 
 #include <iostream>
 
@@ -236,7 +237,7 @@ void TestApp::doMovement() {
         cameraSpeed *= 3.0f;
     }
     GLfloat upSpeed = cameraSpeed;
-    glm::vec3 move;
+    vec3 move;
     if (app->getKey(KEY_W)) {
         move.z = 1;
     }
@@ -271,22 +272,22 @@ void TestApp::drawText() {
 
     float size = static_cast<float>(_font->size());
 
-    _font->drawText(g_frame_time_str.c_str(), 0.f, y, glm::vec3(1, 0, 0));
-    _font->drawText(g_fps_str.c_str(), 0.f, y += size, glm::vec3(0, 0.8f, 0.2f));
+    _font->drawText(g_frame_time_str.c_str(), 0.f, y, vec3(1, 0, 0));
+    _font->drawText(g_fps_str.c_str(), 0.f, y += size, vec3(0, 0.8f, 0.2f));
     if (app()->isCursorVisible()) {
-        _font->drawText("m - activate mouse look", 0.f, y += size, glm::vec3(1, 0.41f, 0));
+        _font->drawText("m - activate mouse look", 0.f, y += size, vec3(1, 0.41f, 0));
     }
     else {
-        _font->drawText("m - disable mouse look", 0.f, y += size, glm::vec3(1, 0.41f, 0));
+        _font->drawText("m - disable mouse look", 0.f, y += size, vec3(1, 0.41f, 0));
     }
 
-    static glm::vec3 hColor = rgbToVec3(0xFFBC42);
+    static vec3 hColor = rgbToVec3(0xFFBC42);
     _font->drawText("k - change box color", 0.f, y += size, hColor);
     //_font->drawText("The quick brown fox", x, y += size);
-    //_font->drawText("AAÿAA", x, y += size, glm::vec3(1, 0, 0));
-    //_font->drawText(_font->getFace().c_str(), x, y += size, glm::vec3(0, 1, 1));
+    //_font->drawText("AAï¿½AA", x, y += sizevec3c3(1, 0, 0));
+    //_font->drawText(_font->getFace().c_str(), x, y += size, vec3(0, 1, 1));
 
-    static glm::vec3 clickColor(1.0f, 0.7686f, 0.4f);
+    static vec3 clickColor(1.0f, 0.7686f, 0.4f);
     if (app()->getMouseButton(LEFT_MOUSE)) {
         _font->drawText("LEFT PRESS", 0, app()->height() - size, clickColor);
     }
@@ -340,11 +341,11 @@ void TestApp::loadScenes() {
 
         scene->moveNodesFrom(GLTF2Loader().loadSceneFromFile(BOX_PATH));
         scene->lastChild()->childAt(0)->setName("Box");
-        scene->lastChild()->setTranslation(glm::vec3(0, -2, 0));
+        scene->lastChild()->setTranslation(vec3(0, -2, 0));
         scene->moveNodesFrom(GLTF2Loader().loadSceneFromFile(BOX_INTERLEAVED_PATH));
-        scene->lastChild()->setTranslation(glm::vec3(2, -2, 0));
+        scene->lastChild()->setTranslation(vec3(2, -2, 0));
         scene->moveNodesFrom(GLTF2Loader().loadSceneFromFile(BOX_TEXTURED_PATH));
-        scene->lastChild()->setTranslation(glm::vec3(2, 0, 0));
+        scene->lastChild()->setTranslation(vec3(2, 0, 0));
     }
 
     auto cube = createCubeMesh();
@@ -368,8 +369,8 @@ shared_ptr<Scene> TestApp::loadDuckScene() {
 }
 
 void changeBoxColor(const Scene& scene) {
-    static glm::vec4 color(0.8, 0, 0, 1);
-    color = glm::vec4(color.z, color.x, color.y, color.w);
+    static vec4 color(0.8, 0, 0, 1);
+    color = vec4(color.z, color.x, color.y, color.w);
 
     auto redBox = scene.findFirstNodeByName("Box");
     if (redBox) {
@@ -394,7 +395,7 @@ shared_ptr<Mesh> createCubeMesh() {
     //    gltf.load(BOX_PATH);
     //    auto material = gltf.findMaterialById("Effect-Red");
     //    if (auto param = material->param("diffuse")) {
-    //        param->setValue(glm::vec4(1.f, 0.5f, 0.f, 1.0f));
+    //        param->setValue(vec4(1.f, 0.5f, 0.f, 1.0f));
     //    }
     //    prim->setMaterial(material);
     //    auto mesh = Mesh::create();

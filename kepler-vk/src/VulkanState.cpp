@@ -23,15 +23,15 @@ VmaAllocator g_allocator = {};
 
 // TODO remove
 struct UniformBufferObject {
-    glm::mat4 model;
-    glm::mat4 view;
-    glm::mat4 proj;
+    mat4 model;
+    mat4 view;
+    mat4 proj;
 };
 
 // TODO remove
 struct Vertex {
-    glm::vec2 pos;
-    glm::vec3 color;
+    vec2 pos;
+    vec3 color;
 
     static vk::VertexInputBindingDescription getBindingDescription() {
         vk::VertexInputBindingDescription bindingDescription;
@@ -660,8 +660,8 @@ void VulkanState::updateUniformBuffer() {
     float time = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - startTime).count() / 1000.0f;
 
     UniformBufferObject ubo = {};
-    ubo.model = glm::rotate(glm::mat4(), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    ubo.model = glm::rotate(mat4(), time * glm::radians(90.0f), vec3(0.0f, 0.0f, 1.0f));
+    ubo.view = glm::lookAt(vec3(2.0f, 2.0f, 2.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f));
     ubo.proj = glm::perspective(glm::radians(45.0f), _swapChain->width() / (float)_swapChain->height(), 0.1f, 10.0f);
     ubo.proj[1][1] *= -1;
 
@@ -683,7 +683,7 @@ void VulkanState::drawFrame() {
     else if (result != vk::Result::eSuccess && result != vk::Result::eSuboptimalKHR) {
         throw std::runtime_error("failed to acquire swap chain image!");
     }
-    
+
     vk::SubmitInfo submitInfo;
 
     vk::Semaphore waitSemaphores[] = {_imageAvailableSemaphores[_currentFrame]};

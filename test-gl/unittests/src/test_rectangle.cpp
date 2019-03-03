@@ -1,10 +1,8 @@
-#include "gtest/gtest.h"
-#include "macros.hpp"
+#include "common_test.hpp"
 
 #include <Rectangle.hpp>
 
 using namespace kepler;
-using glm::vec2;
 
 TEST(rectangle, create) {
     Rectangle rect(1, 2, 3, 4);

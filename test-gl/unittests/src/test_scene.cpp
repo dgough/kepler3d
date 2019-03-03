@@ -220,6 +220,4 @@ TEST(scene, delete_scene) {
             EXPECT_EQ(nullptr, node->scene());
         }
     }
-
-
 }

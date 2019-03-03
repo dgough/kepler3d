@@ -1,6 +1,7 @@
 #pragma once
 
 #include <BaseGL.hpp>
+#include <BaseMath.hpp>
 #include <string>
 
 namespace kepler {
@@ -8,7 +9,7 @@ namespace gl {
 
 
 /// BmpFont represents a bitmap font that can draw byte strings.
-/// 
+///
 /// BmpFont supports loading Angel Code BMFonts. (Typically with the ".fnt" file extension)
 class BmpFont {
 public:
@@ -21,7 +22,7 @@ public:
     /// Creates a BmpFont from an Angel Code font file.
     static shared_ptr<BmpFont> createFromFile(const char* path);
 
-    void drawText(const char* text, float x, float y, const glm::vec3& color = glm::vec3(1, 1, 1));
+    void drawText(const char* text, float x, float y, const vec3& color = vec3(1, 1, 1));
 
     int size() const;
     float sizeAsFloat() const;

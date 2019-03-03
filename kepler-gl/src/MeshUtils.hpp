@@ -2,7 +2,7 @@
 
 #include <BaseGL.hpp>
 #include <OpenGL.hpp>
-#include <glm/glm.hpp>
+#include <BaseMath.hpp>
 
 namespace kepler {
 namespace gl {
@@ -12,9 +12,9 @@ shared_ptr<MeshPrimitive> createLitCubePrimitive();
 
 /// Creates a quad with position, normal and texture attributes.
 /// The quad is vertical and facing the positive Z axis.
-shared_ptr<MeshPrimitive> createTexturedLitQuadPrimitive(glm::vec2 maxTexCoords = glm::vec2(1));
+shared_ptr<MeshPrimitive> createTexturedLitQuadPrimitive(vec2 maxTexCoords);
 
 shared_ptr<MeshPrimitive> createWireframeBoxPrimitive(const BoundingBox& box);
 
-}
-}
+} // namespace gl
+} // namespace kepler

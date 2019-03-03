@@ -27,7 +27,7 @@ const BoundingBox& MeshPrimitive::boundingBox() const {
     return _box;
 }
 
-void MeshPrimitive::setBoundingBox(const glm::vec3& min, const glm::vec3& max) {
+void MeshPrimitive::setBoundingBox(const vec3& min, const vec3& max) {
     _box.set(min, max);
 }
 

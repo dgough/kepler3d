@@ -25,7 +25,7 @@ shared_ptr<Camera> FirstPersonController::camera() const {
     return _pitchNode->component<Camera>();
 }
 
-void FirstPersonController::setPosition(const glm::vec3& position) {
+void FirstPersonController::setPosition(const vec3& position) {
     // Assumes _root is actually a root node
     _root->setTranslation(position);
 }
@@ -43,7 +43,7 @@ void FirstPersonController::moveLeft(float value) {
 }
 
 void FirstPersonController::moveRight(float value) {
-    glm::vec3 v = glm::normalize(glm::cross(_pitchNode->forwardVectorWorld(), glm::vec3(0, 1, 0)));
+    vec3 v = glm::normalize(glm::cross(_pitchNode->forwardVectorWorld(), vec3(0, 1, 0)));
     _root->translate(v * value);
 }
 

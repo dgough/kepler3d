@@ -22,7 +22,7 @@
     <ProjectGuid>{77DC05ED-B315-44FC-8EAC-C541287CEC58}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>kepler</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -145,6 +145,7 @@
     <ClCompile Include="src\BoundingBox.cpp" />
     <ClCompile Include="src\Button.cpp" />
     <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\ColorMath.cpp" />
     <ClCompile Include="src\Component.cpp" />
     <ClCompile Include="src\DrawableComponent.cpp" />
     <ClCompile Include="src\FileSystem.cpp" />
@@ -171,6 +172,7 @@
     <ClInclude Include="src\BoundingBox.hpp" />
     <ClInclude Include="src\Button.hpp" />
     <ClInclude Include="src\Camera.hpp" />
+    <ClInclude Include="src\ColorMath.hpp" />
     <ClInclude Include="src\Component.hpp" />
     <ClInclude Include="src\DrawableComponent.hpp" />
     <ClInclude Include="src\FileSystem.hpp" />

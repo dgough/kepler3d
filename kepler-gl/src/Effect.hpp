@@ -42,13 +42,13 @@ public:
     void setValue(const Uniform* uniform, float value) const noexcept;
     void setValue(GLint location, int value) const noexcept;
     void setValue(const Uniform* uniform, int value) const noexcept;
-    void setValue(const Uniform* uniform, const glm::mat3& value) const noexcept;
-    void setValue(GLint location, const glm::mat4& value) const noexcept;
-    void setValue(const Uniform* uniform, const glm::mat4& value) const noexcept;
-    void setValue(const Uniform* uniform, const glm::vec2& value) const noexcept;
-    void setValue(GLint location, const glm::vec3& value) const noexcept;
-    void setValue(const Uniform* uniform, const glm::vec3& value) const noexcept;
-    void setValue(const Uniform* uniform, const glm::vec4& value) const noexcept;
+    void setValue(const Uniform* uniform, const mat3& value) const noexcept;
+    void setValue(GLint location, const mat4& value) const noexcept;
+    void setValue(const Uniform* uniform, const mat4& value) const noexcept;
+    void setValue(const Uniform* uniform, const vec2& value) const noexcept;
+    void setValue(GLint location, const vec3& value) const noexcept;
+    void setValue(const Uniform* uniform, const vec3& value) const noexcept;
+    void setValue(const Uniform* uniform, const vec4& value) const noexcept;
 
     void setTexture(const Uniform* uniform, const shared_ptr<Texture>& texture) const noexcept;
 

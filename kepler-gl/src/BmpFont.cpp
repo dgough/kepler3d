@@ -120,7 +120,7 @@ class BmpFont::Impl {
 public:
     Impl();
     ~Impl() noexcept;
-    void drawText(const char* text, float x, float y, const glm::vec3& color);
+    void drawText(const char* text, float x, float y, const vec3& color);
     void loadFromFile(const char* path, std::ifstream& file);
     void loadTextures();
 private:
@@ -173,7 +173,7 @@ public:
     ~BmpFontRenderer() noexcept;
 
     /// Draws a batch of letters.
-    void draw(const GLfloat* data, GLsizei count, const Texture* texture, const glm::vec3& color) const noexcept;
+    void draw(const GLfloat* data, GLsizei count, const Texture* texture, const vec3& color) const noexcept;
 
     BmpFontRenderer(const BmpFontRenderer&) = delete;
     BmpFontRenderer& operator=(const BmpFontRenderer&) = delete;
@@ -203,7 +203,7 @@ BmpFont::Impl::Impl() : _scale(1.f), _size(0) {
 BmpFont::Impl::~Impl() noexcept {
 }
 
-void BmpFont::Impl::drawText(const char* text, float x, float y, const glm::vec3& color) {
+void BmpFont::Impl::drawText(const char* text, float x, float y, const vec3& color) {
     std::array<GLfloat, BUFFER_SIZE> buffer;
     GLsizei letter_count = 0;
     static constexpr size_t increment = VERTEX_COUNT * VERTEX_SIZE;
@@ -422,7 +422,7 @@ bool BmpFont::Impl::getCharacter(char ch, Character& character) {
 BmpFontRenderer::BmpFontRenderer() : _vao(0), _vbo(0) {
     _effect = Effect::createFromSource(vertSource, fragSource);
     _effect->bind();
-    glm::mat4 projection = glm::ortho(0.f, static_cast<GLfloat>(app()->width()), static_cast<GLfloat>(app()->height()), 0.f);
+    mat4 projection = glm::ortho(0.f, static_cast<GLfloat>(app()->width()), static_cast<GLfloat>(app()->height()), 0.f);
     _effect->setValue(_effect->getUniformLocation("u_projection"), projection);
 
     _state.setBlend(true);
@@ -448,7 +448,7 @@ BmpFontRenderer::~BmpFontRenderer() noexcept {
     glDeleteBuffers(1, &_vbo);
 }
 
-void BmpFontRenderer::draw(const GLfloat* data, GLsizei count, const Texture* texture, const glm::vec3& color) const noexcept {
+void BmpFontRenderer::draw(const GLfloat* data, GLsizei count, const Texture* texture, const vec3& color) const noexcept {
     const auto* effect = _effect.get();
     effect->bind();
     _state.bind();
@@ -500,7 +500,7 @@ shared_ptr<BmpFont> BmpFont::createFromFile(const char* path) {
     return nullptr;
 }
 
-void BmpFont::drawText(const char* text, float x, float y, const glm::vec3& color) {
+void BmpFont::drawText(const char* text, float x, float y, const vec3& color) {
     _impl->drawText(text, x, y, color);
 }
 

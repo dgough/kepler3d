@@ -54,10 +54,10 @@ public:
 
     void setValue(float value);
     void setValue(int value);
-    void setValue(const glm::mat4& value);
-    void setValue(const glm::vec2& value);
-    void setValue(const glm::vec3& value);
-    void setValue(const glm::vec4& value);
+    void setValue(const mat4& value);
+    void setValue(const vec2& value);
+    void setValue(const vec3& value);
+    void setValue(const vec4& value);
     void setValue(const FunctionBinding& func);
     void setValue(const shared_ptr<Texture>& texture);
 

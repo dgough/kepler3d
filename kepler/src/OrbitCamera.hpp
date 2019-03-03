@@ -35,14 +35,14 @@ public:
     void zoomOut(float value);
 
     /// Sets the zoom value. The zoom will be clamped to the min zoom.
-    /// @param[in] value The new zoom value. 
+    /// @param[in] value The new zoom value.
     void setZoom(float value);
 
 private:
     float _yaw;
     float _pitch;
     float _radius;
-    glm::vec2 _start;
+    vec2 _start;
 
     shared_ptr<Node> _cameraNode;
     /// The parent node of _cameraNode

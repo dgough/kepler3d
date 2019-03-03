@@ -7,6 +7,7 @@
 #include <GLFW/glfw3.h>
 
 #include <BaseVk.hpp>
+#include <BaseMath.hpp>
 #include <SwapChain.hpp>
 #include <Buffer.hpp>
 

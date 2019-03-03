@@ -36,25 +36,25 @@ void MaterialParameter::setValue(int value) {
     };
 }
 
-void MaterialParameter::setValue(const glm::mat4& value) {
+void MaterialParameter::setValue(const mat4& value) {
     _function = [value](Effect& effect, const Uniform* uniform) {
         effect.setValue(uniform, value);
     };
 }
 
-void MaterialParameter::setValue(const glm::vec2& value) {
+void MaterialParameter::setValue(const vec2& value) {
     _function = [value](Effect& effect, const Uniform* uniform) {
         effect.setValue(uniform, value);
     };
 }
 
-void MaterialParameter::setValue(const glm::vec3& value) {
+void MaterialParameter::setValue(const vec3& value) {
     _function = [value](Effect& effect, const Uniform* uniform) {
         effect.setValue(uniform, value);
     };
 }
 
-void MaterialParameter::setValue(const glm::vec4& value) {
+void MaterialParameter::setValue(const vec4& value) {
     _function = [value](Effect& effect, const Uniform* uniform) {
         effect.setValue(uniform, value);
     };

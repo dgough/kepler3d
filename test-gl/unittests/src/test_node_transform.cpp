@@ -1,15 +1,13 @@
-#include "gtest/gtest.h"
-#include "macros.hpp"
+#include "common_test.hpp"
 
 #include <Node.hpp>
 #include <glm/gtx/quaternion.hpp>
 
 using namespace kepler;
-using glm::vec3;
 using glm::quat;
 using glm::radians;
 
-static constexpr float float_err = 0.000001f;
+constexpr float FLOAT_ERR = 0.000001f;
 
 TEST(node_transform, parent_transform) {
     auto root = Node::create("root");
@@ -24,7 +22,7 @@ TEST(node_transform, parent_transform) {
     root->editLocalTransform().translate(translation);
     EXPECT_EQ(c->worldTransform().translation(), root->localTransform().translation());
     EXPECT_EQ(c->worldTransform().translation(), translation);
-    //root->editLocalTransform().rotate(glm::quat(glm::vec3(0.0f, glm::radians(45.0f), 0.0f)));
+    //root->editLocalTransform().rotate(glm::quat(vec3(0.0f, glm::radians(45.0f), 0.0f)));
 }
 
 TEST(node_transform, forward) {
@@ -81,16 +79,15 @@ TEST(node_transform, local_transform_ref) {
     EXPECT_FALSE(weakref.expired());
 }
 
-
 TEST(node_transform, rotate_axis) {
     float e = 0.000001f;
     auto n = Node::create("n");
     n->rotateY(glm::quarter_pi<float>());
     n->rotateY(glm::quarter_pi<float>());
-    glm::vec4 result = glm::vec4(0, 0, 1, 1) * n->worldMatrix();
-    EXPECT_FLOAT_CLOSE(result.x, -1.0f, float_err);
-    EXPECT_FLOAT_CLOSE(result.y, 0.0f, float_err);
-    EXPECT_FLOAT_CLOSE(result.z, 0.0f, float_err);
+    vec4 result = vec4(0, 0, 1, 1) * n->worldMatrix();
+    EXPECT_FLOAT_CLOSE(result.x, -1.0f, FLOAT_ERR);
+    EXPECT_FLOAT_CLOSE(result.y, 0.0f, FLOAT_ERR);
+    EXPECT_FLOAT_CLOSE(result.z, 0.0f, FLOAT_ERR);
 }
 
 TEST(node_transform, set_translation) {
@@ -134,7 +131,7 @@ TEST(node_transform, set_rotation) {
 
     //n->getLocalTransform().getRotation();
     //void setRotation(const glm::quat& rotation);
-    //void setRotationFromEuler(const glm::vec3& eulerAngles);
+    //void setRotationFromEuler(const vec3& eulerAngles);
     //void setRotationFromEuler(float pitch, float yaw, float roll);
 }
 
@@ -167,24 +164,24 @@ TEST(node, world_rotation) {
     auto t = n1->worldTransform();
     auto m = n1->worldMatrix();
 
-    auto v = m * glm::vec4(1, 0, 0, 1);
-    EXPECT_TRUE(glm::abs(v.x) < float_err);
-    EXPECT_TRUE(glm::abs(1.0f - v.y) < float_err);
-    EXPECT_TRUE(glm::abs(v.z) < float_err);
+    auto v = m * vec4(1, 0, 0, 1);
+    EXPECT_TRUE(glm::abs(v.x) < FLOAT_ERR);
+    EXPECT_TRUE(glm::abs(1.0f - v.y) < FLOAT_ERR);
+    EXPECT_TRUE(glm::abs(v.z) < FLOAT_ERR);
 }
 
 TEST(node, set_matrix) {
     // Tests setting a node's transform from a matrix.
-    // This was a bug with using glm::decompse incorrectly.
+    // This was a bug with using glm::decompose incorrectly.
     auto n = Node::create();
-    auto vec = glm::vec4(1, 0, 1, 1);
-    glm::mat4 matrix(1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1);
+    auto vec = vec4(1, 0, 1, 1);
+    mat4 matrix(1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1);
     n->setLocalTransform(matrix);
     n->rotate(glm::quat()); // force rotation to be dirty
     auto matrixResult = matrix * vec;
     auto nodeResult = n->worldMatrix() * vec;
 
-    EXPECT_FLOAT_CLOSE(matrixResult.x, nodeResult.x, float_err);
-    EXPECT_FLOAT_CLOSE(matrixResult.y, nodeResult.y, float_err);
-    EXPECT_FLOAT_CLOSE(matrixResult.z, nodeResult.z, float_err);
+    EXPECT_FLOAT_CLOSE(matrixResult.x, nodeResult.x, FLOAT_ERR);
+    EXPECT_FLOAT_CLOSE(matrixResult.y, nodeResult.y, FLOAT_ERR);
+    EXPECT_FLOAT_CLOSE(matrixResult.z, nodeResult.z, FLOAT_ERR);
 }

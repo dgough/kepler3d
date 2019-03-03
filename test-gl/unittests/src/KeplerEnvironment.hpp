@@ -43,4 +43,5 @@ public:
 private:
     GLFWwindow* _window = nullptr;
 };
-}
+
+} // namespace kepler

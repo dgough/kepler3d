@@ -42,12 +42,15 @@
     <ClCompile Include="src\test_BoundingBox.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\test_ColorMath.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\macros.hpp">
+    <ClInclude Include="src\KeplerEnvironment.hpp">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\KeplerEnvironment.hpp">
+    <ClInclude Include="src\common_test.hpp">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

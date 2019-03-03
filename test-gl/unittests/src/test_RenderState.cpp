@@ -1,5 +1,4 @@
-#include "gtest/gtest.h"
-#include "macros.hpp"
+#include "common_test.hpp"
 
 #include <RenderState.hpp>
 

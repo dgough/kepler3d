@@ -12,8 +12,6 @@
 namespace kepler {
 namespace gl {
 
-using glm::vec3;
-
 static constexpr char* FONT_EXTENSION = ".fnt";
 static const char* FONT_PATH = "res/fonts/arial-32.fnt";
 
@@ -49,13 +47,13 @@ void TextTest::render() {
         static constexpr float x = 0.f;
         float y = 0.f;
         _font->drawText(g_text.c_str(), x, y);
-        _font->drawText("Blue", x, y += height, glm::vec3(0, 0, 1));
-        _font->drawText("gggHggg", x, y += height, glm::vec3(.5f, .62f, 1));
-        _font->drawText("HHHHHH", x, y += height, glm::vec3(1, 0, 0));
+        _font->drawText("Blue", x, y += height, vec3(0, 0, 1));
+        _font->drawText("The quick brown fox", x, y += height, vec3(.5f, .62f, 1));
+        _font->drawText("Hello text kerning", x, y += height, vec3(1, 0.48, 0));
 
 
         auto bottom = app()->heightAsFloat() - static_cast<float>(_font->lineHeight());
-        _font->drawText("Drag font into window to load.", x, bottom, glm::vec3(0, 1, 1));
+        _font->drawText("Drag font into window to load.", x, bottom, vec3(0, 1, 1));
     }
 }
 

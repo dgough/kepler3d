@@ -73,7 +73,7 @@ shared_ptr<MeshPrimitive> createLitCubePrimitive() {
     return prim;
 }
 
-shared_ptr<MeshPrimitive> createTexturedLitQuadPrimitive(glm::vec2 maxTexCoords) {
+shared_ptr<MeshPrimitive> createTexturedLitQuadPrimitive(vec2 maxTexCoords) {
     static constexpr float p = 0.5f;
     static constexpr float n = -0.5f;
     static constexpr float z = 0.0f;
@@ -96,7 +96,7 @@ shared_ptr<MeshPrimitive> createTexturedLitQuadPrimitive(glm::vec2 maxTexCoords)
 }
 
 shared_ptr<MeshPrimitive> createWireframeBoxPrimitive(const BoundingBox& box) {
-    glm::vec3 corners[8];
+    vec3 corners[8];
     box.corners(corners);
     auto vbo = VertexBuffer::create(sizeof(corners), corners);
     static constexpr GLsizei stride = 3 * sizeof(GLfloat);

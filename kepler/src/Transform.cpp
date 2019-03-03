@@ -7,16 +7,16 @@
 
 namespace kepler {
 
-const glm::vec3 Transform::ScaleOne(1);
+const vec3 Transform::ScaleOne(1);
 
 Transform::Transform() : _scale(ScaleOne), _dirtyBits(0) {
 }
 
-Transform::Transform(const glm::vec3& translation, const glm::quat& rotation, const glm::vec3& scale)
+Transform::Transform(const vec3& translation, const glm::quat& rotation, const vec3& scale)
     : _translation(translation), _rotation(rotation), _scale(scale), _dirtyBits(ALL_TRANSFORM_DIRTY) {
 }
 
-void Transform::setTranslation(const glm::vec3& translation) {
+void Transform::setTranslation(const vec3& translation) {
     dirty(TRANSLATE_DIRTY);
     _translation = translation;
 }
@@ -28,7 +28,7 @@ void Transform::setTranslation(float x, float y, float z) {
     _translation.z = z;
 }
 
-void Transform::setScale(const glm::vec3& scale) {
+void Transform::setScale(const vec3& scale) {
     dirty(SCALE_DIRTY);
     _scale = scale;
 }
@@ -45,15 +45,15 @@ void Transform::setRotation(const glm::quat& rotation) {
     _rotation = rotation;
 }
 
-void Transform::setRotationFromEuler(const glm::vec3& eulerAngles) {
+void Transform::setRotationFromEuler(const vec3& eulerAngles) {
     setRotation(glm::quat(eulerAngles));
 }
 
 void Transform::setRotationFromEuler(float pitch, float yaw, float roll) {
-    setRotationFromEuler(glm::vec3(pitch, yaw, roll));
+    setRotationFromEuler(vec3(pitch, yaw, roll));
 }
 
-void Transform::translate(const glm::vec3& translation) {
+void Transform::translate(const vec3& translation) {
     dirty(TRANSLATE_DIRTY);
     _translation += translation;
 }
@@ -65,7 +65,7 @@ void Transform::translate(float x, float y, float z) {
     _translation.z += z;
 }
 
-void Transform::scale(const glm::vec3& scale) {
+void Transform::scale(const vec3& scale) {
     dirty(SCALE_DIRTY);
     _scale *= scale;
 }
@@ -87,7 +87,7 @@ void Transform::rotate(const glm::quat& rotation) {
     _rotation = rotation * _rotation;
 }
 
-const glm::mat4& Transform::matrix() const {
+const mat4& Transform::matrix() const {
     if ((_dirtyBits & ALL_TRANSFORM_DIRTY) == 0) {
         return _matrix;
     }
@@ -103,17 +103,17 @@ const glm::mat4& Transform::matrix() const {
     return _matrix;
 }
 
-void Transform::set(const glm::vec3& translation, const glm::quat& rotation, const glm::vec3& scale) {
+void Transform::set(const vec3& translation, const glm::quat& rotation, const vec3& scale) {
     dirty(ALL_TRANSFORM_DIRTY);
     _translation = translation;
     _rotation = rotation;
     _scale = scale;
 }
 
-bool Transform::set(const glm::mat4& matrix) {
-    glm::vec3 scale;
+bool Transform::set(const mat4& matrix) {
+    vec3 scale;
     glm::quat rotation;
-    glm::vec3 translation;
+    vec3 translation;
     if (decompose(matrix, scale, rotation, translation)) {
         _scale = scale;
         _rotation = rotation;
@@ -126,10 +126,10 @@ bool Transform::set(const glm::mat4& matrix) {
 }
 
 void Transform::loadIdentity() {
-    _translation = glm::vec3();
+    _translation = vec3();
     _rotation = glm::quat();
     _scale = ScaleOne;
-    _matrix = glm::mat4();
+    _matrix = mat4();
     _dirtyBits = 0;
 }
 
@@ -143,7 +143,7 @@ void Transform::combineWithParent(const Transform& parent) {
     _translation += parent._translation;
 }
 
-bool Transform::decompose(const glm::mat4& matrix, glm::vec3& scale, glm::quat& rotation, glm::vec3& translation) {
+bool Transform::decompose(const mat4& matrix, vec3& scale, glm::quat& rotation, vec3& translation) {
     // This was copied from gameplay3d
     auto m = glm::value_ptr(matrix);
 
@@ -154,13 +154,13 @@ bool Transform::decompose(const glm::mat4& matrix, glm::vec3& scale, glm::quat& 
 
     // Extract the scale.
     // This is simply the length of each axis (row/column) in the matrix.
-    glm::vec3 xaxis(m[0], m[1], m[2]);
+    vec3 xaxis(m[0], m[1], m[2]);
     float scaleX = glm::length(xaxis);
 
-    glm::vec3 yaxis(m[4], m[5], m[6]);
+    vec3 yaxis(m[4], m[5], m[6]);
     float scaleY = glm::length(yaxis);
 
-    glm::vec3 zaxis(m[8], m[9], m[10]);
+    vec3 zaxis(m[8], m[9], m[10]);
     float scaleZ = glm::length(zaxis);
 
     // Determine if we have a negative scale (true if determinant is less than zero).
@@ -207,7 +207,7 @@ bool Transform::decompose(const glm::mat4& matrix, glm::vec3& scale, glm::quat& 
         rotation.z = (xaxis.y - yaxis.x) * s;
     }
     else {
-        // Note: since xaxis, yaxis, and zaxis are normalized, 
+        // Note: since xaxis, yaxis, and zaxis are normalized,
         // we will never divide by zero in the code below.
         if (xaxis.x > yaxis.y && xaxis.x > zaxis.z) {
             float s = 0.5f / sqrt(1.0f + xaxis.x - yaxis.y - zaxis.z);

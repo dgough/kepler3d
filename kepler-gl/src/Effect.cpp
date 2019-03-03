@@ -99,31 +99,31 @@ void Effect::setValue(const Uniform* uniform, int value) const noexcept {
     glUniform1i(uniform->_location, value);
 }
 
-void Effect::setValue(const Uniform* uniform, const glm::mat3& value) const noexcept {
+void Effect::setValue(const Uniform* uniform, const mat3& value) const noexcept {
     glUniformMatrix3fv(uniform->_location, 1, GL_FALSE, glm::value_ptr(value));
 }
 
-void Effect::setValue(GLint location, const glm::mat4& value) const noexcept {
+void Effect::setValue(GLint location, const mat4& value) const noexcept {
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
 
-void Effect::setValue(const Uniform* uniform, const glm::mat4& value) const noexcept {
+void Effect::setValue(const Uniform* uniform, const mat4& value) const noexcept {
     glUniformMatrix4fv(uniform->_location, 1, GL_FALSE, glm::value_ptr(value));
 }
 
-void Effect::setValue(const Uniform* uniform, const glm::vec2& value) const noexcept {
+void Effect::setValue(const Uniform* uniform, const vec2& value) const noexcept {
     glUniform2f(uniform->_location, value.x, value.y);
 }
 
-void Effect::setValue(GLint location, const glm::vec3 & value) const noexcept {
+void Effect::setValue(GLint location, const vec3 & value) const noexcept {
     glUniform3f(location, value.x, value.y, value.z);
 }
 
-void Effect::setValue(const Uniform* uniform, const glm::vec3& value) const noexcept {
+void Effect::setValue(const Uniform* uniform, const vec3& value) const noexcept {
     glUniform3f(uniform->_location, value.x, value.y, value.z);
 }
 
-void Effect::setValue(const Uniform* uniform, const glm::vec4& value) const noexcept {
+void Effect::setValue(const Uniform* uniform, const vec4& value) const noexcept {
     glUniform4f(uniform->_location, value.x, value.y, value.z, value.w);
 }
 

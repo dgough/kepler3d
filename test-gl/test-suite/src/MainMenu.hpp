@@ -29,7 +29,7 @@ public:
 private:
     void addButton(const char* text, const Rectangle& rect, std::function<void()> callback);
     void drawButton(const Button& button);
-    bool clickButtonAt(glm::vec2 pos);
+    bool clickButtonAt(vec2 pos);
 
     shared_ptr<BmpFont> _font;
     std::vector<shared_ptr<Button>> _buttons;

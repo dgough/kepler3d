@@ -80,7 +80,7 @@ public:
 
     /// Finds the first descendant node that matches the given name.
     /// Immediate children are checked first before recursing.
-    /// 
+    ///
     /// @param[in] name The name of the node to search for.
     /// @param[in] recursive True if the search should be recursive.
     /// @return The node if found; otherwise returns nullptr.
@@ -156,7 +156,7 @@ public:
     // Transform operations
 
     /// Translates the node by the given vector.
-    void translate(const glm::vec3& translation);
+    void translate(const vec3& translation);
     /// Translate the node by the given x, y and z values.
     void translate(float x, float y, float z);
 
@@ -164,7 +164,7 @@ public:
     void translateY(float y);
     void translateZ(float z);
 
-    void scale(const glm::vec3& scale);
+    void scale(const vec3& scale);
     /// Scales the x, y and z by the given scale value.
     void scale(float scale);
     void scale(float x, float y, float z);
@@ -178,16 +178,16 @@ public:
     void rotateZ(float angle);
 
     /// Sets the local translation to the given vector.
-    void setTranslation(const glm::vec3& translation);
+    void setTranslation(const vec3& translation);
     void setTranslation(float x, float y, float z);
 
-    void setScale(const glm::vec3& scale);
+    void setScale(const vec3& scale);
     void setScale(float scale);
     void setScale(float x, float y, float z);
 
     void setRotation(const glm::quat& rotation);
     // TODO untested (setRotationFromEuler)
-    void setRotationFromEuler(const glm::vec3& eulerAngles);
+    void setRotationFromEuler(const vec3& eulerAngles);
     void setRotationFromEuler(float pitch, float yaw, float roll);
 
     /// Returns the local transform.
@@ -200,46 +200,46 @@ public:
     /// Returns a shared pointer that points to the local transform buy holds a reference to the Node.
     const std::shared_ptr<const Transform> localTransformRef() const;
 
-    const glm::mat4& viewMatrix() const;
-    const glm::mat4& viewMatrix(const Camera* camera) const;
-    const glm::mat4& projectionMatrix() const;
-    const glm::mat4& projectionMatrix(const Camera* camera) const;
+    const mat4& viewMatrix() const;
+    const mat4& viewMatrix(const Camera* camera) const;
+    const mat4& projectionMatrix() const;
+    const mat4& projectionMatrix(const Camera* camera) const;
 
     const Transform& worldTransform() const;
-    const glm::mat4& worldMatrix() const;
+    const mat4& worldMatrix() const;
 
     /////////////////
-    const glm::mat4 modelViewMatrix() const;
-    /// Returns the ModelView matrix for this node using the given camera 
+    const mat4 modelViewMatrix() const;
+    /// Returns the ModelView matrix for this node using the given camera
     /// instead of the active camera of the scene this node belongs to.
-    const glm::mat4 modelViewMatrix(const Camera* camera) const;
+    const mat4 modelViewMatrix(const Camera* camera) const;
 
-    const glm::mat3 modelViewInverseTransposeMatrix() const;
-    const glm::mat3 modelViewInverseTransposeMatrix(const Camera* camera) const;
+    const mat3 modelViewInverseTransposeMatrix() const;
+    const mat3 modelViewInverseTransposeMatrix(const Camera* camera) const;
 
-    const glm::mat4 modelViewProjectionMatrix() const;
-    const glm::mat4 modelViewProjectionMatrix(const Camera* camera) const;
-    const glm::mat4 modelInverseMatrix() const;
-    const glm::mat4 viewInverseMatrix() const;
-    const glm::mat4 viewInverseMatrix(const Camera* camera) const;
-    const glm::mat4 projectionInverseMatrix() const;
-    const glm::mat4 projectionInverseMatrix(const Camera* camera) const;
-    const glm::mat4 modelViewInverseMatrix() const;
-    const glm::mat4 modelViewInverseMatrix(const Camera* camera) const;
-    const glm::mat4 modelViewProjectionInverseMatrix() const;
-    const glm::mat4 modelViewProjectionInverseMatrix(const Camera* camera) const;
-    const glm::mat4 modelInverseTransposeMatrix() const;
-    const glm::mat4 viewportMatrix() const;
+    const mat4 modelViewProjectionMatrix() const;
+    const mat4 modelViewProjectionMatrix(const Camera* camera) const;
+    const mat4 modelInverseMatrix() const;
+    const mat4 viewInverseMatrix() const;
+    const mat4 viewInverseMatrix(const Camera* camera) const;
+    const mat4 projectionInverseMatrix() const;
+    const mat4 projectionInverseMatrix(const Camera* camera) const;
+    const mat4 modelViewInverseMatrix() const;
+    const mat4 modelViewInverseMatrix(const Camera* camera) const;
+    const mat4 modelViewProjectionInverseMatrix() const;
+    const mat4 modelViewProjectionInverseMatrix(const Camera* camera) const;
+    const mat4 modelInverseTransposeMatrix() const;
+    const mat4 viewportMatrix() const;
 
     /// Returns the vector (0, 0 -1) transformed by this node's world matrix.
-    glm::vec3 forwardVectorWorld() const;
+    vec3 forwardVectorWorld() const;
 
     void setLocalTransform(const Transform& transform);
-    void setLocalTransform(const glm::vec3& translation, const glm::quat& rotation, const glm::vec3& scale);
+    void setLocalTransform(const vec3& translation, const glm::quat& rotation, const vec3& scale);
 
     /// Sets the local transform using the given matrix.
     /// @return True if the matrix was successfully decompose; false if decompose failed and the transform was not changed.
-    bool setLocalTransform(const glm::mat4& matrix);
+    bool setLocalTransform(const mat4& matrix);
 
     /// Returns the bounding box for this node in world space and merges it with all of its descendants.
     const BoundingBox& boundingBox() const;

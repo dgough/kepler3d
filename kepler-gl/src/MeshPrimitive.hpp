@@ -53,7 +53,7 @@ public:
 
     const BoundingBox& boundingBox() const;
 
-    void setBoundingBox(const glm::vec3& min, const glm::vec3& max);
+    void setBoundingBox(const vec3& min, const vec3& max);
 
     void draw();
 

@@ -6,39 +6,39 @@ bool BoundingBox::empty() const {
     return min == max;
 }
 
-glm::vec3 BoundingBox::center() const {
+vec3 BoundingBox::center() const {
     return (max - min) * 0.5f + min;
 }
 
-void BoundingBox::corners(glm::vec3* p) const {
+void BoundingBox::corners(vec3* p) const {
     // Left-top-front
-    p[0] = glm::vec3(min.x, max.y, max.z);
+    p[0] = vec3(min.x, max.y, max.z);
     // Left-bottom-front
-    p[1] = glm::vec3(min.x, min.y, max.z);
+    p[1] = vec3(min.x, min.y, max.z);
     // Right-bottom-front
-    p[2] = glm::vec3(max.x, min.y, max.z);
+    p[2] = vec3(max.x, min.y, max.z);
     // Right-top-front
-    p[3] = glm::vec3(max.x, max.y, max.z);
+    p[3] = vec3(max.x, max.y, max.z);
 
     // Far face, specified counter-clockwise looking towards the origin from the negative z-axis.
     // Right-top-back
-    p[4] = glm::vec3(max.x, max.y, min.z);
+    p[4] = vec3(max.x, max.y, min.z);
     // Right-bottom-back
-    p[5] = glm::vec3(max.x, min.y, min.z);
+    p[5] = vec3(max.x, min.y, min.z);
     // Left-bottom-back
-    p[6] = glm::vec3(min.x, min.y, min.z);
+    p[6] = vec3(min.x, min.y, min.z);
     // Left-top-back
-    p[7] = glm::vec3(min.x, max.y, min.z);
+    p[7] = vec3(min.x, max.y, min.z);
 }
 
 void BoundingBox::merge(const BoundingBox& box) {
     min = glm::min(min, box.min);
     max = glm::max(max, box.max);
 }
-void BoundingBox::transform(const glm::mat4& matrix) {
+void BoundingBox::transform(const mat4& matrix) {
     BoundingBox b;
     const float *m = (const float*)glm::value_ptr(matrix);
-    glm::vec3 t(m[12], m[13], m[14]);
+    vec3 t(m[12], m[13], m[14]);
 
     for (int i = 0; i < 3; ++i) {
         b.min[i] = b.max[i] = t[i];

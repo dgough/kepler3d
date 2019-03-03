@@ -46,9 +46,9 @@ public:
 
     void transformChanged(const Node* node) override;
 
-    const glm::mat4& viewMatrix() const;
-    const glm::mat4& projectionMatrix() const;
-    const glm::mat4& viewProjectionMatrix() const;
+    const mat4& viewMatrix() const;
+    const mat4& projectionMatrix() const;
+    const mat4& viewProjectionMatrix() const;
 
     /// Returns field of view in degrees.
     float fov() const noexcept;
@@ -71,9 +71,9 @@ private:
     float _zoomX = 0.0f;
     float _zoomY = 0.0f;
 
-    mutable glm::mat4 _view;
-    mutable glm::mat4 _projection;
-    mutable glm::mat4 _viewProjection;
+    mutable mat4 _view;
+    mutable mat4 _projection;
+    mutable mat4 _viewProjection;
     mutable unsigned char _dirtyBits;
 
     static constexpr unsigned char WORLD_DIRTY = 1;

@@ -62,7 +62,7 @@ void Camera::transformChanged(const Node*) {
     _dirtyBits |= TRANSFORM_CHANGE;
 }
 
-const glm::mat4& Camera::viewMatrix() const {
+const mat4& Camera::viewMatrix() const {
     if (_dirtyBits & VIEW_DIRTY) {
         if (auto node = _node.lock()) {
             _view = glm::inverse(node->worldMatrix());
@@ -75,7 +75,7 @@ const glm::mat4& Camera::viewMatrix() const {
     return _view;
 }
 
-const glm::mat4& Camera::projectionMatrix() const {
+const mat4& Camera::projectionMatrix() const {
     if (_dirtyBits & PROJ_DIRTY) {
         if (_type == Type::PERSPECTIVE) {
             // TODO check GLM_FORCE_RADIANS?
@@ -91,7 +91,7 @@ const glm::mat4& Camera::projectionMatrix() const {
     return _projection;
 }
 
-const glm::mat4& Camera::viewProjectionMatrix() const {
+const mat4& Camera::viewProjectionMatrix() const {
     if (_dirtyBits & VIEW_PROJ_DIRTY) {
         _viewProjection = projectionMatrix() * viewMatrix();
         _dirtyBits &= ~VIEW_PROJ_DIRTY;

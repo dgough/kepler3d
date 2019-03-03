@@ -209,7 +209,7 @@ bool Node::containsComponent(const std::string& typeName) const {
     return false;
 }
 
-void Node::translate(const glm::vec3& translation) {
+void Node::translate(const vec3& translation) {
     _local.translate(translation);
     setDirty(ALL_DIRTY);
 }
@@ -231,7 +231,7 @@ void Node::translateZ(float z) {
     translate(0, 0, z);
 }
 
-void Node::scale(const glm::vec3& scale) {
+void Node::scale(const vec3& scale) {
     _local.scale(scale);
     setDirty(ALL_DIRTY);
 }
@@ -252,21 +252,21 @@ void Node::rotate(const glm::quat& rotation) {
 }
 
 void Node::rotateX(float angle) {
-    _local.rotate(glm::angleAxis(angle, glm::vec3(1, 0, 0)));
+    _local.rotate(glm::angleAxis(angle, vec3(1, 0, 0)));
     setDirty(ALL_DIRTY);
 }
 
 void Node::rotateY(float angle) {
-    _local.rotate(glm::angleAxis(angle, glm::vec3(0, 1, 0)));
+    _local.rotate(glm::angleAxis(angle, vec3(0, 1, 0)));
     setDirty(ALL_DIRTY);
 }
 
 void Node::rotateZ(float angle) {
-    _local.rotate(glm::angleAxis(angle, glm::vec3(0, 0, 1)));
+    _local.rotate(glm::angleAxis(angle, vec3(0, 0, 1)));
     setDirty(ALL_DIRTY);
 }
 
-void Node::setTranslation(const glm::vec3& translation) {
+void Node::setTranslation(const vec3& translation) {
     _local.setTranslation(translation);
     setDirty(ALL_DIRTY);
 }
@@ -276,7 +276,7 @@ void Node::setTranslation(float x, float y, float z) {
     setDirty(ALL_DIRTY);
 }
 
-void Node::setScale(const glm::vec3& scale) {
+void Node::setScale(const vec3& scale) {
     _local.setScale(scale);
     setDirty(ALL_DIRTY);
 }
@@ -295,7 +295,7 @@ void Node::setRotation(const glm::quat& rotation) {
     setDirty(ALL_DIRTY);
 }
 
-void Node::setRotationFromEuler(const glm::vec3& eulerAngles) {
+void Node::setRotationFromEuler(const vec3& eulerAngles) {
     _local.setRotationFromEuler(eulerAngles);
     setDirty(ALL_DIRTY);
 }
@@ -318,7 +318,7 @@ const std::shared_ptr<const Transform> Node::localTransformRef() const {
     return std::shared_ptr<const Transform>(shared_from_this(), &_local);
 }
 
-const glm::mat4& Node::viewMatrix() const {
+const mat4& Node::viewMatrix() const {
     ProfileBlock p(0);
     if (auto scene = _scene) {
         auto camera = scene->activeCamera();
@@ -329,14 +329,14 @@ const glm::mat4& Node::viewMatrix() const {
     return IDENTITY_MATRIX;
 }
 
-const glm::mat4& Node::viewMatrix(const Camera* camera) const {
+const mat4& Node::viewMatrix(const Camera* camera) const {
     if (camera != nullptr) {
         return camera->viewMatrix();
     }
     return IDENTITY_MATRIX;
 }
 
-const glm::mat4& Node::projectionMatrix() const {
+const mat4& Node::projectionMatrix() const {
     if (auto scene = _scene) {
         auto camera = scene->activeCamera();
         if (camera) {
@@ -346,7 +346,7 @@ const glm::mat4& Node::projectionMatrix() const {
     return IDENTITY_MATRIX;
 }
 
-const glm::mat4& Node::projectionMatrix(const Camera* camera) const {
+const mat4& Node::projectionMatrix(const Camera* camera) const {
     if (camera != nullptr) {
         return camera->projectionMatrix();
     }
@@ -370,38 +370,38 @@ const Transform& Node::worldTransform() const {
     return _world;
 }
 
-const glm::mat4& Node::worldMatrix() const {
+const mat4& Node::worldMatrix() const {
     // TODO don't use getWorldTransform()? Measure performance difference.
     return worldTransform().matrix();
 }
 
-//const glm::mat4& Node::getModelMatrix() const {
+//const mat4& Node::getModelMatrix() const {
 //    return getLocalTransform().getMatrix();
 //}
 
-const glm::mat4 Node::modelViewMatrix() const {
+const mat4 Node::modelViewMatrix() const {
     return viewMatrix() * worldMatrix();
 }
 
-const glm::mat4 Node::modelViewMatrix(const Camera* camera) const {
+const mat4 Node::modelViewMatrix(const Camera* camera) const {
     if (camera != nullptr) {
         return camera->viewMatrix() * worldMatrix();
     }
     return worldMatrix();
 }
 
-const glm::mat3 Node::modelViewInverseTransposeMatrix() const {
-    return glm::transpose(glm::inverse(glm::mat3(modelViewMatrix())));
+const mat3 Node::modelViewInverseTransposeMatrix() const {
+    return glm::transpose(glm::inverse(mat3(modelViewMatrix())));
 }
 
-const glm::mat3 Node::modelViewInverseTransposeMatrix(const Camera* camera) const {
+const mat3 Node::modelViewInverseTransposeMatrix(const Camera* camera) const {
     if (camera != nullptr) {
-        return glm::transpose(glm::inverse(glm::mat3(modelViewMatrix(camera))));
+        return glm::transpose(glm::inverse(mat3(modelViewMatrix(camera))));
     }
-    return glm::transpose(glm::inverse(glm::mat3(worldMatrix())));
+    return glm::transpose(glm::inverse(mat3(worldMatrix())));
 }
 
-const glm::mat4 Node::modelViewProjectionMatrix() const {
+const mat4 Node::modelViewProjectionMatrix() const {
     if (auto scene = _scene) {
         auto camera = scene->activeCamera();
         if (camera) {
@@ -411,60 +411,60 @@ const glm::mat4 Node::modelViewProjectionMatrix() const {
     return worldMatrix();
 }
 
-const glm::mat4 Node::modelViewProjectionMatrix(const Camera* camera) const {
+const mat4 Node::modelViewProjectionMatrix(const Camera* camera) const {
     if (camera != nullptr) {
         return camera->viewProjectionMatrix() * worldMatrix();
     }
     return worldMatrix();
 }
 
-const glm::mat4 Node::modelInverseMatrix() const {
+const mat4 Node::modelInverseMatrix() const {
     return glm::inverse(worldMatrix());
 }
 
-const glm::mat4 Node::viewInverseMatrix() const {
+const mat4 Node::viewInverseMatrix() const {
     return glm::inverse(viewMatrix());
 }
 
-const glm::mat4 Node::viewInverseMatrix(const Camera* camera) const {
+const mat4 Node::viewInverseMatrix(const Camera* camera) const {
     return glm::inverse(viewMatrix(camera));
 }
 
-const glm::mat4 Node::projectionInverseMatrix() const {
+const mat4 Node::projectionInverseMatrix() const {
     return glm::inverse(projectionMatrix());
 }
 
-const glm::mat4 Node::projectionInverseMatrix(const Camera* camera) const {
+const mat4 Node::projectionInverseMatrix(const Camera* camera) const {
     return glm::inverse(projectionMatrix(camera));
 }
 
-const glm::mat4 Node::modelViewInverseMatrix() const {
+const mat4 Node::modelViewInverseMatrix() const {
     return glm::inverse(modelViewMatrix());
 }
 
-const glm::mat4 Node::modelViewInverseMatrix(const Camera* camera) const {
+const mat4 Node::modelViewInverseMatrix(const Camera* camera) const {
     return glm::inverse(modelViewMatrix(camera));
 }
 
-const glm::mat4 Node::modelViewProjectionInverseMatrix() const {
+const mat4 Node::modelViewProjectionInverseMatrix() const {
     return glm::inverse(modelViewProjectionMatrix());
 }
 
-const glm::mat4 Node::modelViewProjectionInverseMatrix(const Camera* camera) const {
+const mat4 Node::modelViewProjectionInverseMatrix(const Camera* camera) const {
     return glm::inverse(modelViewProjectionMatrix(camera));
 }
 
-const glm::mat4 Node::modelInverseTransposeMatrix() const {
+const mat4 Node::modelInverseTransposeMatrix() const {
     return glm::transpose(glm::inverse(worldMatrix()));
 }
 
-const glm::mat4 Node::viewportMatrix() const {
+const mat4 Node::viewportMatrix() const {
     // TODO
-    return glm::mat4();
+    return mat4();
 }
 
-glm::vec3 Node::forwardVectorWorld() const {
-    return worldTransform().rotation() * glm::vec3(0.0f, 0.0f, -1.0f);
+vec3 Node::forwardVectorWorld() const {
+    return worldTransform().rotation() * vec3(0.0f, 0.0f, -1.0f);
 }
 
 void Node::setLocalTransform(const Transform& transform) {
@@ -472,12 +472,12 @@ void Node::setLocalTransform(const Transform& transform) {
     setDirty(ALL_DIRTY);
 }
 
-void Node::setLocalTransform(const glm::vec3& translation, const glm::quat& rotation, const glm::vec3& scale) {
+void Node::setLocalTransform(const vec3& translation, const glm::quat& rotation, const vec3& scale) {
     _local.set(translation, rotation, scale);
     setDirty(ALL_DIRTY);
 }
 
-bool Node::setLocalTransform(const glm::mat4& matrix) {
+bool Node::setLocalTransform(const mat4& matrix) {
     if (_local.set(matrix)) {
         setDirty(ALL_DIRTY);
         return true;

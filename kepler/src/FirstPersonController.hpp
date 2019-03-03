@@ -9,7 +9,7 @@ namespace kepler {
 class FirstPersonController {
 public:
     /// Constructor.
-    /// 
+    ///
     /// @param[in] fov The field of view Y.
     /// @param[in] width  Screen width. Used to calculate the aspect ratio.
     /// @param[in] height Screen height. Used to calculate the aspect ratio.
@@ -25,9 +25,9 @@ public:
 
     /// Sets the position of the camera.
     /// @param[in] position The position to move to.
-    void setPosition(const glm::vec3& position);
+    void setPosition(const vec3& position);
 
-    /// Moves the camera forward in the direction that it is pointing. 
+    /// Moves the camera forward in the direction that it is pointing.
     /// (Fly mode)
     /// @param[in] value The amount to move.
     void moveForward(float value);

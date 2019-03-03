@@ -1,13 +1,10 @@
-#include "gtest/gtest.h"
-#include "macros.hpp"
+#include "common_test.hpp"
 
 #include <Node.hpp>
 #include <glm/gtx/quaternion.hpp>
 
 using namespace kepler;
-using glm::vec3;
 using glm::quat;
-using glm::mat4;
 using glm::radians;
 
 TEST(transform, transform_identity) {
@@ -28,7 +25,6 @@ TEST(transform, transform_set) {
     EXPECT_EQ(t.translation(), translation);
     EXPECT_EQ(t.rotation(), rotation);
     EXPECT_EQ(t.scale(), scale);
-
 }
 
 TEST(transform, combine_with_parent) {
@@ -41,7 +37,7 @@ TEST(transform, combine_with_parent) {
     EXPECT_EQ(child.translation(), translation * 2.0f);
 }
 
-TEST(transform, eular) {
+TEST(transform, euler) {
     {
         vec3 euler = vec3(radians(45.0f), 0.0f, 0.0f);
         quat rot(euler);

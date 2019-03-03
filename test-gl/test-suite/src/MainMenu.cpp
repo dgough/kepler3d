@@ -79,7 +79,7 @@ void MainMenu::mouseButtonEvent(int button, int action, int mods) {
     if (button == LEFT_MOUSE && action == PRESS) {
         double xpos, ypos;
         app()->cursorPosition(&xpos, &ypos);
-        clickButtonAt(glm::vec2(xpos, ypos));
+        clickButtonAt(vec2(xpos, ypos));
     }
 }
 
@@ -106,7 +106,7 @@ void MainMenu::drawButton(const Button& button) {
     _font->drawText(button.text().c_str(), x, y);
 }
 
-bool MainMenu::clickButtonAt(glm::vec2 pos) {
+bool MainMenu::clickButtonAt(vec2 pos) {
     for (const auto& button : _buttons) {
         if (button->rect().contains(pos)) {
             button->callOnClick();

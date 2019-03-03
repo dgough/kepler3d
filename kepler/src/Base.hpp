@@ -17,4 +17,5 @@ class AppDelegate;
 class FirstPersonController;
 
 using std::shared_ptr;
+using std::size_t;
 }

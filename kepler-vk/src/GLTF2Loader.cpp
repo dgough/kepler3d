@@ -40,7 +40,6 @@ namespace kepler {
 namespace vulkan {
 
 using std::string;
-using std::shared_ptr;
 using std::chrono::high_resolution_clock;
 
 using ubyte = uint8_t;
@@ -350,8 +349,8 @@ shared_ptr<MeshPrimitive> GLTF2Loader::Impl::loadPrimitive(const gltf2::Primitiv
     //        if (attribSemantic == AttributeSemantic::POSITION) {
     //            // find the bounding box
     //            auto gAccessor = _gltf.accessor(attrib.second);
-    //            glm::vec3 min;
-    //            glm::vec3 max;
+    //            vec3 min;
+    //            vec3 max;
     //            if (gAccessor.min(glm::value_ptr(min), 3) && gAccessor.max(glm::value_ptr(max), 3)) {
     //                prim->setBoundingBox(min, max);
     //            }
@@ -512,7 +511,7 @@ shared_ptr<std::vector<ubyte>> GLTF2Loader::Impl::loadBuffer(size_t index) {
 //        }
 //
 //        shared_ptr<Texture> baseMapTexture;
-//        glm::vec4 baseColorFactor(1);
+//        vec4 baseColorFactor(1);
 //        auto gPbr = gMaterial.pbrMetallicRoughness();
 //        if (gPbr) {
 //            size_t textureIndex;
@@ -553,11 +552,11 @@ shared_ptr<std::vector<ubyte>> GLTF2Loader::Impl::loadBuffer(size_t index) {
 //        tech->setSemanticUniform("modelView", MaterialParameter::Semantic::MODELVIEW);
 //        tech->setSemanticUniform("normalMatrix", MaterialParameter::Semantic::MODELVIEWINVERSETRANSPOSE);
 //
-//        tech->setUniform("lightPos", MaterialParameter::create("lightPos", glm::vec3(1, 1, 1)));
-//        tech->setUniform("lightColor", MaterialParameter::create("lightColor", glm::vec3(1, 1, 1)));
+//        tech->setUniform("lightPos", MaterialParameter::create("lightPos", vec3(1, 1, 1)));
+//        tech->setUniform("lightColor", MaterialParameter::create("lightColor", vec3(1, 1, 1)));
 //        tech->setUniform("shininess", MaterialParameter::create("shininess", 64.0f));
 //        tech->setUniform("specularStrength", MaterialParameter::create("specularStrength", 0.2f));
-//        tech->setUniform("ambient", MaterialParameter::create("ambient", glm::vec3(0.2f)));
+//        tech->setUniform("ambient", MaterialParameter::create("ambient", vec3(0.2f)));
 //
 //        tech->setUniform("constantAttenuation", MaterialParameter::create("constantAttenuation", 1.f));
 //        tech->setUniform("linearAttenuation", MaterialParameter::create("linearAttenuation", 0.f));
@@ -669,7 +668,7 @@ shared_ptr<std::vector<ubyte>> GLTF2Loader::Impl::loadBuffer(size_t index) {
 //    auto material = Material::create();
 //
 //    auto emission = MaterialParameter::create("emission");
-//    emission->setValue(glm::vec4(0.8f, 0.8f, 0.8f, 1.0f));
+//    emission->setValue(vec4(0.8f, 0.8f, 0.8f, 1.0f));
 //    material->addParam(emission);
 //
 //    auto technique = loadDefaultTechnique();
@@ -736,8 +735,8 @@ void GLTF2Loader::Impl::loadTransform(const gltf2::Node& gNode, const shared_ptr
         node->setLocalTransform(glm::make_mat4(matrix.data()));
     }
     else {
-        glm::vec3 trans;
-        glm::vec3 scale(1.0f);
+        vec3 trans;
+        vec3 scale(1.0f);
         glm::quat rot;
         gNode.translation(glm::value_ptr(trans));
         gNode.scale(glm::value_ptr(scale));

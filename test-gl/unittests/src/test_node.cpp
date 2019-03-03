@@ -158,7 +158,6 @@ TEST(node, find_first_eval) {
     EXPECT_EQ(root->findFirstNodeByName("B1"), root->findFirstNode(isLeaf));
 }
 
-
 TEST(node, weak_ptr_list) {
 
     auto a = Node::create("A");
@@ -197,7 +196,7 @@ TEST(node, weak_ptr_list) {
 TEST(node, contains_component) {
     shared_ptr<Node> root = Node::create("root");
     auto camera = createCamera();
-    
+
     EXPECT_FALSE(root->containsComponent(camera->typeName()));
     EXPECT_FALSE(root->component<Camera>() != nullptr);
     root->addComponent(camera);
@@ -212,7 +211,7 @@ TEST(node, contains_component) {
 TEST(node, get_drawable) {
     shared_ptr<Node> node = Node::create();
     EXPECT_TRUE(node->drawable() == nullptr);
-    
+
     auto camera = createCamera();
     node->addComponent(camera);
     EXPECT_TRUE(node->drawable() == nullptr);
