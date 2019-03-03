@@ -13,11 +13,8 @@
 using namespace kepler;
 using namespace kepler::gl;
 
-static constexpr char* ARIAL_32 = "res/fonts/arial-32.fnt";
-static constexpr char* ARIAL_15 = "res/fonts/arial-15.fnt";
-
-static constexpr int WINDOW_WIDTH = 8;
-static constexpr int WINDOW_HEIGHT = 6;
+//constexpr char* ARIAL_32 = "res/fonts/arial-32.fnt";
+constexpr char* ARIAL_15 = "res/fonts/arial-15.fnt";
 
 //#define DISABLE_FONT_TEST
 #ifndef DISABLE_FONT_TEST
@@ -28,12 +25,9 @@ TEST(fonts, file_not_found) {
 }
 
 TEST(fonts, load_font) {
-    App app(WINDOW_WIDTH, WINDOW_HEIGHT, false);
-    {
-        auto font = BmpFont::createFromFile(ARIAL_15);
-        ASSERT_NE(font, nullptr);
-        EXPECT_EQ(font->size(), 15);
-    }
+    auto font = BmpFont::createFromFile(ARIAL_15);
+    ASSERT_NE(font, nullptr);
+    EXPECT_EQ(font->size(), 15);
 }
 
 #endif

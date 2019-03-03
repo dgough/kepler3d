@@ -156,6 +156,7 @@
     <ClCompile Include="src\OpenGL.cpp" />
     <ClCompile Include="src\RenderState.cpp" />
     <ClCompile Include="src\Sampler.cpp" />
+    <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -187,6 +188,7 @@
     <ClInclude Include="src\OpenGL.hpp" />
     <ClInclude Include="src\RenderState.hpp" />
     <ClInclude Include="src\Sampler.hpp" />
+    <ClInclude Include="src\Shader.hpp" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\targetver.h" />
     <ClInclude Include="src\Technique.hpp" />

@@ -11,7 +11,7 @@ namespace gl {
 template<GLenum Target>
 class Buffer {
 public:
-    Buffer() = default;
+    Buffer() : _handle(0) {}
 
     Buffer(GLsizeiptr size, const GLvoid* data, GLenum usage) {
         glGenBuffers(1, &_handle);
@@ -60,7 +60,7 @@ public:
     }
 
 private:
-    BufferHandle _handle{0};
+    BufferHandle _handle;
 };
 
 } // namespace gl

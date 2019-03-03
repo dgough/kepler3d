@@ -17,6 +17,7 @@ using BufferHandle = GLuint;
 using ProgramHandle = GLuint;
 using TextureHandle = GLuint;
 using SamplerHandle = GLuint;
+using ShaderHandle = GLuint;
 
 void replace_glad_callbacks();
 

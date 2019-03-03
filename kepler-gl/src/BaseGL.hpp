@@ -2,6 +2,8 @@
 
 #include <Base.hpp>
 
+#define OPENGL_HPP_TYPESAFE_EXPLICIT
+
 namespace kepler {
 namespace gl {
 

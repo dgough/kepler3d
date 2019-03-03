@@ -166,6 +166,7 @@
     <ClCompile Include="src\test_rectangle.cpp" />
     <ClCompile Include="src\test_RenderState.cpp" />
     <ClCompile Include="src\test_scene.cpp" />
+    <ClCompile Include="src\test_Shader.cpp" />
     <ClCompile Include="src\test_string_utils.cpp" />
     <ClCompile Include="src\test_transform.cpp" />
   </ItemGroup>

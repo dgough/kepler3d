@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Effect.hpp"
-#include <OpenGL.hpp>
+#include "Shader.hpp"
 #include "Sampler.hpp"
 #include "FileSystem.hpp"
 #include "StringUtils.hpp"
@@ -15,15 +15,15 @@ static constexpr const char* VERSION_STR = "#version 120\n"; // TODO move this t
 static constexpr const char* DEFINE = "#define ";
 
 //static GLuint loadShaderFromFile(const char* path, GLenum shaderType);
-static GLuint loadShaderFromSource(const std::string& source, GLenum shaderType, const char* defines[] = nullptr, size_t defineCount = 0);
-static GLuint createAndLinkProgram(GLuint vertShader, GLuint fragShader);
+static Shader loadShaderFromSource(const std::string& source, GLenum shaderType, const char* defines[] = nullptr, size_t defineCount = 0);
+static GLuint createAndLinkProgram(const Shader& vertShader, const Shader& fragShader);
 //static GLuint loadShaderProgramFromFile(const char* vertShaderPath, const char* fragShaderPath);
 
 Effect::Effect(ProgramHandle program) : _program(program) {
 }
 
 Effect::~Effect() noexcept {
-    if (_program != 0) {
+    if (_program) {
         glDeleteProgram(_program);
     }
 }
@@ -115,7 +115,7 @@ void Effect::setValue(const Uniform* uniform, const vec2& value) const noexcept 
     glUniform2f(uniform->_location, value.x, value.y);
 }
 
-void Effect::setValue(GLint location, const vec3 & value) const noexcept {
+void Effect::setValue(GLint location, const vec3& value) const noexcept {
     glUniform3f(location, value.x, value.y, value.z);
 }
 
@@ -135,11 +135,9 @@ void Effect::setTexture(const Uniform* uniform, const shared_ptr<Texture>& textu
 }
 
 shared_ptr<Effect> Effect::createFromSource(const std::string& vertSource, const std::string& fragSource, const char* defines[], size_t defineCount) {
-    GLuint vertShader = loadShaderFromSource(vertSource, GL_VERTEX_SHADER, defines, defineCount);
-    GLuint fragShader = loadShaderFromSource(fragSource, GL_FRAGMENT_SHADER, defines, defineCount);
+    Shader vertShader = loadShaderFromSource(vertSource, GL_VERTEX_SHADER, defines, defineCount);
+    Shader fragShader = loadShaderFromSource(fragSource, GL_FRAGMENT_SHADER, defines, defineCount);
     ProgramHandle program = createAndLinkProgram(vertShader, fragShader);
-    glDeleteShader(vertShader);
-    glDeleteShader(fragShader);
     if (program == 0) {
         return nullptr;
     }
@@ -249,11 +247,11 @@ shared_ptr<Effect> Uniform::effect() const {
 //    return loadShaderFromSource(source, shaderType);
 //}
 
-GLuint loadShaderFromSource(const std::string& source, GLenum shaderType, const char* defines[], size_t defineCount) {
-    GLuint shaderId = glCreateShader(shaderType);
-    if (shaderId == 0) {
+Shader loadShaderFromSource(const std::string& source, GLenum shaderType, const char* defines[], size_t defineCount) {
+    Shader shader(shaderType);
+    if (!shader) {
         loge("SHADER::CREATE");
-        return 0;
+        return {};
     }
     std::string version;
     std::vector<const GLchar*> srcLines;
@@ -284,28 +282,21 @@ GLuint loadShaderFromSource(const std::string& source, GLenum shaderType, const 
         srcLines.push_back("\n");
     }
     srcLines.push_back(sourceStr);
-    glShaderSource(shaderId, static_cast<GLsizei>(srcLines.size()), srcLines.data(), nullptr);
-    glCompileShader(shaderId);
-
-    GLint success;
-    glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        constexpr size_t LOG_SIZE = 512;
-        GLchar infoLog[LOG_SIZE];
-        glGetShaderInfoLog(shaderId, LOG_SIZE, nullptr, infoLog);
-        loge("ERROR::SHADER::COMPILE\n", infoLog);
-        glDeleteShader(shaderId);
-        return 0;
+    shader.loadSource(srcLines);
+    if (!shader.compile()) {
+        std::string infoLog = shader.getInfoLog();
+        loge("ERROR::SHADER::COMPILE\n", infoLog.c_str());
+        return {};
     }
-    return shaderId;
+    return shader;
 }
 
-ProgramHandle createAndLinkProgram(GLuint vertShader, GLuint fragShader) {
-    if (vertShader == 0) {
+ProgramHandle createAndLinkProgram(const Shader& vertShader, const Shader& fragShader) {
+    if (!vertShader) {
         loge("VERTEX_SHADER_MISSING");
         return 0;
     }
-    if (fragShader == 0) {
+    if (!fragShader) {
         loge("FRAG_SHADER_MISSING");
         return 0;
     }
@@ -314,8 +305,8 @@ ProgramHandle createAndLinkProgram(GLuint vertShader, GLuint fragShader) {
         loge("PROGRAM::CREATE");
         return 0;
     }
-    glAttachShader(program, vertShader);
-    glAttachShader(program, fragShader);
+    vertShader.attachToProgram(program);
+    fragShader.attachToProgram(program);
     glLinkProgram(program);
     GLint success;
     glGetProgramiv(program, GL_LINK_STATUS, &success);
@@ -330,13 +321,5 @@ ProgramHandle createAndLinkProgram(GLuint vertShader, GLuint fragShader) {
     return program;
 }
 
-//ProgramHandle loadShaderProgramFromFile(const char* vertShaderPath, const char* fragShaderPath) {
-//    GLuint vertShader = loadShaderFromFile(vertShaderPath, GL_VERTEX_SHADER);
-//    GLuint fragShader = loadShaderFromFile(fragShaderPath, GL_FRAGMENT_SHADER);
-//    ProgramHandle program = createAndLinkProgram(vertShader, fragShader);
-//    glDeleteShader(vertShader);
-//    glDeleteShader(fragShader);
-//    return program;
-//}
-}
-}
+} // namespace gl
+} // namespace kepler
