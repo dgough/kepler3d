@@ -3,12 +3,12 @@
 
 namespace kepler {
 
-    DrawableComponent::DrawableComponent() {
-    }
+DrawableComponent::DrawableComponent() {
+}
 
-    DrawableComponent::~DrawableComponent() noexcept {
-    }
-    bool DrawableComponent::isDrawable() const {
-        return true;
-    }
+DrawableComponent::~DrawableComponent() noexcept {
+}
+bool DrawableComponent::isDrawable() const {
+    return true;
+}
 }

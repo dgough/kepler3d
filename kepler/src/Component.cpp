@@ -2,26 +2,26 @@
 #include "Component.hpp"
 
 namespace kepler {
-    Component::Component() {
-    }
+Component::Component() {
+}
 
-    Component::~Component() noexcept {
-    }
+Component::~Component() noexcept {
+}
 
-    ref<Node> Component::node() const {
-        return _node.lock();
-    }
+shared_ptr<Node> Component::node() const {
+    return _node.lock();
+}
 
-    bool Component::isDrawable() const {
-        return false;
-    }
+bool Component::isDrawable() const {
+    return false;
+}
 
-    void Component::onNodeChanged(const ref<Node>&, const ref<Node>&) {
-    }
+void Component::onNodeChanged(const shared_ptr<Node>&, const shared_ptr<Node>&) {
+}
 
-    void Component::setNode(const ref<Node>& node) {
-        ref<Node> oldNode = _node.lock();
-        _node = node;
-        onNodeChanged(oldNode, node);
-    }
+void Component::setNode(const shared_ptr<Node>& node) {
+    shared_ptr<Node> oldNode = _node.lock();
+    _node = node;
+    onNodeChanged(oldNode, node);
+}
 }

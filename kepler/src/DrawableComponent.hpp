@@ -5,17 +5,17 @@
 
 namespace kepler {
 
-    /// A Node Component that can draw itself.
-    class DrawableComponent : public virtual Component {
-    public:
-        DrawableComponent();
-        virtual ~DrawableComponent() noexcept;
+/// A Node Component that can draw itself.
+class DrawableComponent : public virtual Component {
+public:
+    DrawableComponent();
+    virtual ~DrawableComponent() noexcept;
 
-        virtual void draw() = 0;
+    virtual void draw() = 0;
 
-        bool isDrawable() const override;
+    bool isDrawable() const override;
 
-        DrawableComponent(const DrawableComponent&) = delete;
-        DrawableComponent& operator=(const DrawableComponent&) = delete;
-    };
+    DrawableComponent(const DrawableComponent&) = delete;
+    DrawableComponent& operator=(const DrawableComponent&) = delete;
+};
 }

@@ -41,8 +41,8 @@ No. I want to stay as the sole contributor for now.
 
 # Dependencies
 
-- [glad](https://github.com/Dav1dde/glad)
 - [GLFW](http://www.glfw.org/)
+- [glad](https://github.com/Dav1dde/glad)
 - [glm](http://glm.g-truc.net)
 - [SOIL2](https://bitbucket.org/SpartanJ/soil2)
 - [RapidJSON](https://github.com/miloyip/rapidjson)

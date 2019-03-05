@@ -10,32 +10,17 @@
     <Filter Include="src\Base">
       <UniqueIdentifier>{a3086535-3b6a-4bfd-a01f-3bc7b9ab039f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Font">
-      <UniqueIdentifier>{9d33c7bf-6e75-4953-aef6-24351dca6830}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Geometry">
       <UniqueIdentifier>{dd784477-e816-4d71-8325-5113b169dc6c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Geometry\Accessors">
-      <UniqueIdentifier>{84aa1853-bcf8-4794-a5ea-2566a62aa139}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Geometry\Buffers">
-      <UniqueIdentifier>{11e293ae-607f-4b13-be21-84f4edb08a13}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\glTF">
       <UniqueIdentifier>{fa6f2b4a-0503-4d5b-ad9f-60634014681d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Materials">
-      <UniqueIdentifier>{93a99bd0-5fde-4519-9b3c-164bb17fadb5}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Platform">
       <UniqueIdentifier>{b52461fe-10e8-4583-868a-13d7987f2ceb}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Scene">
       <UniqueIdentifier>{8d62e15a-38d0-4e0d-b944-410977b65937}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Texturing">
-      <UniqueIdentifier>{75788a07-46ef-47ed-aaf2-40c3612a860a}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Utils">
       <UniqueIdentifier>{4d626487-be76-4772-8fb6-c79fafbea38d}</UniqueIdentifier>
@@ -45,20 +30,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\AppGLFW.cpp">
-      <Filter>src\Platform</Filter>
-    </ClCompile>
-    <ClCompile Include="src\AxisCompass.cpp">
-      <Filter>src\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="src\BaseGL.cpp">
-      <Filter>src\Base</Filter>
-    </ClCompile>
     <ClCompile Include="src\BaseMath.cpp">
       <Filter>src\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="src\BmpFont.cpp">
-      <Filter>src\Font</Filter>
     </ClCompile>
     <ClCompile Include="src\Camera.cpp">
       <Filter>src\Scene</Filter>
@@ -69,41 +42,14 @@
     <ClCompile Include="src\DrawableComponent.cpp">
       <Filter>src\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="src\Effect.cpp">
-      <Filter>src\Materials</Filter>
-    </ClCompile>
     <ClCompile Include="src\FileSystem.cpp">
       <Filter>src\Platform</Filter>
     </ClCompile>
     <ClCompile Include="src\FirstPersonController.cpp">
       <Filter>src\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="src\glad.cpp">
-      <Filter>src\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Image.cpp">
-      <Filter>src\Texturing</Filter>
-    </ClCompile>
-    <ClCompile Include="src\IndexAccessor.cpp">
-      <Filter>src\Geometry\Accessors</Filter>
-    </ClCompile>
     <ClCompile Include="src\Logging.cpp">
       <Filter>src\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Sampler.cpp">
-      <Filter>src\Texturing</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Texture.cpp">
-      <Filter>src\Texturing</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Mesh.cpp">
-      <Filter>src\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MeshPrimitive.cpp">
-      <Filter>src\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MeshRenderer.cpp">
-      <Filter>src\Geometry</Filter>
     </ClCompile>
     <ClCompile Include="src\stdafx.cpp">
       <Filter>src\Base</Filter>
@@ -111,41 +57,14 @@
     <ClCompile Include="src\StringUtils.cpp">
       <Filter>src\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="src\VertexAttributeAccessor.cpp">
-      <Filter>src\Geometry\Accessors</Filter>
-    </ClCompile>
-    <ClCompile Include="src\IndexBuffer.cpp">
-      <Filter>src\Geometry\Buffers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VertexBuffer.cpp">
-      <Filter>src\Geometry\Buffers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Material.cpp">
-      <Filter>src\Materials</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MaterialBinding.cpp">
-      <Filter>src\Materials</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MaterialParameter.cpp">
-      <Filter>src\Materials</Filter>
-    </ClCompile>
     <ClCompile Include="src\Node.cpp">
       <Filter>src\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\OrbitCamera.cpp">
       <Filter>src\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="src\Technique.cpp">
-      <Filter>src\Materials</Filter>
-    </ClCompile>
     <ClCompile Include="src\Transform.cpp">
       <Filter>src\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VertexAttributeBinding.cpp">
-      <Filter>src\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="src\RenderState.cpp">
-      <Filter>src\Materials</Filter>
     </ClCompile>
     <ClCompile Include="src\Scene.cpp">
       <Filter>src\Scene</Filter>
@@ -156,20 +75,14 @@
     <ClCompile Include="src\Button.cpp">
       <Filter>src\UI</Filter>
     </ClCompile>
-    <ClCompile Include="src\MeshUtils.cpp">
-      <Filter>src\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GLTF1Loader.cpp">
-      <Filter>src\glTF</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GLTF2Loader.cpp">
-      <Filter>src\glTF</Filter>
-    </ClCompile>
     <ClCompile Include="src\Performance.cpp">
       <Filter>src\Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\BoundingBox.cpp">
       <Filter>src\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ColorMath.cpp">
+      <Filter>src\Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -179,20 +92,11 @@
     <ClInclude Include="src\AppDelegate.hpp">
       <Filter>src\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="src\AxisCompass.hpp">
-      <Filter>src\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="src\Base.hpp">
-      <Filter>src\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="src\BaseGL.hpp">
       <Filter>src\Base</Filter>
     </ClInclude>
     <ClInclude Include="src\BaseMath.hpp">
       <Filter>src\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="src\BmpFont.hpp">
-      <Filter>src\Font</Filter>
     </ClInclude>
     <ClInclude Include="src\Camera.hpp">
       <Filter>src\Scene</Filter>
@@ -203,38 +107,14 @@
     <ClInclude Include="src\DrawableComponent.hpp">
       <Filter>src\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\Effect.hpp">
-      <Filter>src\Materials</Filter>
-    </ClInclude>
     <ClInclude Include="src\FileSystem.hpp">
       <Filter>src\Platform</Filter>
     </ClInclude>
     <ClInclude Include="src\FirstPersonController.hpp">
       <Filter>src\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="src\Image.hpp">
-      <Filter>src\Texturing</Filter>
-    </ClInclude>
-    <ClInclude Include="src\IndexAccessor.hpp">
-      <Filter>src\Geometry\Accessors</Filter>
-    </ClInclude>
     <ClInclude Include="src\Logging.hpp">
       <Filter>src\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Sampler.hpp">
-      <Filter>src\Texturing</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Texture.hpp">
-      <Filter>src\Texturing</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Mesh.hpp">
-      <Filter>src\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MeshPrimitive.hpp">
-      <Filter>src\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MeshRenderer.hpp">
-      <Filter>src\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="src\stdafx.h">
       <Filter>src\Base</Filter>
@@ -245,24 +125,6 @@
     <ClInclude Include="src\StringUtils.hpp">
       <Filter>src\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="src\VertexAttributeAccessor.hpp">
-      <Filter>src\Geometry\Accessors</Filter>
-    </ClInclude>
-    <ClInclude Include="src\IndexBuffer.hpp">
-      <Filter>src\Geometry\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\VertexBuffer.hpp">
-      <Filter>src\Geometry\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Material.hpp">
-      <Filter>src\Materials</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MaterialBinding.hpp">
-      <Filter>src\Materials</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MaterialParameter.hpp">
-      <Filter>src\Materials</Filter>
-    </ClInclude>
     <ClInclude Include="src\Node.hpp">
       <Filter>src\Scene</Filter>
     </ClInclude>
@@ -272,17 +134,8 @@
     <ClInclude Include="src\Platform.hpp">
       <Filter>src\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="src\Technique.hpp">
-      <Filter>src\Materials</Filter>
-    </ClInclude>
     <ClInclude Include="src\Transform.hpp">
       <Filter>src\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="src\VertexAttributeBinding.hpp">
-      <Filter>src\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="src\RenderState.hpp">
-      <Filter>src\Materials</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene.hpp">
       <Filter>src\Scene</Filter>
@@ -293,21 +146,6 @@
     <ClInclude Include="src\Button.hpp">
       <Filter>src\UI</Filter>
     </ClInclude>
-    <ClInclude Include="src\MeshUtils.hpp">
-      <Filter>src\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="src\AttributeSemantic.hpp">
-      <Filter>src\Materials</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GLTF1Loader.hpp">
-      <Filter>src\glTF</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GLTF2Loader.hpp">
-      <Filter>src\glTF</Filter>
-    </ClInclude>
-    <ClInclude Include="src\lazy_gltf2.hpp">
-      <Filter>src\glTF</Filter>
-    </ClInclude>
     <ClInclude Include="src\lib64.hpp">
       <Filter>src\glTF</Filter>
     </ClInclude>
@@ -316,6 +154,12 @@
     </ClInclude>
     <ClInclude Include="src\BoundingBox.hpp">
       <Filter>src\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Bounded.hpp">
+      <Filter>src\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ColorMath.hpp">
+      <Filter>src\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{d12247d3-99e7-4e71-a839-a289e9cd4795}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\test_node_transform.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test_scene.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test_string_utils.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test_transform.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main_tests.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test_filesystem.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test_fonts.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test_node.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test_rectangle.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test_gltf2.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test_RenderState.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test_BoundingBox.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test_ColorMath.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test_buffer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\KeplerEnvironment.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common_test.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{3cca19ed-9ee8-4c7e-807f-b19eceb69153}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Base">
+      <UniqueIdentifier>{3aff1b8d-d3ea-4a20-9f90-a629afd61fdb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Platform">
+      <UniqueIdentifier>{0be2a814-7b9e-444c-8ab3-187560d6cf64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Vulkan">
+      <UniqueIdentifier>{6c601c69-e63c-43e9-b161-be1cad5150e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Mesh">
+      <UniqueIdentifier>{d95c8b40-4f54-4997-97f4-1cd410eefd17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\glTF">
+      <UniqueIdentifier>{8bab7d75-d0b9-443a-b3b9-cee2d4a557d5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\stdafx.cpp">
+      <Filter>src\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AppVk.cpp">
+      <Filter>src\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VmaAllocator.cpp">
+      <Filter>src\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VulkanState.cpp">
+      <Filter>src\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Buffer.cpp">
+      <Filter>src\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SwapChain.cpp">
+      <Filter>src\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VulkanUtils.cpp">
+      <Filter>src\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shader.cpp">
+      <Filter>src\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MeshPrimitive.cpp">
+      <Filter>src\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mesh.cpp">
+      <Filter>src\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GLTF2Loader.cpp">
+      <Filter>src\glTF</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MeshRenderer.cpp">
+      <Filter>src\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Vao.cpp">
+      <Filter>src\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VertexLayout.cpp">
+      <Filter>src\Mesh</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\stdafx.h">
+      <Filter>src\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\targetver.h">
+      <Filter>src\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BaseVk.hpp">
+      <Filter>src\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\AppVk.hpp">
+      <Filter>src\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VulkanState.hpp">
+      <Filter>src\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VulkanUtils.hpp">
+      <Filter>src\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Buffer.hpp">
+      <Filter>src\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SwapChain.hpp">
+      <Filter>src\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shader.hpp">
+      <Filter>src\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VertexAttrib.hpp">
+      <Filter>src\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MeshPrimitive.hpp">
+      <Filter>src\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Mesh.hpp">
+      <Filter>src\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GLTF2Loader.hpp">
+      <Filter>src\glTF</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MeshRenderer.hpp">
+      <Filter>src\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Vao.hpp">
+      <Filter>src\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VertexLayout.hpp">
+      <Filter>src\Mesh</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
