@@ -14,8 +14,6 @@ static constexpr unsigned char BOUNDS_DIRTY = 32;
 static constexpr unsigned char ALL_DIRTY = (VIEW_DIRTY | PROJ_DIRTY | VIEW_PROJ_DIRTY | INV_VIEW_DIRTY | INV_VIEW_PROJ_DIRTY | BOUNDS_DIRTY);
 static constexpr unsigned char TRANSFORM_CHANGE = ALL_DIRTY & ~PROJ_DIRTY;
 
-static std::string _typeName("Camera");
-
 Camera::Camera(float fov, float aspectRatio, float near, float far)
     : _type(Type::PERSPECTIVE), _fov(fov), _aspectRatio(aspectRatio), _near(near), _far(far) {
     _dirtyBits |= ALL_DIRTY;
@@ -26,8 +24,7 @@ Camera::Camera(float zoomX, float zoomY, float aspectRatio, float near, float fa
     _dirtyBits |= ALL_DIRTY;
 }
 
-Camera::~Camera() noexcept {
-}
+Camera::~Camera() noexcept = default;
 
 shared_ptr<Camera> Camera::createPerspective(float fov, float aspectRatio, float near, float far) {
     return std::make_shared<Camera>(fov, aspectRatio, near, far);
@@ -51,7 +48,8 @@ void Camera::onNodeChanged(const shared_ptr<Node>& oldNode, const shared_ptr<Nod
 }
 
 const std::string& Camera::typeName() const {
-    return _typeName;
+    static std::string typeName("Camera");
+    return typeName;
 }
 
 Camera::Type Camera::cameraType() const {
@@ -116,4 +114,5 @@ float Camera::zoomX() const noexcept {
 float Camera::zoomY() const noexcept {
     return _zoomY;
 }
-}
+
+} // namespace kepler

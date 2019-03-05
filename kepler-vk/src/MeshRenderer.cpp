@@ -6,8 +6,6 @@
 namespace kepler {
 namespace vulkan {
 
-static std::string _typeName("MeshRenderer");
-
 MeshRenderer::MeshRenderer(const shared_ptr<Mesh>& mesh) : _mesh(mesh) {
 }
 
@@ -46,7 +44,9 @@ bool MeshRenderer::getBoundingBox(BoundingBox& box) {
 }
 
 const std::string& MeshRenderer::typeName() const {
-    return _typeName;
+    static std::string typeName("MeshRenderer");
+    return typeName;
 }
+
 }
 }

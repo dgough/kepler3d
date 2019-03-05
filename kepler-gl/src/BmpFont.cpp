@@ -153,7 +153,6 @@ private:
     string _face;
     string _baseDir;
 
-    // TODO use std::vector instead
     std::vector<Character> _chars;
     std::vector<string> _pages;
 

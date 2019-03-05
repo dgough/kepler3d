@@ -29,7 +29,7 @@ bool MeshPrimitive::hasAttribute(AttributeSemantic semantic) const {
     return _attributes.count(semantic) != 0;
 }
 
-void MeshPrimitive::bindIndices() {
+void MeshPrimitive::bindIndices() const {
     if (_indices) {
         _indices->bind();
     }
@@ -74,7 +74,7 @@ void MeshPrimitive::setMaterial(const shared_ptr<Material>& material) {
     // TODO should this be a weak reference?
     // should attributes be in another object? A geometry?
     _material = material;
-    _vertexBinding = VertexAttributeBinding::createUnique(shared_from_this(), tech);
+    _vertexBinding = VertexAttributeBinding(*this, *tech, *effect);
     updateBindings();
 }
 
@@ -88,12 +88,12 @@ void MeshPrimitive::setBoundingBox(const vec3& min, const vec3& max) {
 
 void MeshPrimitive::draw() {
     auto node = _node.lock();
-    if (_vertexBinding == nullptr || !node) {
+    if (!_vertexBinding || !node) {
         return;
     }
     const auto& material = *_material;
     _materialBinding->bind(*node, material);
-    _vertexBinding->bind();
+    _vertexBinding.bind();
     if (_indices) {
         glDrawElements(_mode, _indices->count(), _indices->type(), (const GLvoid*)_indices->offset());
     }
@@ -103,7 +103,7 @@ void MeshPrimitive::draw() {
             glDrawArrays(_mode, 0, attrib->second->count());
         }
     }
-    _vertexBinding->unbind();
+    _vertexBinding.unbind();
 }
 
 void MeshPrimitive::updateBindings() {

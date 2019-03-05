@@ -76,12 +76,13 @@ public:
     Uniform& operator=(const Uniform&) = delete;
 private:
     Uniform(const std::string& name, GLint location, GLenum type);
-private:
+
     std::string _name;
     GLint _location;
     GLenum _type;
     unsigned int _index;
     std::weak_ptr<Effect> _effect;
 };
-}
-}
+
+} // namespace gl
+} // namespace kepler

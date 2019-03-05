@@ -9,7 +9,7 @@ namespace kepler {
 namespace gl {
 
 /// Wrapper class for the OpenGL shader object.
-class Shader {
+class Shader final {
 public:
     Shader() : _handle(0) {}
     explicit Shader(GLenum shaderType);

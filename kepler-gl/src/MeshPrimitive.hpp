@@ -4,6 +4,7 @@
 #include "AttributeSemantic.hpp"
 #include "MaterialBinding.hpp"
 #include "BoundingBox.hpp"
+#include "VertexAttributeBinding.hpp"
 
 #include <map>
 
@@ -11,7 +12,7 @@ namespace kepler {
 namespace gl {
 
 /// A MeshPrimitive is the data required to draw a primitive with glDrawArrays or glDrawElements.
-class MeshPrimitive : public std::enable_shared_from_this<MeshPrimitive> {
+class MeshPrimitive {
     friend Mesh;
 public:
 
@@ -39,7 +40,7 @@ public:
     bool hasAttribute(AttributeSemantic semantic) const;
 
     /// Binds the indices for this mesh's primitive if they exist.
-    void bindIndices();
+    void bindIndices() const;
 
     void setAttribute(AttributeSemantic semantic, const shared_ptr<VertexAttributeAccessor>& accessor);
     /// Sets the IndexAccessor.
@@ -68,9 +69,10 @@ private:
     std::map<AttributeSemantic, shared_ptr<VertexAttributeAccessor>> _attributes;
     shared_ptr<Material> _material;
     std::unique_ptr<MaterialBinding> _materialBinding;
-    std::unique_ptr<VertexAttributeBinding> _vertexBinding;
+    VertexAttributeBinding _vertexBinding;
     std::weak_ptr<Node> _node;
     BoundingBox _box;
 };
-}
-}
+
+} // namespace gl
+} // namespace kepler

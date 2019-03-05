@@ -640,4 +640,5 @@ Node& Node::Iterator::operator* () const {
 Node* Node::Iterator::operator->() const {
     return _list[_pos].get();
 }
-}
+
+} // namespace kepler

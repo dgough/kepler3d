@@ -33,13 +33,13 @@ void Mesh::addMeshPrimitive(const shared_ptr<MeshPrimitive>& primitive) {
 }
 
 void Mesh::setName(const char* name) {
-    if (name != nullptr && *name != '\0') {
-        _name = std::make_unique<std::string>(name);
-    }
+    //if (name != nullptr && *name != '\0') {
+    //    _name = std::make_unique<std::string>(name);
+    //}
 }
 
 void Mesh::setName(const std::string& name) {
-    _name = std::make_unique<std::string>(name);
+    //_name = std::make_unique<std::string>(name);
 }
 
 shared_ptr<MeshPrimitive> Mesh::primitiveAt(size_t index) const {
