@@ -16,15 +16,15 @@ static constexpr const char* DEFINE = "#define ";
 
 //static GLuint loadShaderFromFile(const char* path, GLenum shaderType);
 static Shader loadShaderFromSource(const std::string& source, GLenum shaderType, const char* defines[] = nullptr, size_t defineCount = 0);
-static GLuint createAndLinkProgram(const Shader& vertShader, const Shader& fragShader);
+static Program createAndLinkProgram(const Shader& vertShader, const Shader& fragShader);
 //static GLuint loadShaderProgramFromFile(const char* vertShaderPath, const char* fragShaderPath);
 
-Effect::Effect(ProgramHandle program) : _program(program) {
+Effect::Effect(Program&& program) : _program(std::move(program)) {
 }
 
 Effect::~Effect() noexcept {
     if (_program) {
-        glDeleteProgram(_program);
+        _program.destroy();
     }
 }
 
@@ -34,10 +34,11 @@ shared_ptr<Effect> Effect::createFromFile(const char* vertexShaderPath, const ch
     }
     std::string vertSrc;
     std::string fragSrc;
-    if (!readTextFile(vertexShaderPath, vertSrc)) {
-        return nullptr;
+    try {
+        readTextFile(vertexShaderPath, vertSrc);
+        readTextFile(fragmentShaderPath, fragSrc);
     }
-    if (!readTextFile(fragmentShaderPath, fragSrc)) {
+    catch (const std::ios::failure&) {
         return nullptr;
     }
     return createFromSource(vertSrc, fragSrc, defines, defineCount);
@@ -68,7 +69,7 @@ GLint Effect::findUniformLocation(const std::string& uniformName) {
 }
 
 GLint Effect::getUniformLocation(const char* uniformName) const noexcept {
-    return glGetUniformLocation(_program, uniformName);
+    return _program.getUniformLocation(uniformName);
 }
 
 Uniform* Effect::uniform(const std::string& uniformName) const {
@@ -77,10 +78,6 @@ Uniform* Effect::uniform(const std::string& uniformName) const {
         return it->second.get();
     }
     return nullptr;
-}
-
-ProgramHandle Effect::program() const noexcept {
-    return _program;
 }
 
 void Effect::setValue(GLint location, float value) const noexcept {
@@ -137,11 +134,8 @@ void Effect::setTexture(const Uniform* uniform, const shared_ptr<Texture>& textu
 shared_ptr<Effect> Effect::createFromSource(const std::string& vertSource, const std::string& fragSource, const char* defines[], size_t defineCount) {
     Shader vertShader = loadShaderFromSource(vertSource, GL_VERTEX_SHADER, defines, defineCount);
     Shader fragShader = loadShaderFromSource(fragSource, GL_FRAGMENT_SHADER, defines, defineCount);
-    ProgramHandle program = createAndLinkProgram(vertShader, fragShader);
-    if (program == 0) {
-        return nullptr;
-    }
-    shared_ptr<Effect> effect = std::make_shared<Effect>(program);
+    Program program = createAndLinkProgram(vertShader, fragShader);
+    shared_ptr<Effect> effect = std::make_shared<Effect>(std::move(program));
     effect->queryAttributes();
     effect->queryUniforms();
     return effect;
@@ -152,83 +146,70 @@ void Effect::saveAttribLocation(const GLchar* attribName, GLint location) {
 }
 
 void Effect::queryAttributes() {
-    GLint activeAttributes;
-    glGetProgramiv(_program, GL_ACTIVE_ATTRIBUTES, &activeAttributes);
-    if (activeAttributes > 0) {
-        GLint length;
-        glGetProgramiv(_program, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &length);
-        if (length > 0) {
-            std::unique_ptr<GLchar[]> attribName(new GLchar[length + 1]);
-            GLint attribSize;
-            GLenum attribType;
-            GLint attribLocation;
-            for (int i = 0; i < activeAttributes; ++i) {
-                // Query attribute info.
-                glGetActiveAttrib(_program, i, length, nullptr, &attribSize, &attribType, &attribName[0]);
-                attribName[length] = '\0';
+    const auto activeAttributes = _program.getInt(GL_ACTIVE_ATTRIBUTES);
+    const auto maxLength = _program.getInt(GL_ACTIVE_ATTRIBUTE_MAX_LENGTH);
+    if (activeAttributes > 0 && maxLength > 0) {
+        std::vector<GLchar> attribName(maxLength + 1);
+        GLint attribSize;
+        GLenum attribType;
+        GLint attribLocation;
+        for (int i = 0; i < activeAttributes; ++i) {
+            // Query attribute info.
+            glGetActiveAttrib(_program, i, maxLength, nullptr, &attribSize, &attribType, attribName.data());
 
-                // Query the pre-assigned attribute location.
-                attribLocation = glGetAttribLocation(_program, &attribName[0]);
+            // Query the pre-assigned attribute location.
+            attribLocation = glGetAttribLocation(_program, attribName.data());
 
-                // Assign the vertex attribute mapping for the effect.
-                saveAttribLocation(&attribName[0], attribLocation);
-            }
+            // Assign the vertex attribute mapping for the effect.
+            saveAttribLocation(attribName.data(), attribLocation);
         }
     }
 }
 
 void Effect::queryUniforms() {
     // Query and store uniforms from the program.
-    GLint activeUniforms;
-    glGetProgramiv(_program, GL_ACTIVE_UNIFORMS, &activeUniforms);
-    if (activeUniforms > 0) {
-        GLint length;
-        glGetProgramiv(_program, GL_ACTIVE_UNIFORM_MAX_LENGTH, &length);
-        if (length > 0) {
-            std::unique_ptr<GLchar[]> uniformName(new GLchar[length + 1]);
-            GLint uniformSize;
-            GLenum uniformType;
-            GLint uniformLocation;
-            unsigned int samplerIndex = 0;
-            for (int i = 0; i < activeUniforms; ++i) {
-                // Query uniform info.
-                glGetActiveUniform(_program, i, length, nullptr, &uniformSize, &uniformType, &uniformName[0]);
-                uniformName[length] = '\0';  // null terminate
-                if (length > 3) {
-                    // If this is an array uniform, strip array indexers off it since GL does not
-                    // seem to be consistent across different drivers/implementations in how it returns
-                    // array uniforms. On some systems it will return "u_matrixArray", while on others
-                    // it will return "u_matrixArray[0]".
-                    char* c = strrchr(&uniformName[0], '[');
-                    if (c) {
-                        *c = '\0';
-                    }
+    const auto activeUniforms = _program.getInt(GL_ACTIVE_UNIFORMS);
+    const auto maxLength = _program.getInt(GL_ACTIVE_UNIFORM_MAX_LENGTH);
+    if (activeUniforms > 0 && maxLength > 0) {
+        std::vector<GLchar> uniformName(maxLength + 1);
+        GLint uniformSize;
+        GLenum uniformType;
+        GLint uniformLocation;
+        unsigned int samplerIndex = 0;
+        for (int i = 0; i < activeUniforms; ++i) {
+            // Query uniform info.
+            glGetActiveUniform(_program, i, maxLength, nullptr, &uniformSize, &uniformType, uniformName.data());
+            if (maxLength > 3) {
+                // If this is an array uniform, strip array indexers off it since GL does not
+                // seem to be consistent across different drivers/implementations in how it returns
+                // array uniforms. On some systems it will return "u_matrixArray", while on others
+                // it will return "u_matrixArray[0]".
+                char* c = strrchr(uniformName.data(), '[');
+                if (c) {
+                    *c = '\0';
                 }
-
-                // Query the pre-assigned uniform location.
-                uniformLocation = glGetUniformLocation(_program, &uniformName[0]);
-
-                std::unique_ptr<Uniform> uniform(new Uniform(std::string(&uniformName[0]), uniformLocation, uniformType));
-                uniform->_effect = shared_from_this();
-                if (uniformType == GL_SAMPLER_2D || uniformType == GL_SAMPLER_CUBE) {
-                    uniform->_index = samplerIndex;
-                    samplerIndex += uniformSize;
-                }
-                _uniforms[uniform->_name] = std::move(uniform);
             }
+
+            // Query the pre-assigned uniform location.
+            uniformLocation = glGetUniformLocation(_program, uniformName.data());
+
+            auto uniform = std::make_unique<Uniform>(uniformName.data(), uniformLocation, uniformType, shared_from_this());
+            if (uniformType == GL_SAMPLER_2D || uniformType == GL_SAMPLER_CUBE) {
+                uniform->_index = samplerIndex;
+                samplerIndex += uniformSize;
+            }
+            _uniforms[uniform->name()] = std::move(uniform);
         }
     }
 }
 
 // Uniform
 
-Uniform::Uniform(const std::string& name, GLint location, GLenum type) : _name(name), _location(location), _type(type), _index(0) {
-
+Uniform::Uniform(const char* name, GLint location, GLenum type, const shared_ptr<Effect>& effect)
+    : _name(name), _location(location), _type(type), _index(0), _effect(effect) {
 }
 
-Uniform::~Uniform() noexcept {
-
-}
+Uniform::~Uniform() noexcept = default;
 
 shared_ptr<Effect> Uniform::effect() const {
     return _effect.lock();
@@ -237,21 +218,10 @@ shared_ptr<Effect> Uniform::effect() const {
 //////////////
 // functions
 
-// Loads shader from a file.
-//GLuint loadShaderFromFile(const char* path, GLenum shaderType) {
-//    std::string source;
-//    if (!readTextFile(path, source)) {
-//        loge("ERROR::SHADER::FILE ", path);
-//        return 0;
-//    }
-//    return loadShaderFromSource(source, shaderType);
-//}
-
 Shader loadShaderFromSource(const std::string& source, GLenum shaderType, const char* defines[], size_t defineCount) {
     Shader shader(shaderType);
     if (!shader) {
-        loge("SHADER::CREATE");
-        return {};
+        throw std::runtime_error("SHADER::CREATE");
     }
     std::string version;
     std::vector<const GLchar*> srcLines;
@@ -284,39 +254,20 @@ Shader loadShaderFromSource(const std::string& source, GLenum shaderType, const 
     srcLines.push_back(sourceStr);
     shader.loadSource(srcLines);
     if (!shader.compile()) {
-        std::string infoLog = shader.getInfoLog();
-        loge("ERROR::SHADER::COMPILE\n", infoLog.c_str());
-        return {};
+        loge("ERROR::SHADER::COMPILE\n", shader.getInfoLog().c_str());
+        throw std::runtime_error("ERROR::SHADER::COMPILE");
     }
     return shader;
 }
 
-ProgramHandle createAndLinkProgram(const Shader& vertShader, const Shader& fragShader) {
-    if (!vertShader) {
-        loge("VERTEX_SHADER_MISSING");
-        return 0;
+Program createAndLinkProgram(const Shader& vertShader, const Shader& fragShader) {
+    Program program(glCreateProgram());
+    if (!program) {
+        throw std::runtime_error("PROGRAM::CREATE");
     }
-    if (!fragShader) {
-        loge("FRAG_SHADER_MISSING");
-        return 0;
-    }
-    ProgramHandle program = glCreateProgram();
-    if (program == 0) {
-        loge("PROGRAM::CREATE");
-        return 0;
-    }
-    vertShader.attachToProgram(program);
-    fragShader.attachToProgram(program);
-    glLinkProgram(program);
-    GLint success;
-    glGetProgramiv(program, GL_LINK_STATUS, &success);
-    if (!success) {
-        constexpr size_t LOG_SIZE = 512;
-        GLchar infoLog[LOG_SIZE];
-        glGetProgramInfoLog(program, 512, nullptr, infoLog);
-        loge("PROGRAM::LINK\n", infoLog);
-        glDeleteProgram(program);
-        return 0;
+    if (!program.link(vertShader, fragShader)) {
+        loge("PROGRAM::LINK\n", program.getInfoLog().c_str());
+        throw std::runtime_error("PROGRAM::CREATE");
     }
     return program;
 }

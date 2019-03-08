@@ -29,8 +29,11 @@ std::string joinPath(const std::string& path1, const std::string& path2);
 bool fileExists(const char* path);
 bool fileExists(const std::string& path);
 
-bool readTextFile(const char* path, std::string& destination);
-bool writeTextFile(const char* path, std::string& destination);
+/// @throws std::ios::failure
+void readTextFile(const char* path, std::string& destination);
+
+/// @throws std::ios::failure
+void writeTextFile(const char* path, const std::string& text);
 
 /// Reads a binary file and loads the data into the given vector.
 /// @param[in] path The file path.
@@ -50,7 +53,7 @@ bool readBinaryFile(const char* path, std::vector<T>& data) {
     is.seekg(0, std::ios_base::beg);
 
     data.resize(size / sizeof(T));
-    is.read(reinterpret_cast<char*>(&data[0]), size);
+    is.read(reinterpret_cast<char*>(data.data()), size);
     is.close();
     return true;
 }
@@ -62,8 +65,9 @@ bool writeBinaryFile(const char* path, std::vector<T>& data) {
         std::clog << "ERROR::WRITE_FILE " << path << std::endl;
         return false;
     }
-    os.write(reinterpret_cast<const char*>(&data[0]), sizeof(T) * data.size());
+    os.write(reinterpret_cast<const char*>(data.data()), sizeof(T) * data.size());
     os.close();
     return true;
 }
-}
+
+} // namespace kepler

@@ -154,6 +154,7 @@
     <ClCompile Include="src\MeshRenderer.cpp" />
     <ClCompile Include="src\MeshUtils.cpp" />
     <ClCompile Include="src\OpenGL.cpp" />
+    <ClCompile Include="src\Program.cpp" />
     <ClCompile Include="src\RenderState.cpp" />
     <ClCompile Include="src\Sampler.cpp" />
     <ClCompile Include="src\Shader.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="src\MeshRenderer.hpp" />
     <ClInclude Include="src\MeshUtils.hpp" />
     <ClInclude Include="src\OpenGL.hpp" />
+    <ClInclude Include="src\Program.hpp" />
     <ClInclude Include="src\RenderState.hpp" />
     <ClInclude Include="src\Sampler.hpp" />
     <ClInclude Include="src\Shader.hpp" />

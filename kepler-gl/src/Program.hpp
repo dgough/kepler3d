@@ -2,43 +2,45 @@
 
 #include <BaseGL.hpp>
 #include <OpenGL.hpp>
+#include <Shader.hpp>
 
 #include <vector>
 
 namespace kepler {
 namespace gl {
 
-/// Wrapper class for the OpenGL shader object.
-class Shader final {
+/// Wrapper class for the OpenGL program object.
+class Program final {
 public:
-    Shader() : _handle(0) {}
-    explicit Shader(GLenum shaderType);
+    Program() : _handle(0) {}
+    explicit Program(ProgramHandle handle) : _handle(handle) {}
 
     /// Automatically calls glDeleteShader.
-    ~Shader() noexcept;
-    
+    ~Program() noexcept;
+
     // Not copyable
-    Shader(const Shader&) = delete;
-    Shader& operator=(const Shader&) = delete;
+    Program(const Program&) = delete;
+    Program& operator=(const Program&) = delete;
 
     // Movable
-    Shader(Shader&& other);
-    Shader& operator=(Shader&& other);
+    Program(Program&& other);
+    Program& operator=(Program&& other);
 
-    void loadSource(const std::vector<const char*>& source) const;
+    void attach(const Shader& shader) const;
 
-    /// Compiles the shader. Returns true on success; false otherwise.
-    bool compile() const;
+    bool link() const;
+    bool link(const Shader& vert, const Shader& frag) const;
 
     void destroy();
 
-    /// Retruns the shader type: GL_VERTEX_SHADER, GL_FRAGMENT_SHADER or GL_GEOMETRY_SHADER
-    GLenum getType() const;
+    GLint getInt(GLenum pname) const;
 
     std::string getInfoLog() const;
 
     // Returns the number of characters in the information log for shader including the null termination character.
     GLint getInfoLogLength() const;
+
+    GLint getUniformLocation(const char* uniformName) const;
 
     /// Returns true if this wrapper object is associated with an OpenGL shader object.
     /// Returns false if the handle is zero.
@@ -46,12 +48,12 @@ public:
         return _handle != 0;
     }
 
-    OPENGL_HPP_TYPESAFE_EXPLICIT operator ShaderHandle() const {
+    OPENGL_HPP_TYPESAFE_EXPLICIT operator ProgramHandle() const {
         return _handle;
     }
 
 private:
-    ShaderHandle _handle;
+    ProgramHandle _handle;
 };
 
 } // namespace gl
