@@ -4,7 +4,8 @@
 #define APIENTRY __stdcall
 #endif
 
-//#define GLAD_DEBUG
+// define in order print when an OpenGL error occurs.
+#define GLAD_DEBUG
 
 // GLAD
 #include <glad/glad.h>

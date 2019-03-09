@@ -20,5 +20,6 @@ void replace_glad_callbacks() {
     glad_set_post_callback(check_gl_error);
 #endif
 }
-}
-}
+
+} // namespace gl
+} // namespace kepler

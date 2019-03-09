@@ -73,6 +73,10 @@ static void printCursor() {
 TestApp::TestApp() {
 }
 
+TestApp::~TestApp() noexcept {
+    _scene.reset();
+}
+
 void TestApp::start() {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     app()->setSwapInterval(g_use_vsync ? 1 : 0);
@@ -99,6 +103,7 @@ void TestApp::start() {
     }
     if (_scene) {
         changeBoxColor(*_scene);
+        _truck = _scene->findFirstNodeByName("Cesium_Milk_Truck");
     }
 }
 
@@ -112,9 +117,8 @@ void TestApp::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if (_scene) {
-        static auto truck = _scene->findFirstNodeByName("Cesium_Milk_Truck");
-        if (truck) {
-            truck->rotateY(g_deltaTime * PI_OVER_2);
+        if (_truck) {
+            _truck->rotateY(g_deltaTime * PI_OVER_2);
         }
         _scene->visit(renderAll);
     }
@@ -332,12 +336,12 @@ void TestApp::loadScenes() {
         auto truckScene = truckLoader.loadSceneFromFile(TRUCK_PATH);
         auto truck = truckScene->childAt(0);
         truck->setName("Cesium_Milk_Truck");
-        scene->moveNodesFrom(truckScene);
         if (truck) {
             truck->translate(-2.5, -0.5, 0);
             truck->rotateY(-PI / 4);
             truck->scale(0.5f);
         }
+        scene->moveNodesFrom(truckScene);
 
         scene->moveNodesFrom(GLTF2Loader().loadSceneFromFile(BOX_PATH));
         scene->lastChild()->childAt(0)->setName("Box");
@@ -404,5 +408,6 @@ shared_ptr<Mesh> createCubeMesh() {
     //}
     return nullptr;
 }
-}
-}
+
+} // namespace gl
+} // namespace kepler

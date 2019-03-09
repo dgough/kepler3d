@@ -11,6 +11,7 @@ namespace gl {
 class TestApp : public AppDelegate {
 public:
     TestApp();
+    ~TestApp() noexcept override;
 
     void start() override;
     void update() override;
@@ -34,6 +35,8 @@ private:
     std::unique_ptr<FirstPersonController> _firstPerson;
     std::unique_ptr<AxisCompass> _compass;
     shared_ptr<BmpFont> _font;
+    shared_ptr<Node> _truck;
 };
-}
-}
+
+} // namespace gl
+} // namespace kepler
