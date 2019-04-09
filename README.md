@@ -1,5 +1,7 @@
 # Kepler3D
 
+<img align="right" width="40%" height="40%" src="https://i.imgur.com/9hK19jE.jpg" />
+
 Kepler3D is an OpenGL and C++14 game engine.
 
 This is a learning experience and a work in progress so I don't recommend using this engine in its current state.
@@ -16,10 +18,12 @@ This is a learning experience and a work in progress so I don't recommend using 
 
 ## Windows
 
+<img align="right" width="40%" height="40%" src="https://i.imgur.com/BKiBd1L.jpg" />
+
 **Requirements:**
 
 - 64 bit Windows
-- Visual Studio 2017
+- Visual Studio 2019
 
 External-dependencies and resource files are stored separately to keep the repo size down.
 
