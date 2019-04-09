@@ -28,8 +28,7 @@ static shared_ptr<MeshPrimitive> createPrimitive();
 static shared_ptr<Mesh> createMesh();
 static shared_ptr<Node> createNode();
 
-AxisCompass::AxisCompass() {
-    _node = createNode();
+AxisCompass::AxisCompass() : _node(createNode()) {
 }
 
 AxisCompass::AxisCompass(Scene* scene) : AxisCompass() {

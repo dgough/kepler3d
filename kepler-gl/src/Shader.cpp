@@ -6,8 +6,7 @@ namespace gl {
 
 static_assert(sizeof(Shader) == sizeof(ShaderHandle), "Ensure no vtable created");
 
-Shader::Shader(GLenum shaderType) {
-    _handle = glCreateShader(shaderType);
+Shader::Shader(GLenum shaderType) : _handle(glCreateShader(shaderType)) {
 }
 
 Shader::~Shader() {
@@ -16,11 +15,11 @@ Shader::~Shader() {
     }
 }
 
-Shader::Shader(Shader&& other) : _handle(other._handle) {
+Shader::Shader(Shader&& other) noexcept : _handle(other._handle) {
     other._handle = 0;
 }
 
-Shader& Shader::operator=(Shader&& other) {
+Shader& Shader::operator=(Shader&& other) noexcept {
     if (this != &other) {
         std::swap(_handle, other._handle);
         other.destroy();

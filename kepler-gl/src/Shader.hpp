@@ -22,8 +22,8 @@ public:
     Shader& operator=(const Shader&) = delete;
 
     // Movable
-    Shader(Shader&& other);
-    Shader& operator=(Shader&& other);
+    Shader(Shader&& other) noexcept;
+    Shader& operator=(Shader&& other) noexcept;
 
     void loadSource(const std::vector<const char*>& source) const;
 

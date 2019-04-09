@@ -79,7 +79,7 @@ Image::Format Image::format() const {
     return _format;
 }
 
-unsigned char* Image::data() const {
+const unsigned char* Image::data() const {
     return _data;
 }
 

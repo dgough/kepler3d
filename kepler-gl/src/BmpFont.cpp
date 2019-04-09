@@ -418,8 +418,7 @@ bool BmpFont::Impl::getCharacter(char ch, Character& character) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BmpFontRenderer::BmpFontRenderer() : _vao(0), _vbo(0) {
-    _effect = Effect::createFromSource(vertSource, fragSource);
+BmpFontRenderer::BmpFontRenderer() : _vao(0), _vbo(0), _effect(Effect::createFromSource(vertSource, fragSource)) {
     _effect->bind();
     mat4 projection = glm::ortho(0.f, static_cast<GLfloat>(app()->width()), static_cast<GLfloat>(app()->height()), 0.f);
     _effect->setValue(_effect->getUniformLocation("u_projection"), projection);

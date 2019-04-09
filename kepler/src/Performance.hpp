@@ -12,8 +12,7 @@ using TimePoint = std::chrono::time_point<std::chrono::high_resolution_clock>;
 
 class ProfileBlock final {
 public:
-    explicit ProfileBlock(size_t index) : _index(index) {
-        _t1 = std::chrono::high_resolution_clock::now();
+    explicit ProfileBlock(size_t index) : _index(index), _t1(std::chrono::high_resolution_clock::now()) {
     }
     ~ProfileBlock() {
         _t2 = std::chrono::high_resolution_clock::now();
