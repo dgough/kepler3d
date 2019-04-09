@@ -19,13 +19,12 @@ public:
     MaterialBinding() = default;
     ~MaterialBinding() = default;
 
+    MaterialBinding(const MaterialBinding&) = delete;
+    MaterialBinding& operator=(const MaterialBinding&) = delete;
+
     void bind(const Node& node, const Material& material);
 
     void updateBindings(const Material& material);
-
-public:
-    MaterialBinding(const MaterialBinding&) = delete;
-    MaterialBinding& operator=(const MaterialBinding&) = delete;
 
 private:
     void updateValues(const Material& material);
@@ -33,5 +32,6 @@ private:
     std::vector<std::function<void(const Effect& effect, const Node&, const Camera*)>> _functions;
     std::vector<shared_ptr<MaterialParameter>> _values;
 };
+
 }
 }

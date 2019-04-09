@@ -120,6 +120,12 @@
     <ClInclude Include="src\IndexBuffer.hpp">
       <Filter>src\Buffers</Filter>
     </ClInclude>
+    <ClInclude Include="src\Shader.hpp">
+      <Filter>src\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Program.hpp">
+      <Filter>src\Materials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
@@ -190,6 +196,12 @@
     </ClCompile>
     <ClCompile Include="src\AppGlfwOpenGL.cpp">
       <Filter>src\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shader.cpp">
+      <Filter>src\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Program.cpp">
+      <Filter>src\Materials</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

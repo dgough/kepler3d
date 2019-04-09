@@ -4,6 +4,7 @@
 #include <Rectangle.hpp>
 
 #include <functional>
+#include <string>
 
 namespace kepler {
 

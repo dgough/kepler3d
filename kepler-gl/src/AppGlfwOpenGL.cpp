@@ -178,6 +178,8 @@ App::Impl::Impl(int width, int height, bool fullscreen) : _width(width), _height
 }
 
 App::Impl::~Impl() noexcept {
+    // Destroy the delegate  and its contents before terminating GLFW
+    _delegate.reset();
     glfwTerminate();
 }
 

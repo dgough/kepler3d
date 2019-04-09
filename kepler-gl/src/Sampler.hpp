@@ -1,12 +1,12 @@
 #pragma once
 
 #include <BaseGL.hpp>
-#include "Texture.hpp"
+#include <Texture.hpp>
 
 namespace kepler {
 namespace gl {
 
-class Sampler {
+class Sampler final {
 public:
 
     enum class Wrap {
@@ -34,13 +34,14 @@ public:
     static constexpr Wrap DEFAULT_WRAP = Wrap::REPEAT;
 
     /// Use Sampler::create instead.
-    Sampler();
-    virtual ~Sampler() noexcept;
+    explicit Sampler(SamplerHandle handle = 0);
+    ~Sampler() noexcept;
 
     /// Creates a Texture Sampler and returns a shared pointer to it.
+    /// Returns null if there was an error.
     static shared_ptr<Sampler> create();
 
-    void bind(GLenum textureUnit) const noexcept;
+    void bind(GLenum textureUnit) const;
 
     void setWrapMode(Sampler::Wrap wrapS, Sampler::Wrap wrapT, Sampler::Wrap wrapR = DEFAULT_WRAP);
     void setFilterMode(Sampler::MinFilter minFilter, Sampler::MagFilter magFilter);
@@ -54,5 +55,6 @@ public:
 private:
     SamplerHandle _handle;
 };
-}
-}
+
+} // namespace gl
+} // namespace kepler

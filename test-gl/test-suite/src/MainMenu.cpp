@@ -69,6 +69,7 @@ void MainMenu::render() {
 void MainMenu::keyEvent(int key, int scancode, int action, int mods) {
     if (key == KEY_ESCAPE && action == PRESS) {
         app()->setShouldClose(true);
+        __instance.reset();
     }
 }
 

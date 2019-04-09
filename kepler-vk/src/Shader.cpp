@@ -53,5 +53,5 @@ vk::PipelineShaderStageCreateInfo Shader::pipelineCreateInfo(const char* name) {
     return shaderStageInfo;
 }
 
-}
-}
+} // namespace vulkan
+} // namespace kepler

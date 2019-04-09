@@ -7,10 +7,9 @@ namespace kepler {
 namespace gl {
 
 class Texture {
-    friend class Sampler;
 public:
 
-    enum class Type {
+    enum class Type : GLenum {
         TEXTURE_2D = GL_TEXTURE_2D,
         TEXTURE_3D = GL_TEXTURE_3D,
         TEXTURE_2D_ARRAY = GL_TEXTURE_2D_ARRAY,
@@ -18,7 +17,7 @@ public:
     };
 
     // Use Texture::create2D() to create a texture.
-    explicit Texture(Type type);
+    Texture(TextureHandle handle, Type type, int width, int height);
     Texture(const Texture&) = delete;
     Texture& operator=(const Texture&) = delete;
     void bind(GLenum textureUnit) const noexcept;
@@ -51,5 +50,6 @@ private:
     int _height;
     shared_ptr<Sampler> _sampler;
 };
-}
-}
+
+} // namespace gl
+} // namespace kepler

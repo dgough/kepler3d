@@ -6,21 +6,25 @@ namespace gl {
 
 static TextureHandle __currentSamplerId = 0;
 
-Sampler::Sampler() : _handle(0) {
-    glGenSamplers(1, &_handle);
+Sampler::Sampler(SamplerHandle handle) : _handle(handle) {
 }
 
 Sampler::~Sampler() noexcept {
-    if (_handle > 0) {
+    if (_handle) {
         glDeleteSamplers(1, &_handle);
     }
 }
 
 shared_ptr<Sampler> Sampler::create() {
-    return std::make_shared<Sampler>();
+    SamplerHandle handle;
+    glGenSamplers(1, &handle);
+    if (handle) {
+        return std::make_shared<Sampler>(handle);
+    }
+    return nullptr;
 }
 
-void Sampler::bind(GLenum textureUnit) const noexcept {
+void Sampler::bind(GLenum textureUnit) const {
     if (_handle != __currentSamplerId) {
         glBindSampler(textureUnit, _handle);
         __currentSamplerId = _handle;
@@ -37,5 +41,6 @@ void Sampler::setFilterMode(Sampler::MinFilter minFilter, Sampler::MagFilter mag
     glSamplerParameteri(_handle, GL_TEXTURE_MIN_FILTER, (GLint)minFilter);
     glSamplerParameteri(_handle, GL_TEXTURE_MAG_FILTER, (GLint)magFilter);
 }
-}
-}
+
+} // namespace gl
+} // namespace kepler

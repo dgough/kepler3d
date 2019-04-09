@@ -31,5 +31,6 @@ protected:
     ShaderType _type;
     vk::ShaderModule _module;
 };
-}
-}
+
+} // namespace vulkan
+} // namespace kepler

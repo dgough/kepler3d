@@ -40,7 +40,6 @@ public:
 
     const BoundingBox& Mesh::boundingBox() const;
 
-public:
     Mesh(const Mesh&) = delete;
     Mesh& operator=(const Mesh&) = delete;
 
@@ -49,7 +48,7 @@ private:
     void setNode(const shared_ptr<Node>& node);
 
     std::vector<shared_ptr<MeshPrimitive>> _primitives;
-    std::unique_ptr<std::string> _name;
+    //std::unique_ptr<std::string> _name;
     BoundingBox _box;
 };
 }

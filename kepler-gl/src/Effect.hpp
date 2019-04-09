@@ -4,7 +4,8 @@
 
 #include <BaseGL.hpp>
 #include <OpenGL.hpp>
-#include "BaseMath.hpp"
+#include <BaseMath.hpp>
+#include <Program.hpp>
 
 namespace kepler {
 namespace gl {
@@ -15,7 +16,7 @@ class Uniform;
 class Effect : public std::enable_shared_from_this<Effect> {
 public:
     // Use one of the static create methods.
-    explicit Effect(ProgramHandle program);
+    explicit Effect(Program&& program);
     virtual ~Effect() noexcept;
     Effect(const Effect&) = delete;
     Effect& operator=(const Effect&) = delete;
@@ -36,7 +37,6 @@ public:
     GLint getUniformLocation(const char* uniformName) const noexcept;
 
     Uniform* uniform(const std::string& uniformName) const;
-    ProgramHandle program() const noexcept;
 
     void setValue(GLint location, float value) const noexcept;
     void setValue(const Uniform* uniform, float value) const noexcept;
@@ -59,23 +59,26 @@ private:
     void queryUniforms();
 
 private:
-    ProgramHandle _program;
+    Program _program;
     std::map<std::string, GLint> _attribLocations;
     std::map<std::string, std::unique_ptr<Uniform>> _uniforms;
 };
 
 /// Shader Uniform.
-class Uniform {
+class Uniform final {
     friend class Effect;
 public:
+    Uniform(const char* name, GLint location, GLenum type, const shared_ptr<Effect>& effect);
     ~Uniform() noexcept;
 
     shared_ptr<Effect> effect() const;
 
     Uniform(const Uniform&) = delete;
     Uniform& operator=(const Uniform&) = delete;
-private:
-    Uniform(const std::string& name, GLint location, GLenum type);
+
+    const std::string& name() const {
+        return _name;
+    }
 private:
     std::string _name;
     GLint _location;
@@ -83,5 +86,6 @@ private:
     unsigned int _index;
     std::weak_ptr<Effect> _effect;
 };
-}
-}
+
+} // namespace gl
+} // namespace kepler

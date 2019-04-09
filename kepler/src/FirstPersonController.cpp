@@ -10,8 +10,7 @@ static constexpr float MAX_PITCH = 89.0f * PI / 180.0f;
 static constexpr float MIN_PITCH = -MAX_PITCH;
 
 FirstPersonController::FirstPersonController(float fov, float width, float height, float near, float far)
-    : _invertY(-1.0f), _pitch(0.0f) {
-    _root = Node::create();
+    : _root(Node::create()), _invertY(-1.0f), _pitch(0.0f) {
     _pitchNode = _root->createChild();
     auto camera = Camera::createPerspectiveFov(fov, width, height, near, far);
     _pitchNode->addComponent(camera);

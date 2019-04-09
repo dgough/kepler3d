@@ -54,7 +54,7 @@ public:
 
     /// Direct access to the underlying memory.
     /// @return Pointer to the image data.
-    unsigned char* data() const;
+    const unsigned char* data() const;
 
     /// Returns the data type. Currently always GL_UNSIGNED_BYTE.
     unsigned int type() const;

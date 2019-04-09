@@ -48,6 +48,9 @@
     <ClCompile Include="src\test_buffer.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\test_Shader.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\KeplerEnvironment.hpp">

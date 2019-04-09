@@ -9,19 +9,38 @@ namespace gl {
 /// Wrapper for VAO.
 class VertexAttributeBinding final {
 public:
+    VertexAttributeBinding() = default;
     explicit VertexAttributeBinding(GLuint handle);
+
+    VertexAttributeBinding(const MeshPrimitive& meshPrim, const Technique& technique, const Effect& effect);
+
     ~VertexAttributeBinding() noexcept;
 
-    static std::unique_ptr<VertexAttributeBinding> createUnique(const shared_ptr<MeshPrimitive>& meshPrim, const shared_ptr<Technique>& technique);
-
-    void bind();
-    void unbind();
-
-private:
+    // Not copyable
     VertexAttributeBinding(const VertexAttributeBinding&) = delete;
     VertexAttributeBinding& operator=(const VertexAttributeBinding&) = delete;
+
+    // Movable
+    VertexAttributeBinding(VertexAttributeBinding&& other);
+    VertexAttributeBinding& operator=(VertexAttributeBinding&& other);
+
+    void bind() {
+        glBindVertexArray(_handle);
+    }
+
+    void unbind() {
+        glBindVertexArray(0);
+    }
+
+    void destroy();
+
+    explicit operator bool() const noexcept {
+        return _handle != 0;
+    }
+
 private:
-    GLuint _handle;
+    GLuint _handle = 0;
 };
-}
-}
+
+} // namespace gl
+} // namespace kepler

@@ -9,39 +9,27 @@
 
 namespace kepler {
 namespace gl {
+
 VertexAttributeBinding::VertexAttributeBinding(GLuint handle) : _handle(handle) {
 }
 
-VertexAttributeBinding::~VertexAttributeBinding() noexcept {
-    if (_handle != 0) {
-        glDeleteVertexArrays(1, &_handle);
-    }
-}
-
-std::unique_ptr<VertexAttributeBinding> VertexAttributeBinding::createUnique(const shared_ptr<MeshPrimitive>& meshPrim, const shared_ptr<Technique>& technique) {
-    if (meshPrim == nullptr || technique == nullptr) {
-        return nullptr;
-    }
-    GLuint handle = 0;
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    glGenVertexArrays(1, &handle);
-    if (handle == 0) {
+VertexAttributeBinding::VertexAttributeBinding(const MeshPrimitive& meshPrim, const Technique& technique, const Effect& effect) {
+    glGenVertexArrays(1, &_handle);
+    if (_handle == 0) {
         loge("glGenVertexArrays");
-        return nullptr;
+        return;
     }
-    glBindVertexArray(handle);
 
-    auto effect = technique->effect();
-    if (effect == nullptr) {
-        glDeleteVertexArrays(1, &handle);
-        return nullptr;
-    }
-    meshPrim->bindIndices();
-    for (const auto& attrib : technique->attributes()) {
+    //glBindBuffer(GL_ARRAY_BUFFER, 0);
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    
+    glBindVertexArray(_handle);
+
+    meshPrim.bindIndices();
+    for (const auto& attrib : technique.attributes()) {
         const auto& shaderAttribName = attrib.first;
-        auto location = effect->attribLocation(shaderAttribName);
-        auto attribAccessor = meshPrim->attribute(attrib.second);
+        auto location = effect.attribLocation(shaderAttribName);
+        auto attribAccessor = meshPrim.attribute(attrib.second);
         if (location >= 0 && attribAccessor) {
             auto index = static_cast<GLuint>(location);
             attribAccessor->bind(index);
@@ -49,16 +37,32 @@ std::unique_ptr<VertexAttributeBinding> VertexAttributeBinding::createUnique(con
         }
     }
     glBindVertexArray(0); // Unbind VAO
-
-    return std::make_unique<VertexAttributeBinding>(handle);
 }
 
-void VertexAttributeBinding::bind() {
-    glBindVertexArray(_handle);
+VertexAttributeBinding::~VertexAttributeBinding() noexcept {
+    if (_handle) {
+        glDeleteVertexArrays(1, &_handle);
+    }
 }
 
-void VertexAttributeBinding::unbind() {
-    glBindVertexArray(0);
+VertexAttributeBinding::VertexAttributeBinding(VertexAttributeBinding&& other) : _handle(other._handle) {
+    other._handle = 0;
 }
+
+VertexAttributeBinding& VertexAttributeBinding::operator=(VertexAttributeBinding&& other) {
+    if (this != &other) {
+        std::swap(_handle, other._handle);
+        other.destroy();
+    }
+    return *this;
 }
+
+void VertexAttributeBinding::destroy() {
+    if (_handle) {
+        glDeleteVertexArrays(1, &_handle);
+        _handle = 0;
+    }
 }
+
+} // namespace gl
+} // namespace kepler

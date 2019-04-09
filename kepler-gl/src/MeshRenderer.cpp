@@ -6,13 +6,10 @@
 namespace kepler {
 namespace gl {
 
-static std::string _typeName("MeshRenderer");
-
 MeshRenderer::MeshRenderer(const shared_ptr<Mesh>& mesh) : _mesh(mesh) {
 }
 
-MeshRenderer::~MeshRenderer() noexcept {
-}
+MeshRenderer::~MeshRenderer() noexcept = default;
 
 shared_ptr<MeshRenderer> MeshRenderer::create(const shared_ptr<Mesh>& mesh) {
     return std::make_shared<MeshRenderer>(mesh);
@@ -46,7 +43,9 @@ bool MeshRenderer::getBoundingBox(BoundingBox& box) {
 }
 
 const std::string& MeshRenderer::typeName() const {
-    return _typeName;
+    static std::string typeName("MeshRenderer");
+    return typeName;
 }
+
 }
 }

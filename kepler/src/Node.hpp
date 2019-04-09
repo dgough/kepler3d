@@ -363,4 +363,5 @@ void Node::component(T* ptr) const {
     }
     return nullptr;
 }
-}
+
+} // namespace kepler

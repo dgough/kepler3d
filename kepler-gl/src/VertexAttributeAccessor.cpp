@@ -4,6 +4,7 @@
 
 namespace kepler {
 namespace gl {
+
 VertexAttributeAccessor::VertexAttributeAccessor(const shared_ptr<VertexBuffer>& vbo,
     GLint componentSize, GLenum type, GLboolean normalized, GLsizei stride, GLintptr offset, GLsizei count)
     : _vbo(vbo), _componentSize(componentSize), _type(type), _normalized(normalized), _stride(stride), _offset(offset), _count(count) {
@@ -22,5 +23,6 @@ void VertexAttributeAccessor::bind(GLuint location) const noexcept {
 GLsizei VertexAttributeAccessor::count() const {
     return _count;
 }
-}
-}
+
+} // namespace gl
+} // namespace kepler

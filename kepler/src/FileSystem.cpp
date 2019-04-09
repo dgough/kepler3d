@@ -1,9 +1,10 @@
 #include "stdafx.h"
 #include "FileSystem.hpp"
 
+namespace kepler {
+
 using std::string;
 
-namespace kepler {
 string directoryName(const char* path) {
     // From gameplay3d
     if (path == nullptr || strlen(path) == 0) {
@@ -63,33 +64,27 @@ bool fileExists(const std::string& path) {
     return fileExists(path.c_str());
 }
 
-bool readTextFile(const char* path, std::string& destination) {
+void readTextFile(const char* path, std::string& destination) {
+    std::ifstream file;
     try {
-        std::ifstream file;
-        file.exceptions(std::ifstream::badbit);
+        file.exceptions(std::ios::badbit | std::ios::failbit);
         file.open(path);
-        if (!file) {
-            std::clog << "ERROR::READ_TEXT_FILE " << path << std::endl;
-            return false;
-        }
         destination.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
         file.close();
     }
-    catch (const std::ifstream::failure& e) {
-        std::clog << "ERROR::READ_TEXT_FILE " << path << " " << e.what() << std::endl;
-        return false;
+    catch (const std::ios::failure&) {
+        if (!file.eof()) {
+            throw;
+        }
     }
-    return true;
 }
 
-bool writeTextFile(const char* path, std::string& destination) {
-    std::ofstream os(path);
-    if (!os) {
-        std::clog << "ERROR::WRITE_TEXT_FILE " << path << std::endl;
-        return false;
-    }
-    os.write(reinterpret_cast<const char*>(&destination[0]), destination.size());
-    os.close();
-    return true;
+void writeTextFile(const char* path, const std::string& text) {
+    std::ofstream out;
+    out.exceptions(std::ios::badbit | std::ios::failbit);
+    out.open(path);
+    out << text;
+    out.close();
 }
-}
+
+} // namespace kepler
