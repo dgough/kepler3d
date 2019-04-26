@@ -91,7 +91,7 @@ static int base64_decode_block(const char* code_in, const int length_in, char* p
 }
 
 struct decoder {
-    base64_decodestate _state;
+    base64_decodestate _state = {};
     int _buffersize;
 
     decoder(int buffersize_in = BASE64_BUFFERSIZE) : _buffersize(buffersize_in) {}

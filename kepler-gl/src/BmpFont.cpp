@@ -143,13 +143,13 @@ private:
     // unicode?
     int _stretchH;
     int _lineHeight;
-    int _base;
+    int _base = 0;
     int _scaleW;
     int _scaleH;
     int _spacingX;
     int _spacingY;
     //int _pages;
-    int _packed;
+    //int _packed;
     string _face;
     string _baseDir;
 
@@ -330,7 +330,7 @@ void BmpFont::Impl::loadCommon(const string& line) {
     readIntAfter(line, "base=", _base);
     readIntAfter(line, "scaleW=", _scaleW);
     readIntAfter(line, "scaleH=", _scaleH);
-    readIntAfter(line, "packed=", _packed);
+    //readIntAfter(line, "packed=", _packed);
 
     int pageCount;
     if (readIntAfter(line, "pages=", pageCount)) {
@@ -455,7 +455,7 @@ void BmpFontRenderer::draw(const GLfloat* data, GLsizei count, const Texture* te
     glBindVertexArray(_vao);
     texture->bind(0);
     glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-    static constexpr GLsizei SIZE = VERTEX_COUNT * VERTEX_SIZE * sizeof(GLfloat);
+    static constexpr GLsizeiptr SIZE = VERTEX_COUNT * VERTEX_SIZE * sizeof(GLfloat);
     glBufferSubData(GL_ARRAY_BUFFER, 0, SIZE * count, data);
     glDrawArrays(GL_TRIANGLES, 0, count * VERTEX_COUNT);
 

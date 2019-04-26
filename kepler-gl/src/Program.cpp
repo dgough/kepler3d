@@ -6,17 +6,17 @@ namespace gl {
 
 static_assert(sizeof(Program) == sizeof(ProgramHandle), "Ensure no vtable created");
 
-Program::~Program() {
+Program::~Program() noexcept {
     if (_handle) {
         glDeleteShader(_handle);
     }
 }
 
-Program::Program(Program&& other) : _handle(other._handle) {
+Program::Program(Program&& other) noexcept : _handle(other._handle) {
     other._handle = 0;
 }
 
-Program& Program::operator=(Program&& other) {
+Program& Program::operator=(Program&& other) noexcept {
     if (this != &other) {
         std::swap(_handle, other._handle);
         other.destroy();

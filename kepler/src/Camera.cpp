@@ -15,13 +15,11 @@ static constexpr unsigned char ALL_DIRTY = (VIEW_DIRTY | PROJ_DIRTY | VIEW_PROJ_
 static constexpr unsigned char TRANSFORM_CHANGE = ALL_DIRTY & ~PROJ_DIRTY;
 
 Camera::Camera(float fov, float aspectRatio, float near, float far)
-    : _type(Type::PERSPECTIVE), _fov(fov), _aspectRatio(aspectRatio), _near(near), _far(far) {
-    _dirtyBits |= ALL_DIRTY;
+    : _type(Type::PERSPECTIVE), _fov(fov), _aspectRatio(aspectRatio), _near(near), _far(far), _dirtyBits(ALL_DIRTY) {
 }
 
 Camera::Camera(float zoomX, float zoomY, float aspectRatio, float near, float far) :
-    _type(Type::ORTHOGRAPHIC), _aspectRatio(aspectRatio), _near(near), _far(far), _zoomX(zoomX), _zoomY(zoomY) {
-    _dirtyBits |= ALL_DIRTY;
+    _type(Type::ORTHOGRAPHIC), _aspectRatio(aspectRatio), _near(near), _far(far), _zoomX(zoomX), _zoomY(zoomY), _dirtyBits(ALL_DIRTY) {
 }
 
 Camera::~Camera() noexcept = default;

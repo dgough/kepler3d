@@ -21,8 +21,8 @@ public:
     VertexAttributeBinding& operator=(const VertexAttributeBinding&) = delete;
 
     // Movable
-    VertexAttributeBinding(VertexAttributeBinding&& other);
-    VertexAttributeBinding& operator=(VertexAttributeBinding&& other);
+    VertexAttributeBinding(VertexAttributeBinding&& other) noexcept;
+    VertexAttributeBinding& operator=(VertexAttributeBinding&& other) noexcept;
 
     void bind() {
         glBindVertexArray(_handle);

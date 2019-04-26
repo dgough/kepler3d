@@ -16,7 +16,7 @@ static constexpr unsigned char BOUNDS_DIRTY = 2;
 
 static constexpr unsigned char ALL_DIRTY = WORLD_DIRTY | BOUNDS_DIRTY;
 
-Node::Node() {
+Node::Node() : _dirtyBits(0) {
 }
 
 Node::Node(const char* name) : _dirtyBits(0) {
@@ -49,7 +49,6 @@ shared_ptr<Node> Node::create(const std::string& name) {
 }
 
 shared_ptr<Node> Node::createChild(const std::string& name) {
-    std::unique_ptr<Node> p = nullptr;
     shared_ptr<Node> node = create(name);
     _children.push_back(node);
     node->_parent = this;
@@ -59,7 +58,9 @@ shared_ptr<Node> Node::createChild(const std::string& name) {
 
 void Node::createChildren(const std::initializer_list<std::string>& names) {
     for (const auto& name : names) {
-        createChild(name);
+        _children.push_back(std::make_shared<Node>(name));
+        _children.back()->_parent = this;
+        _children.back()->_scene = _scene;
     }
 }
 

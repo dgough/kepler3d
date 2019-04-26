@@ -177,7 +177,7 @@ private:
     bool _autoLoadMaterials;
     float _aspectRatio;
 
-    time_type _jsonLoadTime;
+    time_type _jsonLoadTime = {};
 };
 
 ////////////////////////////////////////////////////////////////

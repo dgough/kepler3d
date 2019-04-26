@@ -50,7 +50,7 @@ shared_ptr<Image> Image::createFromFileMemory(const unsigned char* buffer, int b
 
 shared_ptr<Image> Image::createFromMemory(int width, int height, Format format, const unsigned char* data) {
     int soilFormat = toSoilFormat(format);
-    size_t size = width * height * soilFormat;
+    size_t size = static_cast<size_t>(width) * static_cast<size_t>(height) * soilFormat;
     unsigned char* d = (unsigned char*)malloc(size);
     if (d == nullptr) {
         return nullptr;

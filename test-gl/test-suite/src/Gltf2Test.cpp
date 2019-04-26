@@ -129,6 +129,12 @@ void Gltf2Test::keyEvent(int key, int scancode, int action, int mods) {
     }
     if (action == PRESS) {
         switch (key) {
+		case KEY_UP:
+			_scene->childAt(0)->translateY(0.1f);
+			break;
+		case KEY_DOWN:
+			_scene->childAt(0)->translateY(-0.1f);
+			break;
         case KEY_F:
             focus();
             break;
@@ -192,7 +198,6 @@ void Gltf2Test::dropEvent(int count, const char** paths) {
 }
 
 void Gltf2Test::focus() {
-    using std::max;
     // account for near plane
     float zoom = _zoomMag + 0.2f;
     _orbitCamera.setZoom(zoom);

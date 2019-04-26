@@ -149,7 +149,7 @@ void Effect::queryAttributes() {
     const auto activeAttributes = _program.getInt(GL_ACTIVE_ATTRIBUTES);
     const auto maxLength = _program.getInt(GL_ACTIVE_ATTRIBUTE_MAX_LENGTH);
     if (activeAttributes > 0 && maxLength > 0) {
-        std::vector<GLchar> attribName(maxLength + 1);
+        std::vector<GLchar> attribName(static_cast<size_t>(maxLength) + 1);
         GLint attribSize;
         GLenum attribType;
         GLint attribLocation;
@@ -171,7 +171,7 @@ void Effect::queryUniforms() {
     const auto activeUniforms = _program.getInt(GL_ACTIVE_UNIFORMS);
     const auto maxLength = _program.getInt(GL_ACTIVE_UNIFORM_MAX_LENGTH);
     if (activeUniforms > 0 && maxLength > 0) {
-        std::vector<GLchar> uniformName(maxLength + 1);
+        std::vector<GLchar> uniformName(static_cast<size_t>(maxLength) + 1);
         GLint uniformSize;
         GLenum uniformType;
         GLint uniformLocation;

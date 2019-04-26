@@ -43,7 +43,8 @@ shared_ptr<Node> Scene::createChild(const std::string& name) {
 
 void Scene::createChildren(const std::initializer_list<std::string>& names) {
     for (const auto& name : names) {
-        createChild(name);
+        _children.push_back(std::make_shared<Node>(name));
+        _children.back()->_scene = this;
     }
 }
 

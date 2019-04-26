@@ -45,11 +45,11 @@ VertexAttributeBinding::~VertexAttributeBinding() noexcept {
     }
 }
 
-VertexAttributeBinding::VertexAttributeBinding(VertexAttributeBinding&& other) : _handle(other._handle) {
+VertexAttributeBinding::VertexAttributeBinding(VertexAttributeBinding&& other) noexcept : _handle(other._handle) {
     other._handle = 0;
 }
 
-VertexAttributeBinding& VertexAttributeBinding::operator=(VertexAttributeBinding&& other) {
+VertexAttributeBinding& VertexAttributeBinding::operator=(VertexAttributeBinding&& other) noexcept {
     if (this != &other) {
         std::swap(_handle, other._handle);
         other.destroy();

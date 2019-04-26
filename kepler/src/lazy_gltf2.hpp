@@ -1790,7 +1790,7 @@ public:
     }
 private:
     /// Pointer to the parent animation json object
-    const JsonValue* animation;
+    const JsonValue* animation = nullptr;
 };
 
 // TODO move this?

@@ -23,8 +23,8 @@ public:
     Program& operator=(const Program&) = delete;
 
     // Movable
-    Program(Program&& other);
-    Program& operator=(Program&& other);
+    Program(Program&& other) noexcept;
+    Program& operator=(Program&& other) noexcept;
 
     void attach(const Shader& shader) const;
 
